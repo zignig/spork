@@ -68,24 +68,34 @@ def Firmware(reg):
         # led is on R2
         MOVI(R2,1),
         L("main_loop"),
+            # check the timer
             LDXA(R0,reg.timer_ev_pending),
             CMPI(R0,1),
+            # it has expired blink 
             BZ1("blink"),
+            # is there a char on the uart ? 
             LDXA(R0,reg.serial_rx_rdy),
             CMPI(R0,1),
+            # send it back
             BZ1("echo"),
         J("main_loop"),
 
         L("blink"),
+            # ackknowledge the timer
             MOVI(R0,1),
             STXA(R0,reg.timer_ev_pending),
+            # invert the leds 
             XORI(R2,R2,0xFFFF),
+            # post to the leds
             STXA(R2,reg.status_led_led),
         J("main_loop"),
 
         L("echo"),
+            # load the rx data 
             LDXA(R3,reg.serial_rx_data),
+            # send the byte to the crc engine
             STXA(R3,reg.crc_byte),
+            # send the byte back out on the TX
             STXA(R3,reg.serial_tx_data),    
         J("main_loop"),
     ]
@@ -102,15 +112,16 @@ if __name__ == "__main__":
             )
         ]
     )
+    # Spork it up
     spork = TestSpork(platform)
-
+    # Build the firmware
     f = Firmware(spork.cpu.map)
+    # Sporkify it ! 
     spork.cpu.firmware(f)
 
     from nmigen.cli import pysim
     from sim_data import test_rx, str_data 
     st = "sphinx of black quartz judge my vow"
-    st = "testing"
     print(hex(crc_16_kermit(st.encode('utf-8'))))
     data = str_data(st)
     dut = spork.cpu.pc.devices[0]._phy
