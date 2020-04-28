@@ -67,6 +67,7 @@ def Firmware(reg):
         STXA(R0, reg.crc_reset),
         # led is on R2
         MOVI(R2,1),
+
         L("main_loop"),
             # check the timer
             LDXA(R0,reg.timer_ev_pending),
@@ -126,8 +127,8 @@ if __name__ == "__main__":
     data = str_data(st)
     dut = spork.cpu.pc.devices[0]._phy
     dut.divisor_val  = spork.divisor
-    #with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
-    #    sim.add_clock(0.1)
-    #    sim.add_sync_process(test_rx(data,dut))
-    #    sim.run_until(10000, run_passive=True)
-    platform.build(spork,do_program=True)
+    with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
+        sim.add_clock(0.1)
+        sim.add_sync_process(test_rx(data,dut))
+        sim.run_until(10000, run_passive=True)
+    #platform.build(spork,do_program=True)
