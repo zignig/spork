@@ -1,0 +1,127 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Tue Apr 28 07:16:59 2020
+[*]
+[dumpfile] "/opt/FPGA/spork/view_spork.vcd"
+[dumpfile_mtime] "Tue Apr 28 07:16:59 2020"
+[dumpfile_size] 6230379
+[savefile] "/opt/FPGA/spork/view_spork.gtkw"
+[timestart] 0
+[size] 1920 1035
+[pos] -1 -1
+*-48.559132 133885000000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.cpu.
+[treeopen] top.cpu.pc.
+[treeopen] top.cpu.pc.crc.
+[treeopen] top.cpu.pc.serial.phy.
+[treeopen] top.cpu.pc.serial.phy.rx.
+[treeopen] top.cpu.pc.timer.bridge.
+[sst_width] 279
+[signals_width] 229
+[sst_expanded] 1
+[sst_vpaned_height] 305
+@28
+top.cpu.pc.serial.phy.rx.i
+top.cpu.pc.serial.phy.tx.o
+@820
+top.cpu.pc.serial.tx_fifo.storage_w_data[7:0]
+top.cpu.pc.serial.rx_fifo.storage_w_data[7:0]
+@28
+top.cpu.cpu.fsm_state
+top.cpu.cpu.i_insn
+@22
+top.cpu.cpu.memrd.memory(490)[15:0]
+top.cpu.cpu.memrd.memory(491)[15:0]
+top.cpu.cpu.memrd.memory(492)[15:0]
+top.cpu.cpu.memrd.memory(493)[15:0]
+top.cpu.cpu.memrd.memory(494)[15:0]
+top.cpu.cpu.memrd.memory(495)[15:0]
+top.cpu.cpu.memrd.memory(496)[15:0]
+top.cpu.cpu.memrd.memory(497)[15:0]
+top.cpu.cpu.memrd.memory(498)[15:0]
+top.cpu.cpu.memrd.memory(499)[15:0]
+top.cpu.cpu.memrd.memory(500)[15:0]
+top.cpu.cpu.memrd.memory(501)[15:0]
+top.cpu.cpu.memrd.memory(502)[15:0]
+top.cpu.cpu.memrd.memory(503)[15:0]
+@23
+[color] 1
+top.cpu.cpu.memrd.memory(504)[15:0]
+[color] 1
+top.cpu.cpu.memrd.memory(505)[15:0]
+[color] 1
+top.cpu.cpu.memrd.memory(506)[15:0]
+@821
+[color] 1
+top.cpu.cpu.memrd.memory(507)[15:0]
+@23
+[color] 1
+top.cpu.cpu.memrd.memory(508)[15:0]
+[color] 1
+top.cpu.cpu.memrd.memory(509)[15:0]
+[color] 1
+top.cpu.cpu.memrd.memory(510)[15:0]
+[color] 1
+top.cpu.cpu.memrd.memory(511)[15:0]
+@28
+top.cpu.pc.timer.bridge._int_src.timer_ev_pending__r_data
+top.cpu.pc.timer.bridge._int_src.timer_ev_status__r_data
+top.cpu.pc.status_led.led_0__o
+@800200
+-crc
+@28
+top.cpu.pc.crc.crc_reset__w_stb
+top.cpu.pc.crc.crc_byte__w_stb
+@820
+top.cpu.pc.crc.crc_byte__w_data[7:0]
+@24
+top.cpu.pc.crc.crc_byte__w_data[7:0]
+@c00022
+top.cpu.pc.crc.crc[15:0]
+@28
+(0)top.cpu.pc.crc.crc[15:0]
+(1)top.cpu.pc.crc.crc[15:0]
+(2)top.cpu.pc.crc.crc[15:0]
+(3)top.cpu.pc.crc.crc[15:0]
+(4)top.cpu.pc.crc.crc[15:0]
+(5)top.cpu.pc.crc.crc[15:0]
+(6)top.cpu.pc.crc.crc[15:0]
+(7)top.cpu.pc.crc.crc[15:0]
+(8)top.cpu.pc.crc.crc[15:0]
+(9)top.cpu.pc.crc.crc[15:0]
+(10)top.cpu.pc.crc.crc[15:0]
+(11)top.cpu.pc.crc.crc[15:0]
+(12)top.cpu.pc.crc.crc[15:0]
+(13)top.cpu.pc.crc.crc[15:0]
+(14)top.cpu.pc.crc.crc[15:0]
+(15)top.cpu.pc.crc.crc[15:0]
+@1401200
+-group_end
+@c00022
+top.cpu.pc.crc.crc_crc__r_data[15:0]
+@28
+(0)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(1)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(2)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(3)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(4)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(5)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(6)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(7)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(8)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(9)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(10)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(11)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(12)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(13)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(14)top.cpu.pc.crc.crc_crc__r_data[15:0]
+(15)top.cpu.pc.crc.crc_crc__r_data[15:0]
+@1401200
+-group_end
+@28
+top.cpu.pc.crc.clk
+@1000200
+-crc
+[pattern_trace] 1
+[pattern_trace] 0
