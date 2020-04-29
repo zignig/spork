@@ -41,8 +41,10 @@ def Init(w,reg):
         STXA(w.temp, reg.status_led_en),
         #STXA(w.temp, reg.status_led_led),
         # load the timer
-        MOVI(w.temp, 0xFFF),
-        STXA(w.temp, reg.timer_reload),
+        MOVI(w.temp, 0xFFFF),
+        STXA(w.temp, reg.timer_reload_0),
+        MOVI(w.temp, 0x00FF),
+        STXA(w.temp, reg.timer_reload_1),
         # enable timer and events
         MOVI(w.temp, 1),
         STXA(w.temp, reg.timer_en),
