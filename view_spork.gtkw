@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
-[*] Tue Apr 28 07:16:59 2020
+[*] Tue Apr 28 12:33:47 2020
 [*]
 [dumpfile] "/opt/FPGA/spork/view_spork.vcd"
-[dumpfile_mtime] "Tue Apr 28 07:16:59 2020"
-[dumpfile_size] 6230379
+[dumpfile_mtime] "Tue Apr 28 12:26:55 2020"
+[dumpfile_size] 169089195
 [savefile] "/opt/FPGA/spork/view_spork.gtkw"
 [timestart] 0
 [size] 1920 1035
 [pos] -1 -1
-*-48.559132 133885000000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-49.948803 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.cpu.
 [treeopen] top.cpu.pc.
@@ -45,17 +45,19 @@ top.cpu.cpu.memrd.memory(500)[15:0]
 top.cpu.cpu.memrd.memory(501)[15:0]
 top.cpu.cpu.memrd.memory(502)[15:0]
 top.cpu.cpu.memrd.memory(503)[15:0]
-@23
+@200
+-
+@22
 [color] 1
-top.cpu.cpu.memrd.memory(504)[15:0]
++{W0-R0} top.cpu.cpu.memrd.memory(504)[15:0]
 [color] 1
 top.cpu.cpu.memrd.memory(505)[15:0]
 [color] 1
 top.cpu.cpu.memrd.memory(506)[15:0]
-@821
+@820
 [color] 1
 top.cpu.cpu.memrd.memory(507)[15:0]
-@23
+@22
 [color] 1
 top.cpu.cpu.memrd.memory(508)[15:0]
 [color] 1

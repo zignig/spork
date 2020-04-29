@@ -1,4 +1,4 @@
-" Example spork "
+" Example firmware"
 
 from nmigen import *
 from ideal_spork.cpu.boneless import BonelessSpork
@@ -51,54 +51,7 @@ class TestSpork(Elaboratable):
         return m
 
 
-def Firmware(reg):
-    print(reg)
-    return [
-        # enable the led
-        MOVI(R0, 1),
-        STXA(R0, reg.status_led_en),
-        # load the timer
-        MOVI(R0, 0x8FF),
-        STXA(R0, reg.timer_reload),
-        # enable timer and events
-        MOVI(R0, 1),
-        STXA(R0, reg.timer_en),
-        STXA(R0, reg.timer_ev_enable),
-        # reset the crc
-        MOVI(R0, 1),
-        STXA(R0, reg.crc_reset),
-        # led is on R2
-        MOVI(R2, 1),
-        L("main_loop"),
-        # check the timer
-        LDXA(R0, reg.timer_ev_pending),
-        CMPI(R0, 1),
-        # it has expired blink
-        BZ1("blink"),
-        # is there a char on the uart ?
-        LDXA(R0, reg.serial_rx_rdy),
-        CMPI(R0, 1),
-        # send it back
-        BZ1("echo"),
-        J("main_loop"),
-        L("blink"),
-        # ackknowledge the timer
-        MOVI(R0, 1),
-        STXA(R0, reg.timer_ev_pending),
-        # invert the leds
-        XORI(R2, R2, 0xFFFF),
-        # post to the leds
-        STXA(R2, reg.status_led_led),
-        J("main_loop"),
-        L("echo"),
-        # load the rx data
-        LDXA(R3, reg.serial_rx_data),
-        # send the byte to the crc engine
-        STXA(R3, reg.crc_byte),
-        # send the byte back out on the TX
-        STXA(R3, reg.serial_tx_data),
-        J("main_loop"),
-    ]
+from echo_fw import Echo
 
 
 if __name__ == "__main__":
@@ -115,10 +68,11 @@ if __name__ == "__main__":
     # Spork it up
     spork = TestSpork(platform)
     # Build the firmware
-    f = Firmware(spork.cpu.map)
+    print(spork.cpu.map)
+    f = Echo(spork.cpu.map)
+    f.show()
     # Sporkify it !
-    print(f)
-    spork.cpu.firmware(f)
+    spork.cpu.firmware(f.code())
 
     from nmigen.cli import pysim
     from sim_data import test_rx, str_data

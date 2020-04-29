@@ -4,7 +4,7 @@ from nmigen import *
 
 def char(c):
     d = "{:08b}".format(ord(c))
-    print(c, ord(c))
+    # print(c, ord(c))
     data = []
     for i in d:
         data.append(int(i))
@@ -57,16 +57,18 @@ def test_rx(data, dut):
     yield dut.rx.i.eq(1)
     for i in data:
         yield from O(i)
-        #yield from wait()
+        # yield from wait()
 
 
-class faker: pass
+class faker:
+    pass
+
 
 if __name__ == "__main__":
     dut = faker()
     dut.rx = faker()
     dut.rx.i = Signal()
     dut.divisor_val = 10
-    a = test_rx("this is a test",dut)
+    a = test_rx("this is a test", dut)
     for i in a:
         i
