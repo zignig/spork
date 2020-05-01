@@ -1,0 +1,5 @@
+board : TinyFPGABXPlatform 
+serial_port : /dev/ttyUSB0
+serial_speed : 115200
+cpu: Boneless
+version: BL_0

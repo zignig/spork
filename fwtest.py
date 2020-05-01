@@ -97,8 +97,8 @@ if __name__ == "__main__":
     data = str_data(st)
     dut = spork.cpu.pc.devices[0]._phy
     dut.divisor_val = spork.divisor
-    with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
-        sim.add_clock(16e-6)
-        sim.add_sync_process(test_rx(data, dut))
-        sim.run_until(10000, run_passive=True)
-    #platform.build(spork,do_program=True)
+    #with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
+    #    sim.add_clock(16e-6)
+    #    sim.add_sync_process(test_rx(data, dut))
+    #    sim.run_until(10000, run_passive=True)
+    platform.build(spork,do_program=True)
