@@ -19,7 +19,7 @@ class EchoChar(SubR):
 
 
 # inline function
-def Blink(w,reg):
+def Blink(w, reg):
     return [
         LDXA(w.temp, reg.timer_ev_pending),
         CMPI(w.temp, 1),
@@ -35,11 +35,11 @@ def Blink(w,reg):
     ]
 
 
-def Init(w,reg):
+def Init(w, reg):
     return [
         MOVI(w.temp, 1),
         STXA(w.temp, reg.status_led_en),
-        #STXA(w.temp, reg.status_led_led),
+        # STXA(w.temp, reg.status_led_led),
         # load the timer
         MOVI(w.temp, 0xFFFF),
         STXA(w.temp, reg.timer_reload_0),
@@ -63,9 +63,9 @@ class Echo(Firmware):
         w.req("leds")
         w.req("temp")
         return [
-            Init(w,reg),
+            Init(w, reg),
             L("main_loop"),
-            Blink(w,reg),
+            Blink(w, reg),
             # is there a char on the uart ?
             LDXA(w.temp, reg.serial_rx_rdy),
             CMPI(w.temp, 1),
@@ -73,4 +73,4 @@ class Echo(Firmware):
             echo_char(),
             L("skip_echo"),
             J("main_loop"),
-      ]
+        ]

@@ -1,4 +1,4 @@
-# minimal boot loader for the boneless 
+# minimal boot loader for the boneless
 
 
 from boneless.arch.opcode import Instr
@@ -6,7 +6,7 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 
-from uartIO import ReadWord
+from uartIO import UART
 
 """
 The structure of the bootloader goes something like this
@@ -25,7 +25,8 @@ https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/firmware/bootloa
 
 """
 
-def Init(w,reg):
+
+def Init(w, reg):
     return [
         Rem("Set up the devices"),
         # enable the led
@@ -45,17 +46,22 @@ def Init(w,reg):
         STXA(w.temp, reg.crc_reset),
     ]
 
+
 class Bootloader(Firmware):
+    magic1 = 0xDEAD
+    magic2 = 0xBEEF
+
     def instr(self):
-        w = self.w 
+        w = self.w
         reg = self.reg
-        w.req(['temp','address','checksum','incoming_word','status'])
+        w.req(["temp", "address", "checksum", "incoming_word", "status"])
         # create the subroutine
-        readword = ReadWord()
-        return [ 
-            Init(w,reg),
+        uart = UART()
+        return [
+            Init(w, reg),
             Rem("Move the start pointer into registers"),
-            MOVR(w.address,'program_start'),
-            readword(ret=[w.incoming_word,w.status]),
- 
-        ]     
+            MOVR(w.address, "program_start"),
+            uart.readword(ret=[w.incoming_word, w.status]),
+            CMPI(w.status, 0),
+            uart.writeword(w.incoming_word),
+        ]

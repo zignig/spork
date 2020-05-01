@@ -6,34 +6,90 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 
-class ReadWord(SubR):
+class WriteWord(SubR):
     def setup(self):
-        self.locals = ['counter','serial_flag','jump_save']
-        self.ret = ['status','value']
-        # 0 status is good
-        # non zero is error
+        self.params = ["value"]
+        self.locals = ["char", "status"]
 
     def instr(self):
-        timeout = 5000
         w = self.w
         reg = self.reg
         ll = LocalLabels()
         return [
-            # load the timeout
-            MOVI(w.counter,timeout),
-            ll('wait'),
+            # get the lower char
+            ANDI(w.char, w.value, 0xFF),
+            # wait for the uart to be ready
+            ll("wait"),
+            LDXA(w.status, reg.serial_tx_rdy),
+            CMPI(w.status, 1),
+            BEQ(ll.cont),
+            J(ll.wait),
+            ll("cont"),
+            STXA(w.char, reg.serial_tx_data),
+            ll("wait2"),
+            LDXA(w.status, reg.serial_tx_rdy),
+            CMPI(w.status, 1),
+            BEQ(ll.cont2),
+            J(ll.wait2),
+            ll("cont2"),
+            SRLI(w.char, w.value, 8),
+            STXA(w.char, reg.serial_tx_data),
+        ]
+
+
+class ReadWord(SubR):
+    def setup(self):
+        self.locals = ["counter", "char", "jump_save"]
+        self.ret = ["status", "value"]
+        # 0 status is good
+        # non zero is error
+
+    def instr(self):
+        timeout = 0xFFFF
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [
+            # load zero into the value
+            MOVI(w.value, 0),
+            # wait for a char
+            JAL(w.jump_save, ll.wait_char),
+            # shift R by 8 bits
+            SRLI(w.char, w.char, 8),
+            # copy into the value register
+            MOV(w.value, w.char),
+            # get another char
+            JAL(w.jump_save, ll.wait_char),
+            # char has the new value
+            OR(w.value, w.value, w.char),
+            MOVI(w.status, 0),
+            ADJW(8),
+            JR(w.ret, 0),
+            # wait for char or timeout
+            ll("wait_char"),
+            # Load the timeout value
+            MOVI(w.counter, timeout),
+            ll("wait"),
             # decrement the counter
-            SUBI(w.counter,w.counter,1),
+            SUBI(w.counter, w.counter, 1),
             # if zero jump to the timeout
             BZ(ll.timeout),
-            LDXA(w.serial_flag,reg.serial_rx_rdy),
-            CMPI(w.serial_flag,1),
-            BEQ(ll.get_word),
+            LDXA(w.status, reg.serial_rx_rdy),
+            CMPI(w.status, 1),
+            BEQ(ll.get_char),
             J(ll.wait),
-            ll('timeout'),
-            MOVI(w.status,1),
-            Rem("return from the subroutine"), # this should be a macro
+            # TIMEOUT
+            ll("timeout"),
+            MOVI(w.status, 1),
+            Rem("return from the subroutine"),  # this should be a macro
             ADJW(8),
-            JR(R7, 0),
-            ll('get_word'),
+            JR(w.ret, 0),
+            ll("get_char"),
+            LDXA(w.char, reg.serial_rx_data),
+            JR(w.jump_save, 0),
         ]
+
+
+class UART:
+    readword = ReadWord()
+    writeword = WriteWord()
