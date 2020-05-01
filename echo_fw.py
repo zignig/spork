@@ -73,4 +73,4 @@ class Echo(Firmware):
             echo_char(),
             L("skip_echo"),
             J("main_loop"),
-        ]
+      ]

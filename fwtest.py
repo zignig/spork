@@ -66,6 +66,7 @@ class TestSpork(Elaboratable):
 
 
 from echo_fw import Echo
+from bootloader import Bootloader 
 
 
 if __name__ == "__main__":
@@ -84,7 +85,7 @@ if __name__ == "__main__":
     spork = TestSpork(platform,uart_speed=115200)
     # Build the firmware
     print(spork.cpu.map)
-    f = Echo(spork.cpu.map)
+    f = Bootloader(spork.cpu.map)
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
