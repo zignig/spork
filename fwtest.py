@@ -101,4 +101,4 @@ if __name__ == "__main__":
     #    sim.add_clock(16e-6)
     #    sim.add_sync_process(test_rx(data, dut))
     #    sim.run_until(10000, run_passive=True)
-    platform.build(spork,do_program=True)
+    #platform.build(spork,do_program=True)
