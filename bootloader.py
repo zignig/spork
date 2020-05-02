@@ -7,6 +7,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 from uartIO import UART
+from stringer import Stringer
 
 """
 The structure of the bootloader goes something like this
@@ -55,13 +56,19 @@ class Bootloader(Firmware):
         w = self.w
         reg = self.reg
         w.req(["temp", "address", "checksum", "incoming_word", "status"])
+        ll = LocalLabels()
         # create the subroutine
         uart = UART()
         return [
             Init(w, reg),
             Rem("Move the start pointer into registers"),
             MOVR(w.address, "program_start"),
-            uart.readword(ret=[w.incoming_word, w.status]),
-            CMPI(w.status, 0),
-            uart.writeword(w.incoming_word),
+            uart.read(ret=[w.incoming_word,w.status]),
+            CMPI(w.status,1),
+            BNE(ll.skip),
+            uart.write(w.incoming_word),
+            ll('skip'),
+            # uart.readword(ret=[w.incoming_word, w.status]),
+            # CMPI(w.status, 0),
+            # uart.writeword(w.incoming_word),
         ]

@@ -5,6 +5,44 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 
+class Read(SubR):
+    def setup(self):
+        self.ret = ["value","status"]
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [ 
+            MOVI(w.status,0),
+            LDXA(w.status, reg.serial_rx_rdy),
+            CMPI(w.status,1),
+            BNZ(ll.skip),
+            LDXA(w.value, reg.serial_rx_data),
+            MOVI(w.status,0),
+            J(ll.exit),
+            ll('skip'),
+            MOVI(w.status,1),
+            ll('exit'),
+        ]
+
+class Write(SubR):
+    def setup(self):
+        self.params = ["value"]
+        self.locals = ["status"]
+    
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [ 
+            ll('again'), 
+            LDXA(w.status,reg.serial_tx_rdy),
+            CMPI(w.status,1),
+            BEQ(ll.cont), 
+            J(ll.again),
+            ll('cont'),
+            STXA(w.value, reg.serial_tx_data),
+        ]
 
 class WriteWord(SubR):
     def setup(self):
@@ -55,9 +93,7 @@ class ReadWord(SubR):
             # wait for a char
             JAL(w.jump_save, ll.wait_char),
             # shift R by 8 bits
-            SRLI(w.char, w.char, 8),
-            # copy into the value register
-            MOV(w.value, w.char),
+            SRLI(w.value, w.char, 8),
             # get another char
             JAL(w.jump_save, ll.wait_char),
             # char has the new value
@@ -74,6 +110,7 @@ class ReadWord(SubR):
             SUBI(w.counter, w.counter, 1),
             # if zero jump to the timeout
             BZ(ll.timeout),
+            # check if the serial port is ready
             LDXA(w.status, reg.serial_rx_rdy),
             CMPI(w.status, 1),
             BEQ(ll.get_char),
@@ -86,6 +123,8 @@ class ReadWord(SubR):
             JR(w.ret, 0),
             ll("get_char"),
             LDXA(w.char, reg.serial_rx_data),
+            # insert into the crc engine
+            STXA(w.char, reg.crc_byte),
             JR(w.jump_save, 0),
         ]
 
@@ -93,3 +132,5 @@ class ReadWord(SubR):
 class UART:
     readword = ReadWord()
     writeword = WriteWord()
+    read = Read()
+    write = Write()
