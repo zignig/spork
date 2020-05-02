@@ -13,4 +13,5 @@ firmware:
   - bootloader
   - echo
   - hyperdrive
+  - console
 default: console
