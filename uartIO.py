@@ -5,46 +5,51 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 
+
 class Read(SubR):
     " Status and Char return "
+
     def setup(self):
-        self.ret = ["value","status"]
+        self.ret = ["value", "status"]
+
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        return [ 
+        return [
             Rem("Read a char of the serial port"),
-            MOVI(w.status,0),
-            #Get the serial port status 
+            MOVI(w.status, 0),
+            # Get the serial port status
             LDXA(w.status, reg.serial_rx_rdy),
-            CMPI(w.status,0),
-            BEQ(ll.skip), # skip if not ready
+            CMPI(w.status, 0),
+            BEQ(ll.skip),  # skip if not ready
             # Load the char
             LDXA(w.value, reg.serial_rx_data),
             # Set the status to zero
-            MOVI(w.status,1),
-            ll('skip'),
+            MOVI(w.status, 1),
+            ll("skip"),
         ]
+
 
 class Write(SubR):
     def setup(self):
         self.params = ["value"]
         self.locals = ["status"]
-    
+
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        return [ 
-            ll('again'), 
-            LDXA(w.status,reg.serial_tx_rdy),
-            CMPI(w.status,1),
-            BEQ(ll.cont), 
+        return [
+            ll("again"),
+            LDXA(w.status, reg.serial_tx_rdy),
+            CMPI(w.status, 1),
+            BEQ(ll.cont),
             J(ll.again),
-            ll('cont'),
+            ll("cont"),
             STXA(w.value, reg.serial_tx_data),
         ]
+
 
 class WriteWord(SubR):
     def setup(self):
