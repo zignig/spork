@@ -24,9 +24,12 @@ copy words into memory and increment
 check the checksum
 boot into loaded program 
 
+Refer to 
+
 https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/firmware/bootload.py
 https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/firmware/bootloader_fw.py
 
+for inspiration
 
 """
 
@@ -49,6 +52,8 @@ def Init(w, reg):
         # reset the crc
         MOVI(w.temp, 1),
         STXA(w.temp, reg.crc_reset),
+        Rem("Move the start pointer into registers"),
+        MOVR(w.address, "program_start"),
     ]
 
 
@@ -58,23 +63,26 @@ class Bootloader(Firmware):
 
     requires = ["timer", "uart", "crc", "led"]
 
+    def setup(self):
+        self.w.req(["temp", "address", "checksum", "incoming_word", "status"])
+
+    def prelude(self):
+        return Init(self.w, self.reg)
+
     def instr(self):
         w = self.w
         reg = self.reg
-        w.req(["temp", "address", "checksum", "incoming_word", "status"])
         ll = LocalLabels()
         # create the subroutine
         uart = UART()
+        strings = Stringer()
+        self.attach(strings)
         return [
-            Init(w, reg),
-            Rem("Move the start pointer into registers"),
-            MOVR(w.address, "program_start"),
-            ll("loop"),
             uart.read(ret=[w.incoming_word, w.status]),
+            CMPI(w.status, 0),
             BZ(ll.skip),
             uart.write(w.incoming_word),
             ll("skip"),
-            J(ll.loop),
             # uart.readword(ret=[w.incoming_word, w.status]),
             # CMPI(w.status, 0),
             # uart.writeword(w.incoming_word),
