@@ -64,12 +64,15 @@ class Bootloader(Firmware):
     requires = ["timer", "uart", "crc", "led"]
 
     def setup(self):
+        " registers in the bottom Window "
         self.w.req(["temp", "address", "checksum", "incoming_word", "status"])
 
     def prelude(self):
+        " code before the main loop "
         return Init(self.w, self.reg)
 
     def instr(self):
+        " Locals and the attached subroutine in the main loop "
         w = self.w
         reg = self.reg
         ll = LocalLabels()
@@ -88,6 +91,8 @@ class Bootloader(Firmware):
             # uart.writeword(w.incoming_word),
         ]
 
+
+firmware = Bootloader
 
 if __name__ == "__main__":
     print("uploading bootloader")

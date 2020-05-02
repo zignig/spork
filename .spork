@@ -1,10 +1,16 @@
 name: Bread Boarded tinybx
-board: TinyFPGABXPlatform 
-construct: fwtest
+board: 
+  - TinyFPGABXPlatform 
+construct:
+  - fwtest
+  - complicated
 serial_port: /dev/ttyUSB0
 serial_speed: 115200
 cpu: Boneless
 version: BL_0
 reset: True
-firmware: bootloader
+firmware:
+  - bootloader
+  - echo
+  - hyperdrive
 default: console
