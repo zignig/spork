@@ -1,4 +1,4 @@
-"Serail to word reading and writing"
+"Serail to char and word reading and writing"
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -6,6 +6,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 class Read(SubR):
+    " Status and Char return "
     def setup(self):
         self.ret = ["value","status"]
     def instr(self):
@@ -13,16 +14,17 @@ class Read(SubR):
         reg = self.reg
         ll = LocalLabels()
         return [ 
+            Rem("Read a char of the serial port"),
             MOVI(w.status,0),
+            #Get the serial port status 
             LDXA(w.status, reg.serial_rx_rdy),
-            CMPI(w.status,1),
-            BNZ(ll.skip),
+            CMPI(w.status,0),
+            BEQ(ll.skip), # skip if not ready
+            # Load the char
             LDXA(w.value, reg.serial_rx_data),
-            MOVI(w.status,0),
-            J(ll.exit),
-            ll('skip'),
+            # Set the status to zero
             MOVI(w.status,1),
-            ll('exit'),
+            ll('skip'),
         ]
 
 class Write(SubR):
