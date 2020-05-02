@@ -9,6 +9,10 @@ from ideal_spork.firmware.base import *
 from uartIO import UART
 from stringer import Stringer
 
+from ideal_spork.logger import logger
+
+log = logger(__name__)
+
 """
 The structure of the bootloader goes something like this
 
@@ -52,6 +56,8 @@ class Bootloader(Firmware):
     magic1 = 0xDEAD
     magic2 = 0xBEEF
 
+    requires = ["timer", "uart", "crc", "led"]
+
     def instr(self):
         w = self.w
         reg = self.reg
@@ -73,3 +79,11 @@ class Bootloader(Firmware):
             # CMPI(w.status, 0),
             # uart.writeword(w.incoming_word),
         ]
+
+
+if __name__ == "__main__":
+    print("uploading bootloader")
+    from ideal_spork.utils.upload import Uploader
+
+    up = Uploader(Bootloader)
+    up.upload()

@@ -2,4 +2,8 @@
 
 
 class Stringer:
-    pass
+    def __init__(self):
+        self.strings = {}
+
+    def code():
+        return
