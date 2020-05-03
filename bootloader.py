@@ -59,6 +59,7 @@ def Init(w, reg):
 class Bootloader(Firmware):
     magic1 = 0xDEAD
     magic2 = 0xBEEF
+    LOADER_ID = "BBL1"
 
     requires = ["timer", "uart", "crc", "led"]
 
@@ -78,9 +79,16 @@ class Bootloader(Firmware):
         # create the subroutine
         uart = UART()
         strings = Stringer()
+        strings.intro = "zignig's bootloader\n"
+        strings.loader_id = self.LOADER_ID
+
         self.attach(strings)
         return [
-            # get the uart sttus
+            # Write the greetings string
+            strings.loader_id(w.temp),
+            uart.writestring(w.temp),
+            # get the uart status
+            ll("loop"),
             uart.read(ret=[w.incoming_word, w.status]),
             # if the status is zero skip
             CMPI(w.status, 0),
@@ -88,6 +96,7 @@ class Bootloader(Firmware):
             # write the char back out
             uart.write(w.incoming_word),
             ll("skip"),
+            J(ll.loop),
             # uart.readword(ret=[w.incoming_word, w.status]),
             # CMPI(w.status, 0),
             # uart.writeword(w.incoming_word),

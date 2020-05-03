@@ -86,6 +86,7 @@ from bootloader import Bootloader
 
 
 def build():
+    # for programming from a firmware file
     print("Testing Spork")
     platform = TinyFPGABXPlatform()
     # FTDI on the tinybx
@@ -114,14 +115,27 @@ if __name__ == "__main__":
 
     spork = build()
 
-    from nmigen.cli import pysim
-    from sim_data import test_rx, str_data
+    import argparse
 
-    st = "sphinx of black quartz judge my vow"
-    print(hex(crc_16_kermit(st.encode("utf-8"))))
-    data = str_data(st)
-    dut = spork.cpu.pc.devices[0]._phy
-    dut.divisor_val = spork.divisor
-    #    sim.add_sync_process(test_rx(data, dut))
-    #    sim.run_until(10000, run_passive=True)
-    spork.platform.build(spork, do_program=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--program", action="store_true")
+    parser.add_argument("-s", "--simulate", action="store_true")
+    args = parser.parse_args()
+
+    if args.simulate:
+        from nmigen.cli import pysim
+        from sim_data import test_rx, str_data
+
+        st = "sphinx of black quartz judge my vow"
+        print(hex(crc_16_kermit(st.encode("utf-8"))))
+        data = str_data(st)
+        dut = spork.cpu.pc.devices[0]._phy
+        dut.divisor_val = spork.divisor
+        with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
+            sim.add_clock(1e-3)
+            sim.add_sync_process(test_rx(data, dut))
+            sim.run_until(1000, run_passive=True)
+
+    if args.program:
+
+        spork.platform.build(spork, do_program=True)

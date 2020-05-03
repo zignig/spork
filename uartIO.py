@@ -32,6 +32,8 @@ class Read(SubR):
 
 
 class Write(SubR):
+    " Write a char to the uart"
+
     def setup(self):
         self.params = ["value"]
         self.locals = ["status"]
@@ -48,6 +50,45 @@ class Write(SubR):
             J(ll.again),
             ll("cont"),
             STXA(w.value, reg.serial_tx_data),
+        ]
+
+
+class WriteString(SubR):
+    """ Write a string to the uart
+        Strings are pascal style with the length as the first word
+    """
+
+    def setup(self):
+        self.params = ["address"]
+        self.locals = ["length", "counter", "value"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        # create the subroutine
+        uart_out = Write()
+        return [
+            # Value is the address of the string
+            # Load the length of the string
+            LD(w.length, w.address, 0),
+            # Increment the address so it is at the start of the data
+            ADDI(w.address, w.address, 1),
+            # Reset the counter
+            MOVI(w.counter, 0),
+            ll("loop"),
+            # Write out the char
+            LD(w.value, w.address, 0),
+            uart_out(w.value),
+            # Increment the address
+            ADDI(w.address, w.address, 1),
+            # Increment the counter
+            ADDI(w.counter, w.counter, 1),
+            # check if we are at length
+            CMP(w.length, w.counter),
+            BEQ(ll.exit),
+            J(ll.loop),
+            ll("exit"),
         ]
 
 
@@ -141,3 +182,4 @@ class UART:
     writeword = WriteWord()
     read = Read()
     write = Write()
+    writestring = WriteString()
