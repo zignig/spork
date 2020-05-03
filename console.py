@@ -30,26 +30,26 @@ class CharPad(CodeObject):
         return data
 
 
-class Accept(SubR):
-    " Accept a char and put it into the pad"
-
-    pad = CharPad()
-
-    def setup(self):
-        self.ret = ["value", "pad_address"]
-
-    def instr(self):
-        w = self.w
-        reg = self.reg
-        ll = LocalLabels()
-        return [self.pad(R0), Rem("Not working yet")]
-
-
 class Console:
     def __init__(self):
         # Bind the pad into the function
         # create the functions
-        self.accept = Accept()
+        self.accept = self.Accept()
+
+    class Accept(SubR):
+        " Accept a char and put it into the pad"
+
+        pad = CharPad()
+
+        def setup(self):
+            self.params = ["char"]
+            self.ret = ["value", "pad_address"]
+
+        def instr(self):
+            w = self.w
+            reg = self.reg
+            ll = LocalLabels()
+            return [self.pad(R0), Rem("Not working yet")]
 
 
 if __name__ == "__main__":

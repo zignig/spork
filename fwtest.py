@@ -101,14 +101,14 @@ def build(TheFirmware):
     # Spork it up
     spork = TestSpork(platform, uart_speed=115200)
     # Build the firmware
-    print(spork.cpu.map)
+    print(spork.cpu.map.show())
     f = TheFirmware(spork.cpu.map)
     spork.fw = f
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    # asm = f.assemble()
-    # print(len(asm), f.hex())
+    asm = f.assemble()
+    print(len(asm), f.hex())
     return spork
 
 
