@@ -56,9 +56,12 @@ class Testing(Firmware):
         # create a strings object
         strings = Stringer()
         strings.banner = "Looks like a firmware to me"
+        strings.red = "\u001b[31m"
         console = Console()
         return [
             # Write the greetings string
+            strings.red(w.temp),
+            uart.writestring(w.temp),
             strings.banner(w.temp),
             uart.writestring(w.temp),
             # get the uart status
@@ -69,7 +72,7 @@ class Testing(Firmware):
             BZ(ll.skip),
             # write the char back out
             uart.write(w.incoming_word),
-            console.accept(),
+            console.accept(w.incoming_word),
             ll("skip"),
             J(ll.loop),
         ]
@@ -80,3 +83,4 @@ if __name__ == "__main__":
     import fwtest
 
     spork = fwtest.build(Testing)
+    spork.platform.build(spork, do_program=True)
