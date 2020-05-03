@@ -45,7 +45,6 @@ class Stringer(CodeObject):
         # object.__setattr__(self, "_used", False)
         if prefix is None:
             object.__setattr__(self, "_prefix", "{}_".format(random.randrange(2 ** 16)))
-        log.critical("Unfinished")
 
     @property
     def _used(self):
