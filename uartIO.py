@@ -20,11 +20,11 @@ class Read(SubR):
             Rem("Read a char of the serial port"),
             MOVI(w.status, 0),
             # Get the serial port status
-            LDXA(w.status, reg.serial_rx_rdy),
+            LDXA(w.status, reg.serial.rx.rdy),
             CMPI(w.status, 0),
             BEQ(ll.skip),  # skip if not ready
             # Load the char
-            LDXA(w.value, reg.serial_rx_data),
+            LDXA(w.value, reg.serial.rx.data),
             # Set the status to zero
             MOVI(w.status, 1),
             ll("skip"),
@@ -44,12 +44,12 @@ class Write(SubR):
         ll = LocalLabels()
         return [
             ll("again"),
-            LDXA(w.status, reg.serial_tx_rdy),
+            LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
             BEQ(ll.cont),
             J(ll.again),
             ll("cont"),
-            STXA(w.value, reg.serial_tx_data),
+            STXA(w.value, reg.serial.tx.data),
         ]
 
 

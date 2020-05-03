@@ -19,19 +19,19 @@ def Init(w, reg):
         Rem("Set up the devices"),
         # enable the led
         MOVI(w.temp, 1),
-        STXA(w.temp, reg.status_led_en),
+        STXA(w.temp, reg.statusled.en),
         # load the timer
         MOVI(w.temp, 0xFFFF),
-        STXA(w.temp, reg.timer_reload_0),
+        STXA(w.temp, reg.timer.reload_0),
         MOVI(w.temp, 0x00FF),
-        STXA(w.temp, reg.timer_reload_1),
+        STXA(w.temp, reg.timer.reload_1),
         # enable timer and events
         MOVI(w.temp, 1),
-        STXA(w.temp, reg.timer_en),
-        STXA(w.temp, reg.timer_ev_enable),
+        STXA(w.temp, reg.timer.en),
+        STXA(w.temp, reg.timer.ev.enable),
         # reset the crc
         MOVI(w.temp, 1),
-        STXA(w.temp, reg.crc_reset),
+        STXA(w.temp, reg.crc.reset),
         Rem("Move the start pointer into registers"),
         MOVR(w.address, "program_start"),
     ]
@@ -80,5 +80,3 @@ if __name__ == "__main__":
     import fwtest
 
     spork = fwtest.build(Testing)
-    # print(spork.fw.show())
-    print(CodeObject._objects)

@@ -47,8 +47,8 @@ class TestSpork(Elaboratable):
 
         # A blinky thing
         led = platform.request("led")
-        status_led = LedPeripheral(led)
-        cpu.add_peripheral(status_led)
+        statusled = LedPeripheral(led)
+        cpu.add_peripheral(statusled)
 
         # CRC engine, !! HAZARD, this needs a NOP to get a correct reading!!!
         crc = KermitCRC()
