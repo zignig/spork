@@ -1,6 +1,5 @@
 # minimal boot loader for the boneless
 
-
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
@@ -81,9 +80,12 @@ class Bootloader(Firmware):
         strings = Stringer()
         self.attach(strings)
         return [
+            # get the uart sttus
             uart.read(ret=[w.incoming_word, w.status]),
+            # if the status is zero skip
             CMPI(w.status, 0),
             BZ(ll.skip),
+            # write the char back out
             uart.write(w.incoming_word),
             ll("skip"),
             # uart.readword(ret=[w.incoming_word, w.status]),
@@ -97,6 +99,8 @@ firmware = Bootloader
 if __name__ == "__main__":
     print("uploading bootloader")
     from ideal_spork.utils.upload import Uploader
+    import fwtest
 
-    up = Uploader(Bootloader)
+    spork = fwtest.build()
+    up = Uploader(spork, Bootloader)
     up.upload()

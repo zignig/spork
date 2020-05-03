@@ -28,6 +28,7 @@ crc_16_kermit = crcmod.predefined.mkPredefinedCrcFun("kermit")
 
 class TestSpork(Elaboratable):
     def __init__(self, platform, uart_speed=9600, mem_size=512, firmware=None):
+        self.platform = platform
         self.cpu = cpu = BonelessSpork(firmware=firmware, mem_size=mem_size)
 
         # Request a uart at speed from the platform
@@ -84,7 +85,7 @@ from echo_fw import Echo
 from bootloader import Bootloader
 
 
-if __name__ == "__main__":
+def build():
     print("Testing Spork")
     platform = TinyFPGABXPlatform()
     # FTDI on the tinybx
@@ -106,6 +107,12 @@ if __name__ == "__main__":
     spork.cpu.firmware(f.code())
     asm = f.assemble()
     print(len(asm), f.hex())
+    return spork
+
+
+if __name__ == "__main__":
+
+    spork = build()
 
     from nmigen.cli import pysim
     from sim_data import test_rx, str_data
@@ -115,8 +122,6 @@ if __name__ == "__main__":
     data = str_data(st)
     dut = spork.cpu.pc.devices[0]._phy
     dut.divisor_val = spork.divisor
-    # with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
-    #    sim.add_clock(16e-6)
     #    sim.add_sync_process(test_rx(data, dut))
     #    sim.run_until(10000, run_passive=True)
-    platform.build(spork, do_program=True)
+    spork.platform.build(spork, do_program=True)
