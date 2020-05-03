@@ -41,11 +41,21 @@ class Stringer(CodeObject):
     " Collection of string objects "
 
     def __init__(self, prefix=None):
-        super().__init__()
         object.__setattr__(self, "_strings", {})
+        # object.__setattr__(self, "_used", False)
         if prefix is None:
             object.__setattr__(self, "_prefix", "{}_".format(random.randrange(2 ** 16)))
         log.critical("Unfinished")
+
+    @property
+    def _used(self):
+        used = False
+        for i in self._strings:
+            single = self._strings[i]
+            if single._used:
+                used = True
+                break
+        return used
 
     def __setattr__(self, item, value):
         self._strings[item] = SingleString(item, value, self._prefix)
@@ -70,7 +80,6 @@ if __name__ == "__main__":
     s = Stringer()
     s.one = "this is a test"
     s.two = "this is another test"
-    s.one(R0)
+    # s.one(R0)
     s.boot_string = "Boneless Bootloader"
-    print(s.boot_string(R2))
-    s.show()
+    MetaObj.code()

@@ -78,11 +78,9 @@ class Bootloader(Firmware):
         ll = LocalLabels()
         # create the subroutine
         uart = UART()
+        # create a strings object
         strings = Stringer()
-        strings.intro = "zignig's bootloader\n"
         strings.loader_id = self.LOADER_ID
-
-        self.attach(strings)
         return [
             # Write the greetings string
             strings.loader_id(w.temp),
