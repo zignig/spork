@@ -85,7 +85,7 @@ from echo_fw import Echo
 from bootloader import Bootloader
 
 
-def build():
+def build(TheFirmware):
     # for programming from a firmware file
     print("Testing Spork")
     platform = TinyFPGABXPlatform()
@@ -102,18 +102,19 @@ def build():
     spork = TestSpork(platform, uart_speed=115200)
     # Build the firmware
     print(spork.cpu.map)
-    f = Bootloader(spork.cpu.map)
+    f = TheFirmware(spork.cpu.map)
+    spork.fw = f
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    asm = f.assemble()
-    print(len(asm), f.hex())
+    # asm = f.assemble()
+    # print(len(asm), f.hex())
     return spork
 
 
 if __name__ == "__main__":
 
-    spork = build()
+    spork = build(Bootloader)
 
     import argparse
 

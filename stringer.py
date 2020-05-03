@@ -41,10 +41,9 @@ class Stringer(CodeObject):
     " Collection of string objects "
 
     def __init__(self, prefix=None):
+        super().__init__()
+        # need to make attrs like this becuase of the __setattr__
         object.__setattr__(self, "_strings", {})
-        # object.__setattr__(self, "_used", False)
-        if prefix is None:
-            object.__setattr__(self, "_prefix", "{}_".format(random.randrange(2 ** 16)))
 
     @property
     def _used(self):
@@ -57,10 +56,12 @@ class Stringer(CodeObject):
         return used
 
     def __setattr__(self, item, value):
-        self._strings[item] = SingleString(item, value, self._prefix)
+        val = SingleString(item, value, self._prefix)
+        self._strings[item] = val
+        object.__setattr__(self, item, val)
 
-    def __getattr__(self, item):
-        return self._strings[item]
+    # def __getattr__(self, item):
+    # return self._strings[item]
 
     def code(self):
         string_rep = [Rem("String Construct")]
@@ -81,4 +82,3 @@ if __name__ == "__main__":
     s.two = "this is another test"
     # s.one(R0)
     s.boot_string = "Boneless Bootloader"
-    MetaObj.code()
