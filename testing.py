@@ -6,7 +6,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 from uartIO import UART
-from stringer import Stringer
+from ideal_spork.firmware.stringer import Stringer
 from console import Console
 
 from ideal_spork.logger import logger
@@ -57,12 +57,15 @@ class Testing(Firmware):
         strings = Stringer()
         strings.banner = "Looks like a firmware to me"
         strings.red = "\u001b[31m"
+        strings.reset = "\u001b[0m"
         console = Console()
         return [
             # Write the greetings string
             strings.red(w.temp),
             uart.writestring(w.temp),
             strings.banner(w.temp),
+            uart.writestring(w.temp),
+            strings.reset(w.temp),
             uart.writestring(w.temp),
             # get the uart status
             ll("loop"),

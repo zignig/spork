@@ -15,14 +15,16 @@ class CharPad(CodeObject):
 
     def __call__(self, register):
         self._used = True
-        return [MOVR(register, self._prefix + self.name)]
+        return [MOVR(register, self.name + self._postfix)]
 
     def code(self):
         data = [
             Rem("Data Pad"),
-            L(self._prefix + self.name),
+            L(self.name + self._postfix),
             Rem("length"),
             [self.length],
+            Rem("pointer"),
+            [0],
             Rem("pointer"),
             [0],
         ]
@@ -49,7 +51,7 @@ class Console:
             w = self.w
             reg = self.reg
             ll = LocalLabels()
-            return [self.pad(R0), Rem("Not working yet")]
+            return [self.pad(w.pad_address), Rem("Not working yet")]
 
 
 if __name__ == "__main__":

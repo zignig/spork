@@ -6,7 +6,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 from uartIO import UART
-from stringer import Stringer
+from ideal_spork.firmware.stringer import Stringer
 
 from ideal_spork.logger import logger
 
