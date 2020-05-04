@@ -11,6 +11,9 @@ log = logger(__name__)
 
 import random
 
+# TODO , strings are currently word encoded , wastes a lot of space
+# have a compact version that byte packs them
+
 
 class SingleString:
     """ A single string with prefix and 
