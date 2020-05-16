@@ -1,17 +1,10 @@
-name: Bread Boarded tinybx
-board: 
-  - TinyFPGABXPlatform 
-construct:
-  - fwtest
-  - complicated
-serial_port: /dev/ttyUSB0
-serial_speed: 115200
-cpu: Boneless
-version: BL_0
-reset: True
-firmware:
-  - bootloader
-  - echo
-  - hyperdrive
-  - console
-default: console
+name = "Bread Boarded tinybx"
+board = [ "TinyFPGABXPlatform",]
+construct = [ "fwtest", "complicated",]
+serial_port = "/dev/ttyUSB0"
+serial_speed = 115200
+cpu = "Boneless"
+version = "BL_0"
+reset = true
+firmware = [ "bootloader", "echo", "hyperdrive", "console",]
+default = "console"

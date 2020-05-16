@@ -36,24 +36,26 @@ def Blink(w, reg):
     ]
 
 
-def Init(w, reg):
-    return [
-        Rem("Enable the LED"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.statusled.en),
-        Rem("Load the timer"),
-        MOVI(w.temp, 0xFFFF),
-        STXA(w.temp, reg.timer.reload_0),
-        MOVI(w.temp, 0x00FF),
-        STXA(w.temp, reg.timer.reload_1),
-        Rem("Enable timer and events"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.timer.en),
-        STXA(w.temp, reg.timer.ev.enable),
-        Rem("Reset the CRC"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.crc.reset),
-    ]
+class DeviceSetup(Inline):
+    def instr(self, w):
+        reg = self.reg
+        return [
+            Rem("Enable the LED"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.statusled.en),
+            Rem("Load the timer"),
+            MOVI(w.temp, 0xFFFF),
+            STXA(w.temp, reg.timer.reload_0),
+            MOVI(w.temp, 0x00FF),
+            STXA(w.temp, reg.timer.reload_1),
+            Rem("Enable timer and events"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.timer.en),
+            STXA(w.temp, reg.timer.ev.enable),
+            Rem("Reset the CRC"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.crc.reset),
+        ]
 
 
 class Echo(Firmware):
@@ -61,7 +63,7 @@ class Echo(Firmware):
         self.w.req(["leds", "temp"])
 
     def prelude(self):
-        return [Init(self.w, self.reg)]
+        return [DeviceSetup(self.w)()]
 
     def instr(self):
         echo_char = EchoChar()

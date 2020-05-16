@@ -11,9 +11,11 @@ from ideal_spork.peripheral.kermit_crc import KermitCRC
 from ideal_spork.peripheral.warmboot import WarmBoot
 
 from ideal_spork.cores.ext_reset import ExternalReset
+from ideal_spork.cores.debounce import Debounce
 
 from nmigen_boards.tinyfpga_bx import TinyFPGABXPlatform
 from nmigen_boards.resources.interface import UARTResource
+from nmigen_boards.resources.user import ButtonResources
 
 from nmigen.build import Resource, Subsignal, Pins, Attrs
 
@@ -38,7 +40,7 @@ class TestSpork(Elaboratable):
 
         # Make the peripheral
         serial = AsyncSerialPeripheral(pins=uart, divisor=uart_divisor)
-        # Attach it to the CPU`
+        # Attach it to the CPU
         cpu.add_peripheral(serial)
 
         # A countdown timer with interrupt
@@ -61,6 +63,9 @@ class TestSpork(Elaboratable):
         # build the register map
         cpu.build()
 
+        # debouncer test
+        # but = platform.request('button')
+        # self.db = Debounce(but)
         # Semi external device to reset on an out of band pin
         # DTR on FTDI, 4 toggles -> warmboot , 7 toggles bootloader
         # within a timeout.
@@ -78,6 +83,7 @@ class TestSpork(Elaboratable):
         m.submodules.cpu = self.cpu
         # Attach the external reset
         m.submodules.external_reset = self.er
+        # Attache the debouncer
         return m
 
 
@@ -96,8 +102,10 @@ def build(TheFirmware):
                 0, rx="A8", tx="B8", attrs=Attrs(IO_STANDARD="SB_LVCMOS", PULLUP=1)
             ),
             Resource("reset_pin", 0, Pins("18", conn=("gpio", 0), dir="i")),
+            # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
         ]
     )
+    print(platform.resources)
     # Spork it up
     spork = TestSpork(platform, uart_speed=115200)
     # Build the firmware
@@ -107,8 +115,7 @@ def build(TheFirmware):
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    asm = f.assemble()
-    print(len(asm), f.hex())
+    print(len(spork.cpu.memory.init), f.hex())
     return spork
 
 

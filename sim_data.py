@@ -18,7 +18,6 @@ def str_data(s):
         data.append(char(i))
     return data
 
-test test
 
 def test_rx(data, dut):
     print("test RX")
