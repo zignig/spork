@@ -8,6 +8,8 @@ from ideal_spork.firmware.stringer import Stringer
 
 from ideal_spork.logger import logger
 
+from rich import print
+
 log = logger(__name__)
 
 """ Console and string handling functions
