@@ -19,6 +19,10 @@ log = logger(__name__)
 
 
 class CharPad(CodeObject):
+    """
+        A character pad with console editing
+    """
+
     def __init__(self, name="CharPad", length=32):
         super().__init__()
         self.length = length
@@ -40,9 +44,10 @@ class CharPad(CodeObject):
 class CharSwitch:
     " Construct a jump table for single chars, or integers "
 
-    def __init__(self):
+    def __init__(self, window):
         self.mapping = {}
         self.labels = LocalLabels()
+        self.window = window
 
     def add(self, val, subroutine):
         if isinstance(val, str):
@@ -50,17 +55,11 @@ class CharSwitch:
         self.mapping[val] = subroutine
 
     def dump(self):
-        def jump_entry(arg):
-            def relocate(resolver):
-                return [resolver(arg)]
-
-            return relocate
-
         ll = self.labels
         data = [Rem("start of the jump table"), J(ll.cont), ll("jump_table")]
         for i, j in enumerate(self.mapping):
             log.critical("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
-            data += [j, RR("{:04d}{:s}".format(i, ll._postfix))]
+            data += [j, J("{:04d}{:s}".format(i, ll._postfix)), Rem("---")]
         data += [ll("cont")]
         for i, j in enumerate(self.mapping):
             log.critical(
@@ -101,11 +100,13 @@ if __name__ == "__main__":
     ll = LocalLabels()
     s.test = "this is a test"
     w.req(["pad", "value"])
-    cs = CharSwitch()
-    cs.add("c", console.accept(w.value))
-    cs.add("r", console.accept(w.pad))
-    cs.add("s", s.test(w.value))
-    cs.add(43, s.test(w.value))
+    cs = CharSwitch(w)
+    cs.add("c", [])
+    cs.add("r", [])
+    cs.add("s", [])
+    cs.add(43, [])
+    cs.add(10, [])
+    cs.add(13, [])
     d = cs.dump()
     print(d)
     r = Instr.assemble(d)
