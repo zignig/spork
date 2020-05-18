@@ -41,13 +41,15 @@ class CharPad(CodeObject):
         return data
 
 
-class CharSwitch:
+class Switch:
     " Construct a jump table for single chars, or integers "
 
-    def __init__(self, window):
+    def __init__(self, window, select):
         self.mapping = {}
         self.labels = LocalLabels()
         self.window = window
+        self.select = select  # a register in window
+        window.req(["jumpval"])
 
     def add(self, val, subroutine):
         if isinstance(val, str):
@@ -56,11 +58,19 @@ class CharSwitch:
 
     def dump(self):
         ll = self.labels
-        data = [Rem("start of the jump table"), J(ll.cont), ll("jump_table")]
+        w = self.window
+        data = [Rem("start of the jump table")]
+        # map the values
         for i, j in enumerate(self.mapping):
             log.critical("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
-            data += [j, J("{:04d}{:s}".format(i, ll._postfix)), Rem("---")]
-        data += [ll("cont")]
+            data += [
+                Rem("start-" + str(j)),
+                MOVI(w.jumpval, j),
+                CMP(w.jumpval, self.select),
+                BZ("{:04d}{:s}".format(i, ll._postfix)),
+                Rem("end-" + str(j)),
+            ]
+        data += [Rem("end of jump table"), ll("cont")]
         for i, j in enumerate(self.mapping):
             log.critical(
                 "trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j]))
@@ -96,17 +106,18 @@ class Console:
 if __name__ == "__main__":
     console = Console()
     w = Window()
+    w.req("val")
     s = Stringer()
     ll = LocalLabels()
     s.test = "this is a test"
     w.req(["pad", "value"])
-    cs = CharSwitch(w)
-    cs.add("c", [])
-    cs.add("r", [])
-    cs.add("s", [])
-    cs.add(43, [])
-    cs.add(10, [])
-    cs.add(13, [])
+    cs = Switch(w, w.val)
+    cs.add("c", [ll("a")])
+    cs.add("r", [ll("b")])
+    cs.add("s", [ll("c")])
+    cs.add(43, [ll("d")])
+    cs.add(10, [ll("e")])
+    cs.add(13, [ll("f")])
     d = cs.dump()
     print(d)
     r = Instr.assemble(d)
