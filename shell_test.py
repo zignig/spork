@@ -9,9 +9,9 @@ class Ser(asyncio.Protocol):
         self.transport = transport
         self.buf = bytes()
         self.msgs_recvd = 0
-        print("Reader connection created")
+        print("Serial connection created")
         asyncio.ensure_future(self.send())
-        print("Writer.send() scheduled")
+        print("send() scheduled")
 
     def data_received(self, data):
         print("rec", data)
@@ -20,7 +20,6 @@ class Ser(asyncio.Protocol):
         print("Reader closed")
 
     async def send(self):
-        await asyncio.sleep(5)
         """Send four newline-terminated messages, one byte at a time.
         """
         message = b"foo\nbar\nbaz\nqux\n"
@@ -35,6 +34,6 @@ t = serial_asyncio.create_serial_connection(
     loop, Ser, "/dev/ttyUSB0", baudrate=115200, timeout=0.4
 )
 asyncio.ensure_future(t)
-loop.call_later(10, loop.stop)
+loop.call_later(2, loop.stop)
 loop.run_forever()
 print("Done")
