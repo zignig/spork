@@ -17,6 +17,7 @@ log = logger(__name__)
 """
 The structure of the bootloader goes something like this
 
+THIS IS A LIE
 
 wait for 2 magic words ( id ) 
 wait for checksum
@@ -82,26 +83,19 @@ class Bootloader(Firmware):
         uart = UART()
         # create a strings object
         strings = Stringer()
-        strings.loader_id = self.LOADER_ID + "\r\n"
-        strings.greetings = "Welcome to boneless\r\n"
+        strings.loader_id = "\r\n" + self.LOADER_ID + "\r\n"
+        strings.greetings = "MAY the spork be with you\r\n"
         console = Console()
         return [
-            # wait for a bit
-            MOVI(w.temp, 0xFFFF),
-            ll("again"),
-            SUBI(w.temp, w.temp, 1),
-            BZ(ll.cont),
-            J(ll.again),
-            ll("cont"),
             # Write the greetings string
             strings.loader_id(w.temp),
             uart.writestring(w.temp),
-            # strings.greetings(w.temp),
-            # uart.writestring(w.temp),
+            strings.greetings(w.temp),
+            uart.writestring(w.temp),
             # load the pad address into the register
             console.pad(w.pad_address),
-            # get the uart status
             ll("loop"),
+            # get the uart status
             uart.read(ret=[w.incoming_word, w.status]),
             # if the status is zero skip
             CMPI(w.status, 0),

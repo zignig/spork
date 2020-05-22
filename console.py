@@ -25,12 +25,24 @@ class CharPad(CodeObject):
         A character pad with console editing
     """
 
-    def __init__(self, name="CharPad", length=32):
+    # Add functions for the Char pad here
+    class Accept(SubR):
+        def setup(self):
+            self.params = ["pad_address", "char"]
+            self.locals = ["length"]
+
+        def instr(self):
+            return []
+
+    def __init__(self, name="CharPad", length=64):
         super().__init__()
         self.length = length
-        self.cursor = length + 1
+        self.total_length = length + 1
+        self.cursor = length + 2
         self._used = False  # just make it anyway
         self.name = name
+        # Some internal functions
+        self.accept = self.Accept()
 
     def __call__(self, register):
         self._used = True
@@ -39,7 +51,7 @@ class CharPad(CodeObject):
     def code(self):
         data = [Rem("Data Pad"), L(self.name + self._postfix), Rem("length")]
         data.extend([0] * self.length)
-        data += [Rem("length"), [self.length], Rem("cursor"), [0]]
+        data += [Rem("total_length"), [self.length], Rem("cursor"), [0]]
         return data
 
 
@@ -111,7 +123,10 @@ class Console(SubR):
             return [
                 UART.writestring(w.pad_address),
                 MOVI(w.temp, 0),
+                Rem("clear the length"),
                 ST(w.pad_address, w.temp, 0),
+                Rem("clear the cursor"),
+                ST(w.pad_address, w.temp, 64),
             ]
 
     def setup(self):
@@ -137,7 +152,8 @@ class Console(SubR):
 
         sel.add((13, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
         sel.add((10, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
-        sel.add((3, [Rem("^C Restart"), MOVI(self.w.temp, 1), wb(self.w.temp)]))
+        sel.add((4, [Rem("^D Restart"), MOVI(self.w.temp, 1), wb(self.w.temp)]))
+        sel.add((3, [Rem("^C Init processor"), J("init")]))
         # sel.add((4,[Rem("^D Bootloader"),MOVI(self.w.temp,0),wb(self.w.temp)]))
 
     def instr(self):
