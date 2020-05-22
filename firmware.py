@@ -1,3 +1,5 @@
+# Spork templated file
+# Created on Tue May 19 19:47:47 2020
 " Echo and Blink firmware"
 
 from boneless.arch.opcode import Instr
@@ -7,9 +9,6 @@ from ideal_spork.firmware.base import *
 
 # Subroutine
 class EchoChar(SubR):
-    def setup(self):
-        ...
-
     def instr(self):
         reg = self.reg
         return [
@@ -39,26 +38,24 @@ def Blink(w, reg):
     ]
 
 
-class DeviceSetup(Inline):
-    def instr(self, w):
-        reg = self.reg
-        return [
-            Rem("Enable the LED"),
-            MOVI(w.temp, 1),
-            STXA(w.temp, reg.statusled.en),
-            Rem("Load the timer"),
-            MOVI(w.temp, 0xFFFF),
-            STXA(w.temp, reg.timer.reload_0),
-            MOVI(w.temp, 0x00FF),
-            STXA(w.temp, reg.timer.reload_1),
-            Rem("Enable timer and events"),
-            MOVI(w.temp, 1),
-            STXA(w.temp, reg.timer.en),
-            STXA(w.temp, reg.timer.ev.enable),
-            Rem("Reset the CRC"),
-            MOVI(w.temp, 1),
-            STXA(w.temp, reg.crc.reset),
-        ]
+def Init(w, reg):
+    return [
+        Rem("Enable the LED"),
+        MOVI(w.temp, 1),
+        STXA(w.temp, reg.statusled.en),
+        Rem("Load the timer"),
+        MOVI(w.temp, 0xFFFF),
+        STXA(w.temp, reg.timer.reload_0),
+        MOVI(w.temp, 0x00FF),
+        STXA(w.temp, reg.timer.reload_1),
+        Rem("Enable timer and events"),
+        MOVI(w.temp, 1),
+        STXA(w.temp, reg.timer.en),
+        STXA(w.temp, reg.timer.ev.enable),
+        Rem("Reset the CRC"),
+        MOVI(w.temp, 1),
+        STXA(w.temp, reg.crc.reset),
+    ]
 
 
 class Echo(Firmware):
@@ -66,7 +63,7 @@ class Echo(Firmware):
         self.w.req(["leds", "temp"])
 
     def prelude(self):
-        return [DeviceSetup(self.w)()]
+        return [Init(self.w, self.reg)]
 
     def instr(self):
         echo_char = EchoChar()
@@ -82,10 +79,3 @@ class Echo(Firmware):
             echo_char(),
             L("skip_echo"),
         ]
-
-
-if __name__ == "__main__":
-    print("build echo firmware")
-    import fwtest
-
-    spork = fwtest.build(Echo)

@@ -24,7 +24,7 @@ class Ser(asyncio.Protocol):
         """
         message = b"foo\nbar\nbaz\nqux\n"
         for i in range(1000):
-            # await asyncio.sleep(0.02)
+            await asyncio.sleep(0.001)
             print(i, "send", message)
             self.transport.serial.write(bytes(message))
 
@@ -34,6 +34,6 @@ t = serial_asyncio.create_serial_connection(
     loop, Ser, "/dev/ttyUSB0", baudrate=115200, timeout=0.4
 )
 asyncio.ensure_future(t)
-loop.call_later(2, loop.stop)
+loop.call_later(10, loop.stop)
 loop.run_forever()
 print("Done")

@@ -5,6 +5,7 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.stringer import Stringer
+from uartIO import UART
 
 from ideal_spork.logger import logger
 
@@ -26,8 +27,8 @@ class CharPad(CodeObject):
     def __init__(self, name="CharPad", length=32):
         super().__init__()
         self.length = length
-        self.curser = length + 1
-        self._used = True  # just make it anyway
+        self.cursor = length + 1
+        self._used = False  # just make it anyway
         self.name = name
 
     def __call__(self, register):
@@ -82,7 +83,7 @@ class Switch:
                     Rem("end-" + str(j)),
                 ],
             ]
-        data += [Rem("end of jump table")]
+        data += [J(ll.table_end), Rem("end of jump table")]
         for i, j in enumerate(self.mapping):
             log.critical(
                 "trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j]))
@@ -94,30 +95,52 @@ class Switch:
 
 
 class Console(SubR):
-    def setup(self):
-        param = []
-        local = []
-        ret = ["status"]
-        # Bind the pad into the function
-        # create the functions
-        self.accept = self.Accept()
-        self.pad = CharPad()
-        self.w.req("choice")
-        self.selector = sel = Switch(self.w, self.w.choice)
-        # char selector
+    # Subroutines inside the console
 
-    class Accept(SubR):
-        " Accept a char and put it into the pad"
+    class Enter(SubR):
+        " just write the pad back to the serial port for now"
 
         def setup(self):
-            self.params = ["char"]
-            self.ret = ["value", "pad_address"]
+            self.params = ["pad_address"]
+            self.locals = ["temp"]
+            self.uart = UART()
 
         def instr(self):
             w = self.w
-            reg = self.reg
-            ll = LocalLabels()
-            return [self.pad(w.pad_address), Rem("Not working yet")]
+            return [
+                UART.writestring(w.pad_address),
+                MOVI(w.temp, 0),
+                ST(w.pad_address, w.temp, 0),
+            ]
+
+    def setup(self):
+        self.params = ["char", "pad_address"]
+        self.locals = ["temp"]
+        self.ret = ["status"]
+
+    def build(self):
+        # Bind the pad into the function
+        self.pad = CharPad()
+
+        self.selector = sel = Switch(self.w, self.w.char)
+        ll = LocalLabels()
+        enter = self.Enter()
+        st = Stringer()
+        st.back = "\n>"
+        uart = UART()
+        # char selector
+        # line feed
+        # sel.add((10, [enter(self.w.pad_address)]))
+        # sel.add((13, [enter(self.w.pad_address)]))
+        sel.add((13, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
+        sel.add((10, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
+        sel.add((4, [J("main")]))
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [self.selector.dump(), Rem("Not working yet")]
 
 
 if __name__ == "__main__":

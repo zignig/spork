@@ -2,3 +2,4 @@ name = "Bread Boarded tinybx with LEDS and FTDI"
 serial_port = "/dev/ttyUSB0"
 serial_speed = 115200
 version = "BL_0"
+firmware = "Bootloader"

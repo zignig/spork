@@ -6,6 +6,8 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 from uartIO import UART
+from console import Console
+
 from ideal_spork.firmware.stringer import Stringer
 
 from ideal_spork.logger import logger
@@ -65,7 +67,9 @@ class Bootloader(Firmware):
 
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["temp", "address", "checksum", "incoming_word", "status"])
+        self.w.req(
+            ["temp", "pad_address", "address", "checksum", "incoming_word", "status"]
+        )
 
     def prelude(self):
         " code before the main loop "
@@ -80,11 +84,17 @@ class Bootloader(Firmware):
         uart = UART()
         # create a strings object
         strings = Stringer()
-        strings.loader_id = self.LOADER_ID
+        strings.loader_id = self.LOADER_ID + "\n"
+        strings.greetings = "Welcome to boneless\n"
+        console = Console()
         return [
             # Write the greetings string
             strings.loader_id(w.temp),
             uart.writestring(w.temp),
+            strings.greetings(w.temp),
+            uart.writestring(w.temp),
+            # load the pad address into the register
+            console.pad(w.pad_address),
             # get the uart status
             ll("loop"),
             uart.read(ret=[w.incoming_word, w.status]),
@@ -93,11 +103,9 @@ class Bootloader(Firmware):
             BZ(ll.skip),
             # write the char back out
             uart.write(w.incoming_word),
+            console(w.incoming_word, w.pad_address),
             ll("skip"),
             J(ll.loop),
-            # uart.readword(ret=[w.incoming_word, w.status]),
-            # CMPI(w.status, 0),
-            # uart.writeword(w.incoming_word),
         ]
 
 
