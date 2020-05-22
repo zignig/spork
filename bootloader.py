@@ -59,9 +59,7 @@ def Init(w, reg):
 
 
 class Bootloader(Firmware):
-    magic1 = 0xDEAD
-    magic2 = 0xBEEF
-    LOADER_ID = "BBL1"
+    LOADER_ID = "BL_0"
 
     requires = ["timer", "uart", "crc", "led"]
 
@@ -84,15 +82,22 @@ class Bootloader(Firmware):
         uart = UART()
         # create a strings object
         strings = Stringer()
-        strings.loader_id = self.LOADER_ID + "\n"
-        strings.greetings = "Welcome to boneless\n"
+        strings.loader_id = self.LOADER_ID + "\r\n"
+        strings.greetings = "Welcome to boneless\r\n"
         console = Console()
         return [
+            # wait for a bit
+            MOVI(w.temp, 0xFFFF),
+            ll("again"),
+            SUBI(w.temp, w.temp, 1),
+            BZ(ll.cont),
+            J(ll.again),
+            ll("cont"),
             # Write the greetings string
             strings.loader_id(w.temp),
             uart.writestring(w.temp),
-            strings.greetings(w.temp),
-            uart.writestring(w.temp),
+            # strings.greetings(w.temp),
+            # uart.writestring(w.temp),
             # load the pad address into the register
             console.pad(w.pad_address),
             # get the uart status

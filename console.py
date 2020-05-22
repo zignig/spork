@@ -6,6 +6,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.stringer import Stringer
 from uartIO import UART
+from warm import WarmBoot
 
 from ideal_spork.logger import logger
 
@@ -128,13 +129,16 @@ class Console(SubR):
         st = Stringer()
         st.back = "\n>"
         uart = UART()
+        wb = WarmBoot()
         # char selector
         # line feed
         # sel.add((10, [enter(self.w.pad_address)]))
         # sel.add((13, [enter(self.w.pad_address)]))
+
         sel.add((13, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
         sel.add((10, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
-        sel.add((4, [J("main")]))
+        sel.add((3, [Rem("^C Restart"), MOVI(self.w.temp, 1), wb(self.w.temp)]))
+        # sel.add((4,[Rem("^D Bootloader"),MOVI(self.w.temp,0),wb(self.w.temp)]))
 
     def instr(self):
         w = self.w
