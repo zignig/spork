@@ -10,13 +10,16 @@ from warm import WarmBoot
 
 from ideal_spork.logger import logger
 
+log = logger(__name__)
+
 from rich import print
 
-log = logger(__name__)
 
 """ Console and string handling functions
     for a shell interface 
-    [ ] 
+    [X] reset
+    [X] warmboot
+    [ ] echo
 """
 
 
@@ -34,7 +37,7 @@ class CharPad(CodeObject):
         def instr(self):
             return []
 
-    def __init__(self, name="CharPad", length=64):
+    def __init__(self, name="CharPad", length=32):
         super().__init__()
         self.length = length
         self.total_length = length + 1
@@ -80,7 +83,7 @@ class Switch:
         elif isinstance(val, int):
             self.mapping[val] = subroutine
 
-    def dump(self):
+    def __call__(self):
         ll = self.labels
         w = self.window
         data = [Rem("start of the jump table")]
@@ -129,6 +132,11 @@ class Console(SubR):
                 ST(w.pad_address, w.temp, 64),
             ]
 
+    class Char(Inline):
+        " Echo and accept echoable chars"
+        log.critical("Accept printable char")
+        pass
+
     def setup(self):
         self.params = ["char", "pad_address"]
         self.locals = ["temp"]
@@ -138,6 +146,8 @@ class Console(SubR):
         # Bind the pad into the function
         self.pad = CharPad()
 
+        # self.char = self.Char(self.w)
+
         self.selector = sel = Switch(self.w, self.w.char)
         ll = LocalLabels()
         enter = self.Enter()
@@ -145,25 +155,29 @@ class Console(SubR):
         st.back = "\n>"
         uart = UART()
         wb = WarmBoot()
-        # char selector
-        # line feed
-        # sel.add((10, [enter(self.w.pad_address)]))
-        # sel.add((13, [enter(self.w.pad_address)]))
-
+        # CR does prompt for now
         sel.add((13, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
         sel.add((10, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
+        # ^C Restart , warm boot
         sel.add((4, [Rem("^D Restart"), MOVI(self.w.temp, 1), wb(self.w.temp)]))
+        # ^D Init the firmware
         sel.add((3, [Rem("^C Init processor"), J("init")]))
-        # sel.add((4,[Rem("^D Bootloader"),MOVI(self.w.temp,0),wb(self.w.temp)]))
+        # TAB complete
+        sel.add((3, [Rem("^C Init processor"), J("init")]))
+        # ESCAPE
+        sel.add((3, [Rem("^C Escape"), J("init")]))
 
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        return [self.selector.dump(), Rem("Not working yet")]
+        # TODO check printable char and echo
+        # TODO if not handle other
+        return [self.char(), self.selector(), Rem("Not working yet")]
 
 
 if __name__ == "__main__":
+    log.critical("TESTING")
     console = Console()
     w = Window()
     w.req("val")

@@ -82,6 +82,7 @@ class Bootloader(Firmware):
         # create the subroutine
         uart = UART()
         # create a strings object
+        # TODO make the stringer global
         strings = Stringer()
         strings.loader_id = "\r\n" + self.LOADER_ID + "\r\n"
         strings.greetings = "MAY the spork be with you\r\n"
