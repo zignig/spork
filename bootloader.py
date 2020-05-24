@@ -10,6 +10,8 @@ from console import Console
 
 from ideal_spork.firmware.stringer import Stringer
 
+from ideal_spork.firmware.firmware import Firmware
+
 from ideal_spork.logger import logger
 
 log = logger(__name__)
@@ -84,14 +86,14 @@ class Bootloader(Firmware):
         # create a strings object
         # TODO make the stringer global
         strings = Stringer()
-        strings.loader_id = "\r\n" + self.LOADER_ID + "\r\n"
-        strings.greetings = "MAY the spork be with you\r\n"
+        self.stringer.loader_id = "\r\n" + self.LOADER_ID + "\r\n"
+        self.stringer.greetings = "MAY the spork be with you\r\n"
         console = Console()
         return [
             # Write the greetings string
-            strings.loader_id(w.temp),
+            self.stringer.loader_id(w.temp),
             uart.writestring(w.temp),
-            strings.greetings(w.temp),
+            self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
             # load the pad address into the register
             console.pad(w.pad_address),

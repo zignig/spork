@@ -32,10 +32,20 @@ class CharPad(CodeObject):
     class Accept(SubR):
         def setup(self):
             self.params = ["pad_address", "char"]
-            self.locals = ["length"]
+            self.locals = ["length", "target address"]
 
         def instr(self):
-            return []
+            w = self.w
+            return [
+                Rem("Copy the length").LD(w.pad_address, w.length, 0),
+                Rem("Add the length to the address"),
+                MOVI(w.target_address, 1),
+                ADD(w.target_address, w.pad_address, w.length),
+                ST(w.target_address, w.char, 0),
+                Rem("Offset to the next char slot"),
+                ADDI(w.length, w.length, 1),
+                ST(w.pad_address, w.length),
+            ]
 
     def __init__(self, name="CharPad", length=32):
         super().__init__()
@@ -173,7 +183,7 @@ class Console(SubR):
         ll = LocalLabels()
         # TODO check printable char and echo
         # TODO if not handle other
-        return [self.char(), self.selector(), Rem("Not working yet")]
+        return [self.selector(), Rem("Not working yet")]
 
 
 if __name__ == "__main__":
