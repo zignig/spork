@@ -66,6 +66,7 @@ class TestSpork(Elaboratable):
         # debouncer test
         # but = platform.request('button')
         # self.db = Debounce(but)
+
         # Semi external device to reset on an out of band pin
         # DTR on FTDI, 4 toggles -> warmboot , 7 toggles bootloader
         # within a timeout.
@@ -105,7 +106,7 @@ def build(TheFirmware, mem_size=512):
             # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
         ]
     )
-    print(platform.resources)
+    # print(platform.resources)
     # Spork it up
     spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size)
     # Build the firmware

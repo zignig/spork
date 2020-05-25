@@ -83,17 +83,20 @@ class Bootloader(Firmware):
         ll = LocalLabels()
         # create the subroutine
         uart = UART()
-        # create a strings object
-        # TODO make the stringer global
-        strings = Stringer()
-        self.stringer.loader_id = "\r\n" + self.LOADER_ID + "\r\n"
-        self.stringer.greetings = "MAY the spork be with you\r\n"
+        # stringer global
+        st = self.stringer
+        st.loader_id = "\r\n" + self.LOADER_ID
+        st.greetings = "MAY the spork be with you\r\n"
+        st.warmboot = "Warmboot!"
+        st.reset = "Reset!"
+        st.prompt = "\r\n#>\r\n"
+
         console = Console()
         return [
             # Write the greetings string
             self.stringer.loader_id(w.temp),
             uart.writestring(w.temp),
-            self.stringer.greetings(w.temp),
+            self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
             # load the pad address into the register
             console.pad(w.pad_address),
@@ -104,8 +107,7 @@ class Bootloader(Firmware):
             CMPI(w.status, 0),
             BZ(ll.skip),
             # write the char back out
-            uart.write(w.incoming_word),
-            console(w.incoming_word, w.pad_address),
+            console(w.incoming_word, w.pad_address, ret=[w.status]),
             ll("skip"),
             J(ll.loop),
         ]

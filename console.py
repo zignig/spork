@@ -99,7 +99,7 @@ class Switch:
         data = [Rem("start of the jump table")]
         # map the values
         for i, j in enumerate(self.mapping):
-            log.critical("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
+            log.debug("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
             data += [
                 Rem("start-" + str(j)),
                 [
@@ -111,9 +111,7 @@ class Switch:
             ]
         data += [J(ll.table_end), Rem("end of jump table")]
         for i, j in enumerate(self.mapping):
-            log.critical(
-                "trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j]))
-            )
+            log.debug("trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
             data += [ll("{:04d}".format(i))]
             data += [self.mapping[j], J(ll.table_end)]
         data += [ll("table_end")]
@@ -144,8 +142,20 @@ class Console(SubR):
 
     class Char(Inline):
         " Echo and accept echoable chars"
-        log.critical("Accept printable char")
-        pass
+
+        def instr(self, w):
+            ll = LocalLabels()
+            uart = UART()
+            return [
+                Rem("printable char"),
+                CMPI(w.char, 31),
+                BLEU(ll.cont),
+                CMPI(w.char, 125),
+                BGEU(ll.cont),
+                Rem("Within Printable Range, echo char"),
+                uart.write(w.char),
+                ll("cont"),
+            ]
 
     def setup(self):
         self.params = ["char", "pad_address"]
@@ -161,29 +171,47 @@ class Console(SubR):
         self.selector = sel = Switch(self.w, self.w.char)
         ll = LocalLabels()
         enter = self.Enter()
-        st = Stringer()
-        st.back = "\n>"
-        uart = UART()
-        wb = WarmBoot()
-        # CR does prompt for now
-        sel.add((13, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
-        sel.add((10, [st.back(self.w.temp), uart.writestring(self.w.temp)]))
-        # ^C Restart , warm boot
-        sel.add((4, [Rem("^D Restart"), MOVI(self.w.temp, 1), wb(self.w.temp)]))
-        # ^D Init the firmware
-        sel.add((3, [Rem("^C Init processor"), J("init")]))
-        # TAB complete
-        sel.add((3, [Rem("^C Init processor"), J("init")]))
-        # ESCAPE
-        sel.add((3, [Rem("^C Escape"), J("init")]))
+        self.uart = UART()
+        self.wb = WarmBoot()
 
     def instr(self):
         w = self.w
         reg = self.reg
-        ll = LocalLabels()
+        self.ll = LocalLabels()
         # TODO check printable char and echo
+        char = self.Char(w)
+        # make a CASE style selection
+        sel = self.selector
+        # CR does prompt for now
+        sel.add(
+            (
+                10,
+                [
+                    self.stringer.prompt(self.w.temp),
+                    self.uart.writestring(self.w.temp),
+                    MOVI(w.status, 1),
+                ],
+            )
+        )
+        sel.add(
+            (
+                13,
+                [
+                    self.stringer.prompt(self.w.temp),
+                    self.uart.writestring(self.w.temp),
+                    MOVI(w.status, 1),
+                ],
+            )
+        )
+        # ^C Restart , warm boot
+        sel.add((4, [Rem("^D Restart"), MOVI(self.w.temp, 1), self.wb(self.w.temp)]))
+        # ^D Init the firmware
+        sel.add((3, [Rem("^C Init processor"), J("init")]))
+        # TAB complete
+        # ESCAPE
+
         # TODO if not handle other
-        return [self.selector(), Rem("Not working yet")]
+        return [char(), sel(), Rem("Not working yet")]
 
 
 if __name__ == "__main__":
@@ -191,7 +219,6 @@ if __name__ == "__main__":
     console = Console()
     w = Window()
     w.req("val")
-    s = Stringer()
     ll = LocalLabels()
     s.test = "this is a test"
     w.req(["pad", "value"])
