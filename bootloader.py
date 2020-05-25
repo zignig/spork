@@ -107,7 +107,7 @@ class Bootloader(Firmware):
             CMPI(w.status, 0),
             BZ(ll.skip),
             # write the char back out
-            console(w.incoming_word, w.pad_address, ret=[w.status]),
+            console(w.incoming_word, w.pad_address, w.status, ret=[w.status]),
             ll("skip"),
             J(ll.loop),
         ]

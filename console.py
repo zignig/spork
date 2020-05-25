@@ -152,13 +152,18 @@ class Console(SubR):
                 BLEU(ll.cont),
                 CMPI(w.char, 125),
                 BGEU(ll.cont),
+                CMPI(w.char, 27),
+                BEQ(ll.esc),
                 Rem("Within Printable Range, echo char"),
                 uart.write(w.char),
+                J(ll.cont),
+                ll("esc"),
+                MOVI(w.status, 2),
                 ll("cont"),
             ]
 
     def setup(self):
-        self.params = ["char", "pad_address"]
+        self.params = ["char", "pad_address", "status"]
         self.locals = ["temp"]
         self.ret = ["status"]
 
