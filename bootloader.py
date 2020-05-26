@@ -7,6 +7,7 @@ from ideal_spork.firmware.base import *
 
 from uartIO import UART
 from console import Console
+from action import Action
 
 from ideal_spork.firmware.stringer import Stringer
 
@@ -89,9 +90,10 @@ class Bootloader(Firmware):
         st.greetings = "MAY the spork be with you\r\n"
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
-        st.prompt = "\r\n#>\r\n"
+        st.prompt = "\r\n#>"
 
         console = Console()
+        action = Action()
         return [
             # Write the greetings string
             self.stringer.loader_id(w.temp),
@@ -108,6 +110,7 @@ class Bootloader(Firmware):
             BZ(ll.skip),
             # write the char back out
             console(w.incoming_word, w.pad_address, w.status, ret=[w.status]),
+            action(w.pad_address, w.status, ret=[w.status]),
             ll("skip"),
             J(ll.loop),
         ]
