@@ -87,7 +87,7 @@ class Bootloader(Firmware):
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
-        st.greetings = "MAY the spork be with you\r\n"
+        st.greetings = "\r\nMAY the spork be with you\r\n"
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
         st.prompt = "\r\n#>"
@@ -96,6 +96,8 @@ class Bootloader(Firmware):
         action = Action()
         return [
             # Write the greetings string
+            self.stringer.greetings(w.temp),
+            uart.writestring(w.temp),
             self.stringer.loader_id(w.temp),
             uart.writestring(w.temp),
             self.stringer.prompt(w.temp),
