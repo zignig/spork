@@ -99,16 +99,7 @@ class Console(SubR):
             uart = UART()
             w = self.w
             return [
-                # Rem("Escape sequence"),
-                # CMPI(w.char, 27),
-                # BEQ(ll.esc),
-                J(ll.check),
-                ll("esc"),
-                Rem("Escape sequence, return status 2 and exit"),
-                MOVI(w.status, 2),
-                J(ll.exit),  # in main console
                 Rem("printable char"),
-                ll("check"),
                 CMPI(w.char, 31),
                 BLEU(ll.cont),
                 CMPI(w.char, 125),
