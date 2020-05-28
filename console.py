@@ -99,20 +99,22 @@ class Console(SubR):
             uart = UART()
             w = self.w
             return [
+                # Rem("Escape sequence"),
+                # CMPI(w.char, 27),
+                # BEQ(ll.esc),
+                J(ll.check),
+                ll("esc"),
+                Rem("Escape sequence, return status 2 and exit"),
+                MOVI(w.status, 2),
+                J(ll.exit),  # in main console
                 Rem("printable char"),
+                ll("check"),
                 CMPI(w.char, 31),
                 BLEU(ll.cont),
                 CMPI(w.char, 125),
                 BGEU(ll.cont),
-                CMPI(w.char, 27),
-                BEQ(ll.esc),
                 Rem("Within Printable Range, echo char"),
                 uart.write(w.char),
-                J(ll.cont),
-                ll("esc"),
-                Rem("Escape sequence, return status 2 and exit"),
-                MOVI(w.status, 2),
-                J(ll.exit),
                 ll("cont"),
             ]
 
@@ -141,6 +143,7 @@ class Console(SubR):
         char = self.Char(w, ll=ll)
         # make a CASE style selection
         sel = self.selector
+        sel.add((9, [MOVI(w.status, 3)]))  # horizontal tab
         # CR does prompt for now
         sel.add(
             (
@@ -162,10 +165,38 @@ class Console(SubR):
                 ],
             )
         )
-        # ^C Restart , warm boot
-        sel.add((4, [Rem("^D Restart"), MOVI(self.w.temp, 1), self.wb(self.w.temp)]))
-        # ^D Init the firmware
-        sel.add((3, [Rem("^C Init processor"), J("init")]))
+        # ^D Restart , warm boot
+        sel.add(
+            (
+                4,
+                [
+                    Rem("^D reset"),
+                    self.stringer.warmboot(self.w.temp),
+                    self.uart.writestring(self.w.temp),
+                    MOVI(self.w.temp, 0xFFFF),
+                    ll("again"),
+                    SUBI(self.w.temp, self.w.temp, 1),
+                    CMPI(self.w.temp, 0),
+                    BZ(ll.out),
+                    J(ll.again),
+                    ll("out"),
+                    MOVI(self.w.temp, 1),
+                    self.wb(self.w.temp),
+                ],
+            )
+        )
+        # ^C Init the firmware
+        sel.add(
+            (
+                3,
+                [
+                    Rem("^C Init processor"),
+                    self.stringer.reset(self.w.temp),
+                    self.uart.writestring(self.w.temp),
+                    J("init"),
+                ],
+            )
+        )
         # TAB complete
         # ESCAPE
 

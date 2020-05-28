@@ -10,7 +10,6 @@ from console import Console
 from action import Action
 
 from ideal_spork.firmware.stringer import Stringer
-
 from ideal_spork.firmware.firmware import Firmware
 
 from ideal_spork.logger import logger
@@ -18,46 +17,29 @@ from ideal_spork.logger import logger
 log = logger(__name__)
 
 """
-The structure of the bootloader goes something like this
-
-THIS IS A LIE
-
-wait for 2 magic words ( id ) 
-wait for checksum
-wait for length
-copy words into memory and increment
-check the checksum
-boot into loaded program 
-
-Refer to 
-
-https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/firmware/bootload.py
-https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/firmware/bootloader_fw.py
-
-for inspiration
-
+An interactive console shell for the Boneless-v3 cpu"
 """
 
 
 def Init(w, reg):
     return [
         Rem("Set up the devices"),
-        # enable the led
+        Rem("enable the led"),
         MOVI(w.temp, 1),
         STXA(w.temp, reg.statusled.en),
-        # load the timer
+        Rem("load the timer"),
         MOVI(w.temp, 0xFFFF),
         STXA(w.temp, reg.timer.reload_0),
         MOVI(w.temp, 0x00FF),
         STXA(w.temp, reg.timer.reload_1),
-        # enable timer and events
+        Rem("enable timer and events"),
         MOVI(w.temp, 1),
         STXA(w.temp, reg.timer.en),
         STXA(w.temp, reg.timer.ev.enable),
-        # reset the crc
+        Rem("reset the crc"),
         MOVI(w.temp, 1),
         STXA(w.temp, reg.crc.reset),
-        Rem("Move the start pointer into registers"),
+        Rem("Move the start pointer into register for later jumpage"),
         MOVR(w.address, "program_start"),
     ]
 
@@ -65,6 +47,7 @@ def Init(w, reg):
 class Bootloader(Firmware):
     LOADER_ID = "BL_0"
 
+    # TODO check requirements
     requires = ["timer", "uart", "crc", "led"]
 
     def setup(self):
@@ -87,19 +70,18 @@ class Bootloader(Firmware):
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
-        st.greetings = "\r\nMAY the spork be with you\r\n"
+        st.greetings = "\r\nBoneless-CPU-v3"
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
-        st.prompt = "\r\n#>"
+        st.prompt = "\r\n" + self.LOADER_ID + ">"
 
         console = Console()
         action = Action()
+
         return [
             # Write the greetings string
-            self.stringer.greetings(w.temp),
-            uart.writestring(w.temp),
-            self.stringer.loader_id(w.temp),
-            uart.writestring(w.temp),
+            # self.stringer.greetings(w.temp),
+            # uart.writestring(w.temp),
             self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
             # load the pad address into the register

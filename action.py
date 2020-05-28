@@ -35,7 +35,7 @@ class Action(SubR):
         sel = self.selector
         sel.add(
             (
-                0,
+                20,
                 [
                     Rem("Just echo out the pad"),
                     self.uart.writestring(self.w.pad_address),
