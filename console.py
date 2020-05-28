@@ -38,7 +38,8 @@ class CharPad(CodeObject):
         def instr(self):
             w = self.w
             return [
-                Rem("Copy the length").LD(w.pad_address, w.length, 0),
+                Rem("Copy the length"),
+                LD(w.pad_address, w.length, 0),
                 Rem("Add the length to the address"),
                 MOVI(w.target_address, 1),
                 ADD(w.target_address, w.pad_address, w.length),
@@ -91,24 +92,6 @@ class Console(SubR):
                 ST(w.pad_address, w.temp, 64),
             ]
 
-    class Char(Inline):
-        " Echo and accept echoable chars"
-
-        def instr(self):
-            ll = self.ll
-            uart = UART()
-            w = self.w
-            return [
-                Rem("printable char"),
-                CMPI(w.char, 31),
-                BLEU(ll.cont),
-                CMPI(w.char, 125),
-                BGEU(ll.cont),
-                Rem("Within Printable Range, echo char"),
-                uart.write(w.char),
-                ll("cont"),
-            ]
-
     def setup(self):
         self.params = ["char", "pad_address", "status"]
         self.locals = ["temp"]
@@ -122,7 +105,7 @@ class Console(SubR):
 
         self.selector = sel = Switch(self.w, self.w.char)
         ll = LocalLabels()
-        enter = self.Enter()
+        self.enter = self.Enter()
         self.uart = UART()
         self.wb = WarmBoot()
 
@@ -130,8 +113,6 @@ class Console(SubR):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        # TODO check printable char and echo
-        char = self.Char(w, ll=ll)
         # make a CASE style selection
         sel = self.selector
         sel.add((9, [MOVI(w.status, 3)]))  # horizontal tab
@@ -192,7 +173,21 @@ class Console(SubR):
         # ESCAPE
 
         # TODO if not handle other
-        return [char(), sel(), Rem("Not working yet"), ll("exit")]
+        return [
+            Rem("printable char"),
+            CMPI(w.char, 31),
+            BLEU(ll.cont),
+            CMPI(w.char, 125),
+            BGEU(ll.cont),
+            Rem("Within Printable Range, echo char"),
+            self.uart.write(w.char),
+            self.pad.accept(w.pad_address, w.char),
+            ll("cont"),
+            Rem("Jump table select"),
+            sel(),
+            Rem("Not working yet"),
+            ll("exit"),
+        ]
 
 
 if __name__ == "__main__":
