@@ -116,7 +116,7 @@ def build(TheFirmware, mem_size=512):
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    print(len(spork.cpu.memory.init), f.hex())
+    print(len(f.assemble()), f.hex())
     return spork
 
 

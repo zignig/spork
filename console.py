@@ -33,7 +33,7 @@ class CharPad(CodeObject):
     class Accept(SubR):
         def setup(self):
             self.params = ["pad_address", "char"]
-            self.locals = ["length", "target address"]
+            self.locals = ["length", "target_address"]
 
         def instr(self):
             w = self.w
@@ -46,7 +46,7 @@ class CharPad(CodeObject):
                 ST(w.target_address, w.char, 0),
                 Rem("Offset to the next char slot"),
                 ADDI(w.length, w.length, 1),
-                ST(w.pad_address, w.length),
+                ST(w.pad_address, w.length, 0),
             ]
 
     def __init__(self, name="CharPad", length=32):
