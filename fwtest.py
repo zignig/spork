@@ -129,6 +129,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--program", action="store_true")
     parser.add_argument("-s", "--simulate", action="store_true")
+    parser.add_argument("-g", "--generate", action="store_true")
     args = parser.parse_args()
 
     if args.simulate:
@@ -146,5 +147,10 @@ if __name__ == "__main__":
             sim.run_until(1000, run_passive=True)
 
     if args.program:
-
         spork.platform.build(spork, do_program=True)
+
+    if args.generate:
+        from nmigen.back import rtlil, verilog, pysim
+
+        output = rtlil.convert(spork, name="cxx.il")
+        print(output)
