@@ -155,11 +155,15 @@ if __name__ == "__main__":
 
     if args.generate:
         spork = build(Bootloader, mem_size=1024, sim=True)
-        from nmigen.back import rtlil, verilog, pysim
+        from nmigen.back import cxxrtl
+        from nmigen.hdl import ir
 
-        output = rtlil.convert(
-            spork, name="cxx.il", ports=[spork.cpu.pc.devices[0]._phy.tx.o]
-        )
-        f = open("../cxxrtl_sim/cxx.il", "w")
+        # output = rtlil.convert(
+        #    spork, name="cxx.il", ports=[spork.cpu.pc.devices[0]._phy.tx.o]
+        # )
+        frag = ir.Fragment.get(spork, spork.platform).prepare()
+        output, name_map = cxxrtl.convert_fragment(frag)
+        print(name_map)
+        f = open("../cxxrtl_sim/boneless.sim.cpp", "w")
         f.write(output)
         f.close()
