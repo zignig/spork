@@ -93,6 +93,7 @@ class TestSpork(Elaboratable):
 
 
 from echo_fw import Echo
+from hex_test import HexTest
 from bootloader import Bootloader
 
 
@@ -130,12 +131,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--program", action="store_true")
+    parser.add_argument("-l", "--list", action="store_true")
     parser.add_argument("-s", "--simulate", action="store_true")
     parser.add_argument("-g", "--generate", action="store_true")
     args = parser.parse_args()
 
+    fw = HexTest  # use this firmware
+
     if args.simulate:
-        spork = build(Bootloader, mem_size=1024)
+        spork = build(fw, mem_size=1024)
         from nmigen.cli import pysim
         from sim_data import test_rx, str_data
 
@@ -149,12 +153,15 @@ if __name__ == "__main__":
             sim.add_sync_process(test_rx(data, dut))
             sim.run_until(1000, run_passive=True)
 
+    if args.list:
+        spork = build(fw, mem_size=1024)
+
     if args.program:
-        spork = build(Bootloader, mem_size=1024)
+        spork = build(fw, mem_size=1024)
         spork.platform.build(spork, do_program=True)
 
     if args.generate:
-        spork = build(Bootloader, mem_size=1024, sim=True)
+        spork = build(fw, mem_size=1024, sim=True)
         from nmigen.back import cxxrtl
         from nmigen.hdl import ir
 

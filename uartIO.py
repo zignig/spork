@@ -6,6 +6,72 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 
 
+class ReadHex(SubR):
+    " Read 4 hex char and make a 16 bit register"
+
+    def setup(self):
+        self.ret = ["value", "status"]
+        self.locals = ["counter", "timeout"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [
+            Rem("Read hex register off serial port"),
+            MOVI(w.status, 0),
+            MOVI(w.counter, 4),
+            MOVI(w.timeout, 0xFFFF),
+            ll("wait"),
+            LDXA(w.status, reg.serial.rx.rdy),
+            SUBI(w.timeout, w.timeout, 1),
+            CMPI(w.timeout, 0),
+            BEQ(ll.fail),
+            CMPI(w.status, 1),
+            BEQ(ll.wait),  # repeat if not ready
+            # Load the char
+            LDXA(w.value, reg.serial.rx.data),
+            # Set the status to zero
+            MOVI(w.status, 1),
+            ll("skip"),
+        ]
+
+
+class WriteHex(SubR):
+    " Write a 16 bit reg as hex to the serial port"
+
+    def setup(self):
+        self.params = ["value"]
+        self.locals = ["temp", "nibble", "char", "repeat"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        wr = Write()
+        return [
+            MOVI(w.repeat, 4),
+            AND(w.temp, w.value, w.value),  # copy to temp
+            ll("again"),
+            ROLI(w.temp, w.temp, 4),
+            AND(w.nibble, w.temp, w.temp),
+            ANDI(w.nibble, w.nibble, 15),  # get the first 4 bits
+            AND(w.char, w.nibble, w.nibble),  # copy to temp
+            Rem("convert to char"),
+            CMPI(w.char, 10),
+            BGEU(ll.letter),
+            ADDI(w.char, w.char, 48),  # number
+            J(ll.write),
+            ll("letter"),
+            ADDI(w.char, w.char, 55),  # letter
+            ll("write"),
+            wr(w.char),  # write it to the uart
+            SUBI(w.repeat, w.repeat, 1),  # decrement the counter
+            CMPI(w.repeat, 0),  # check the counter
+            BNE(ll.again),
+        ]
+
+
 class Read(SubR):
     " Status and Char return "
 
@@ -183,3 +249,5 @@ class UART:
     read = Read()
     write = Write()
     writestring = WriteString()
+    writeHex = WriteHex()
+    readHex = ReadHex()
