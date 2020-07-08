@@ -1,7 +1,6 @@
 " Example firmware"
 
 from nmigen import *
-
 from ideal_spork.cpu.boneless import BonelessSpork
 
 from ideal_spork.peripheral.serial import AsyncSerialPeripheral
@@ -121,12 +120,14 @@ def build(TheFirmware, mem_size=512, sim=False):
     f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    print(len(f.assemble()), f.hex())
+    print(f.hex())
+    spork.hex_blob = f.hex()
     return spork
 
 
 if __name__ == "__main__":
 
+    Elaboratable._Elaboratable__silence = True
     import argparse
 
     parser = argparse.ArgumentParser()

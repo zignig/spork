@@ -104,9 +104,9 @@ firmware = Bootloader
 
 if __name__ == "__main__":
     print("uploading bootloader")
-    from ideal_spork.utils.upload import Uploader
+    from upload import Uploader
     import fwtest
 
     spork = fwtest.build(Bootloader)
-    up = Uploader(spork, Bootloader)
-    up.upload()
+    up = Uploader()
+    up.upload(spork)
