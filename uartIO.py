@@ -11,29 +11,47 @@ class ReadHex(SubR):
 
     def setup(self):
         self.ret = ["value", "status"]
-        self.locals = ["counter", "timeout"]
+        self.locals = ["temp", "nibble", "char", "repeat"]
 
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
+        readw = ReadWait()
+        wr = Write()
         return [
             Rem("Read hex register off serial port"),
             MOVI(w.status, 0),
-            MOVI(w.counter, 4),
-            MOVI(w.timeout, 0xFFFF),
-            ll("wait"),
-            LDXA(w.status, reg.serial.rx.rdy),
-            SUBI(w.timeout, w.timeout, 1),
-            CMPI(w.timeout, 0),
-            BEQ(ll.fail),
-            CMPI(w.status, 1),
-            BEQ(ll.wait),  # repeat if not ready
-            # Load the char
-            LDXA(w.value, reg.serial.rx.data),
-            # Set the status to zero
+            MOVI(w.value, 0),
+            MOVI(w.repeat, 4),
+            ll("again"),
+            readw(ret=w.char),  # wait for a char
+            # convert char to value
+            CMPI(w.char, 48),  # 0 char
+            BLTU(ll.err),  # out of hex range
+            CMPI(w.char, 57),  # 9 char
+            BGTU(ll.letter),  # above the 9 , could be a letter
+            SUBI(w.char, w.char, 48),  # make the number
+            J(ll.cont),  # continue
+            ll("letter"),
+            CMPI(w.char, 70),  # compare with F
+            BGTU(ll.err),  # hex out of range
+            CMPI(w.char, 65),  # compare with A
+            BLTU(ll.err),  # in the gap 0 - A
+            SUBI(w.char, w.char, 55),  # make the number A - (10)
+            ll("cont"),
+            # at this point the w.char register should be a number 0-15
+            SLLI(w.value, w.value, 4),  # rotate the nibble to the left.
+            OR(w.value, w.value, w.char),  # insert the nibble into the value
+            SUBI(w.repeat, w.repeat, 1),  # decrement the counter
+            CMPI(w.repeat, 0),  # check the counter
+            BNE(ll.again),
+            # Set the status to 1
+            MOVI(w.status, 0),
+            J(ll.out),
+            ll("err"),
             MOVI(w.status, 1),
-            ll("skip"),
+            ll("out"),
         ]
 
 
@@ -72,6 +90,30 @@ class WriteHex(SubR):
         ]
 
 
+class ReadWait(SubR):
+    "Wait and return a char  "
+
+    def setup(self):
+        self.ret = ["value"]
+        self.locals = ["status"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [
+            Rem("Wait and read a char off the serial port"),
+            MOVI(w.status, 0),
+            # Get the serial port status
+            ll("wait"),
+            LDXA(w.status, reg.serial.rx.rdy),
+            CMPI(w.status, 0),
+            BEQ(ll.wait),  # skip if not ready
+            # Load the char
+            LDXA(w.value, reg.serial.rx.data),
+        ]
+
+
 class Read(SubR):
     " Status and Char return "
 
@@ -83,7 +125,7 @@ class Read(SubR):
         reg = self.reg
         ll = LocalLabels()
         return [
-            Rem("Read a char of the serial port"),
+            Rem("Read a char off the serial port"),
             MOVI(w.status, 0),
             # Get the serial port status
             LDXA(w.status, reg.serial.rx.rdy),
@@ -251,3 +293,4 @@ class UART:
     writestring = WriteString()
     writeHex = WriteHex()
     readHex = ReadHex()
+    readWait = ReadWait()
