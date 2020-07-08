@@ -24,6 +24,8 @@ from boneless.arch.opcode import *
 import struct
 import crcmod.predefined
 
+import warnings
+
 crc_16_kermit = crcmod.predefined.mkPredefinedCrcFun("kermit")
 
 
@@ -94,39 +96,42 @@ class TestSpork(Elaboratable):
 from echo_fw import Echo
 from hexloader import HexLoader
 from bootloader import Bootloader
+from nmigen.hdl.ir import UnusedElaboratable
 
 
 def build(TheFirmware, mem_size=4096, sim=False, detail=False):
-    # for programming from a firmware file
-    if detail:
-        print("Testing Spork")
-    platform = TinyFPGABXPlatform()
-    # FTDI on the tinybx
-    platform.add_resources(
-        [
-            UARTResource(
-                0, rx="A8", tx="B8", attrs=Attrs(IO_STANDARD="SB_LVCMOS", PULLUP=1)
-            ),
-            Resource("reset_pin", 0, Pins("18", conn=("gpio", 0), dir="i")),
-            # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
-        ]
-    )
-    # print(platform.resources)
-    # Spork it up
-    spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size, sim=sim)
-    # Build the firmware
-    if detail:
-        print(spork.cpu.map.show())
-    f = TheFirmware(spork.cpu.map, start_window=mem_size)
-    spork.fw = f
-    if detail:
-        f.show()
-    # Sporkify it !
-    spork.cpu.firmware(f.code())
-    if detail:
-        print(f.hex())
-    spork.hex_blob = f.hex()
-    return spork
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UnusedElaboratable)
+        # for programming from a firmware file
+        if detail:
+            print("Testing Spork")
+        platform = TinyFPGABXPlatform()
+        # FTDI on the tinybx
+        platform.add_resources(
+            [
+                UARTResource(
+                    0, rx="A8", tx="B8", attrs=Attrs(IO_STANDARD="SB_LVCMOS", PULLUP=1)
+                ),
+                Resource("reset_pin", 0, Pins("18", conn=("gpio", 0), dir="i")),
+                # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
+            ]
+        )
+        # print(platform.resources)
+        # Spork it up
+        spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size, sim=sim)
+        # Build the firmware
+        if detail:
+            print(spork.cpu.map.show())
+        f = TheFirmware(spork.cpu.map, start_window=mem_size)
+        spork.fw = f
+        if detail:
+            f.show()
+        # Sporkify it !
+        spork.cpu.firmware(f.code())
+        if detail:
+            print(f.hex())
+        spork.hex_blob = f.hex()
+        return spork
 
 
 if __name__ == "__main__":
@@ -162,7 +167,7 @@ if __name__ == "__main__":
         spork = build(fw, detail=True)
 
     if args.program:
-        spork = build(fw)
+        spork = build(fw, detail=True)
         spork.platform.build(spork, do_program=True)
 
     if args.generate:

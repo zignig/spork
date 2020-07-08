@@ -181,7 +181,7 @@ class Console(SubR):
             BGEU(ll.cont),
             Rem("Within Printable Range, echo char"),
             self.uart.write(w.char),
-            # self.pad.accept(w.pad_address, w.char),
+            self.pad.accept(w.pad_address, w.char),
             ll("cont"),
             Rem("Jump table select"),
             sel(),

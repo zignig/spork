@@ -80,8 +80,8 @@ class Bootloader(Firmware):
 
         return [
             # Write the greetings string
-            # self.stringer.greetings(w.temp),
-            # uart.writestring(w.temp),
+            self.stringer.greetings(w.temp),
+            uart.writestring(w.temp),
             self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
             # load the pad address into the register
