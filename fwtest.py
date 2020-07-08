@@ -92,7 +92,7 @@ class TestSpork(Elaboratable):
 
 
 from echo_fw import Echo
-from hex_test import HexTest
+from hexloader import HexLoader
 from bootloader import Bootloader
 
 
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("-g", "--generate", action="store_true")
     args = parser.parse_args()
 
-    fw = HexTest  # use this firmware
+    fw = HexLoader  # use this firmware
 
     if args.simulate:
         spork = build(fw, mem_size=1024)

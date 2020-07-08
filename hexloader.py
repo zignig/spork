@@ -40,7 +40,7 @@ class CoreDump(SubR):
         ]
 
 
-class HexTest(Firmware):
+class HexLoader(Firmware):
     def setup(self):
         self.w.req(["value", "counter", "checksum", "address", "status", "char"])
 
@@ -107,7 +107,7 @@ class HexTest(Firmware):
         ]
 
 
-firmware = HexTest
+firmware = HexLoader
 
 if __name__ == "__main__":
     print("uploading bootloader")

@@ -35,6 +35,6 @@ class Uploader:
             data = "".join(i).encode()
             self.ser.write(data)
             # l = self.ser.readline()
-            # print(l)
+        #    # print(l)
         if console:
             miniterm.main(self.port, self.baud)
