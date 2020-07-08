@@ -20,7 +20,7 @@ log = logger(__name__)
 class CharSplash(Firmware):
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["counter"])
+        self.w.req(["counter", "wait"])
 
     def instr(self):
         " Locals and the attached subroutine in the main loop "
@@ -34,6 +34,11 @@ class CharSplash(Firmware):
             MOVI(w.counter, 32),
             ll("loop"),
             uart.write(w.counter),
+            MOVI(w.wait, 0xFFFF),
+            ll("wait"),
+            SUBI(w.wait, w.wait, 1),
+            CMPI(w.wait, 0),
+            BNE(ll.wait),
             ADDI(w.counter, w.counter, 1),
             CMPI(w.counter, 125),
             BNE(ll.loop),
@@ -43,7 +48,6 @@ class CharSplash(Firmware):
 firmware = CharSplash
 
 if __name__ == "__main__":
-    print("uploading bootloader")
     from upload import Uploader
     import fwtest
 

@@ -103,7 +103,6 @@ class Bootloader(Firmware):
 firmware = Bootloader
 
 if __name__ == "__main__":
-    print("uploading bootloader")
     from upload import Uploader
     import fwtest
 

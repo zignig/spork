@@ -96,9 +96,10 @@ from hex_test import HexTest
 from bootloader import Bootloader
 
 
-def build(TheFirmware, mem_size=1024, sim=False, detail=False):
+def build(TheFirmware, mem_size=4096, sim=False, detail=False):
     # for programming from a firmware file
-    print("Testing Spork")
+    if detail:
+        print("Testing Spork")
     platform = TinyFPGABXPlatform()
     # FTDI on the tinybx
     platform.add_resources(
@@ -158,10 +159,10 @@ if __name__ == "__main__":
             sim.run_until(1000, run_passive=True)
 
     if args.list:
-        spork = build(fw, mem_size=1024, detail=True)
+        spork = build(fw, detail=True)
 
     if args.program:
-        spork = build(fw, mem_size=1024)
+        spork = build(fw)
         spork.platform.build(spork, do_program=True)
 
     if args.generate:

@@ -27,14 +27,14 @@ class Uploader:
         self.ser.dtr = 1
         time.sleep(0.5)
 
-    def upload(self, firmware):
+    def upload(self, firmware, console=True):
         self.toggle(4)
         self.hex_blob = firmware.hex_blob
-        self.ser.read(1000)  # clear out the buffer
+        self.ser.readall()  # clear out the buffer
         for i in grouper(self.hex_blob, 4):
             data = "".join(i).encode()
             self.ser.write(data)
             # l = self.ser.readline()
             # print(l)
-
-        miniterm.main(self.port, self.baud)
+        if console:
+            miniterm.main(self.port, self.baud)

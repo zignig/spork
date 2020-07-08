@@ -116,4 +116,4 @@ if __name__ == "__main__":
 
     spork = fwtest.build(firmware)
     up = Uploader()
-    up.upload(spork)
+    up.upload(spork, console=False)

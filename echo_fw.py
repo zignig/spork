@@ -66,8 +66,8 @@ class Echo(Firmware):
     def setup(self):
         self.w.req(["leds", "temp"])
 
-    def prelude(self):
-        return [DeviceSetup(self.w)()]
+    # def prelude(self):
+    #    return [DeviceSetup(self.w)()]
 
     def instr(self):
         echo_char = EchoChar()
@@ -87,6 +87,9 @@ class Echo(Firmware):
 
 if __name__ == "__main__":
     print("build echo firmware")
+    from upload import Uploader
     import fwtest
 
     spork = fwtest.build(Echo)
+    up = Uploader()
+    up.upload(spork)
