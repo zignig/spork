@@ -106,6 +106,6 @@ if __name__ == "__main__":
     from upload import Uploader
     import fwtest
 
-    spork = fwtest.build(Bootloader)
+    spork = fwtest.build(Bootloader, detail=True)
     up = Uploader()
     up.upload(spork)

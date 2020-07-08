@@ -121,9 +121,9 @@ class Console(SubR):
             (
                 10,
                 [
-                    self.stringer.prompt(self.w.temp),
-                    self.uart.writestring(self.w.temp),
-                    MOVI(w.status, 1),
+                    # self.stringer.prompt(self.w.temp),
+                    # self.uart.writestring(self.w.temp),
+                    MOVI(w.status, 1)
                 ],
             )
         )
