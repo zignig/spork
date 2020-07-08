@@ -19,10 +19,10 @@ class Uploader:
 
     def toggle(self, count):
         for i in range(count):
-            print("toggle 0")
+            # print("toggle 0")
             time.sleep(0.05)
             self.ser.dtr = 1
-            print("toggle 1")
+            # print("toggle 1")
             self.ser.dtr = 0
         self.ser.dtr = 1
         time.sleep(0.5)
@@ -30,10 +30,11 @@ class Uploader:
     def upload(self, firmware):
         self.toggle(4)
         self.hex_blob = firmware.hex_blob
+        self.ser.read(1000)  # clear out the buffer
         for i in grouper(self.hex_blob, 4):
             data = "".join(i).encode()
             self.ser.write(data)
-            l = self.ser.readline()
-            print(l)
+            # l = self.ser.readline()
+            # print(l)
 
         miniterm.main(self.port, self.baud)

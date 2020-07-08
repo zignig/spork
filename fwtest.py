@@ -96,7 +96,7 @@ from hex_test import HexTest
 from bootloader import Bootloader
 
 
-def build(TheFirmware, mem_size=1024, sim=False):
+def build(TheFirmware, mem_size=1024, sim=False, detail=False):
     # for programming from a firmware file
     print("Testing Spork")
     platform = TinyFPGABXPlatform()
@@ -114,13 +114,16 @@ def build(TheFirmware, mem_size=1024, sim=False):
     # Spork it up
     spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size, sim=sim)
     # Build the firmware
-    print(spork.cpu.map.show())
+    if detail:
+        print(spork.cpu.map.show())
     f = TheFirmware(spork.cpu.map, start_window=mem_size)
     spork.fw = f
-    f.show()
+    if detail:
+        f.show()
     # Sporkify it !
     spork.cpu.firmware(f.code())
-    print(f.hex())
+    if detail:
+        print(f.hex())
     spork.hex_blob = f.hex()
     return spork
 
@@ -155,7 +158,7 @@ if __name__ == "__main__":
             sim.run_until(1000, run_passive=True)
 
     if args.list:
-        spork = build(fw, mem_size=1024)
+        spork = build(fw, mem_size=1024, detail=True)
 
     if args.program:
         spork = build(fw, mem_size=1024)

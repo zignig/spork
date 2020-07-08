@@ -75,23 +75,28 @@ class HexTest(Firmware):
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
             ST(w.value, w.address, 0),
-            Rem("print it out for now"),
-            ho(w.address),
-            MOVI(w.char, 58),  # colon
-            wc(w.char),
-            ho(w.value),
-            MOVI(w.char, 13),  # CR
-            wc(w.char),
-            MOVI(w.char, 10),  # LF
-            wc(w.char),
+            # Rem("print it out for now"),
+            # ho(w.address),
+            # MOVI(w.char, 58),  # colon
+            # wc(w.char),
+            # ho(w.value),
+            # MOVI(w.char, 13),  # CR
+            # wc(w.char),
+            # MOVI(w.char, 10),  # LF
+            # wc(w.char),
             ADDI(w.address, w.address, 1),
             SUBI(w.counter, w.counter, 1),
             CMPI(w.counter, 0),
             BNE(ll.loop),
             Rem("And boot into your newly minted firmware"),
             Rem("TODO, fix checksum"),
+            MOVI(R0, 0),
+            MOVI(R1, 0),
+            MOVI(R2, 0),
+            MOVI(R3, 0),
+            MOVI(R4, 0),
+            MOVI(R5, 0),
             MOVR(w.address, "program_start"),
-            # cd(),
             MOVI(w.fp, self.sw - 8),
             STW(w.fp),
             J("program_start"),
