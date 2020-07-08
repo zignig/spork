@@ -29,7 +29,7 @@ crc_16_kermit = crcmod.predefined.mkPredefinedCrcFun("kermit")
 
 class TestSpork(Elaboratable):
     def __init__(
-        self, platform, uart_speed=9600, mem_size=512, firmware=None, sim=False
+        self, platform, uart_speed=9600, mem_size=1024, firmware=None, sim=False
     ):
         self.platform = platform
         self.cpu = cpu = BonelessSpork(firmware=firmware, mem_size=mem_size)
@@ -96,7 +96,7 @@ from hex_test import HexTest
 from bootloader import Bootloader
 
 
-def build(TheFirmware, mem_size=512, sim=False):
+def build(TheFirmware, mem_size=1024, sim=False):
     # for programming from a firmware file
     print("Testing Spork")
     platform = TinyFPGABXPlatform()
