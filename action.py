@@ -41,6 +41,7 @@ class Action(SubR):
                     uart.cr(),
                     uart.writestring(w.pad_address),
                     MOVI(w.status, 0),
+                    Rem("Reset the pad"),
                     ST(w.status, w.pad_address, 0),
                     uart.cr(),
                     self.stringer.prompt(self.w.temp),
