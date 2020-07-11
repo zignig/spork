@@ -180,6 +180,8 @@ class WriteString(SubR):
             # Value is the address of the string
             # Load the length of the string
             LD(w.length, w.address, 0),
+            CMPI(w.length, 0),
+            BEQ(ll.exit),
             # Increment the address so it is at the start of the data
             ADDI(w.address, w.address, 1),
             # Reset the counter

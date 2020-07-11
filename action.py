@@ -40,6 +40,7 @@ class Action(SubR):
                     Rem("Just echo out the pad"),
                     self.uart.writestring(self.w.pad_address),
                     MOVI(w.status, 0),
+                    ST(w.status, w.pad_address, 0),
                 ],
             )
         )

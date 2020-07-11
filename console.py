@@ -39,14 +39,14 @@ class CharPad(CodeObject):
             w = self.w
             return [
                 Rem("Copy the length"),
-                LD(w.pad_address, w.length, 0),
+                LD(w.length, w.pad_address, 0),
                 Rem("Add the length to the address"),
                 MOVI(w.target_address, 1),
                 ADD(w.target_address, w.pad_address, w.length),
-                ST(w.target_address, w.char, 0),
+                ST(w.char, w.target_address, 0),
                 Rem("Offset to the next char slot"),
                 ADDI(w.length, w.length, 1),
-                ST(w.pad_address, w.length, 0),
+                ST(w.length, w.pad_address, 0),
             ]
 
     def __init__(self, name="CharPad", length=32):
@@ -123,7 +123,7 @@ class Console(SubR):
                 [
                     # self.stringer.prompt(self.w.temp),
                     # self.uart.writestring(self.w.temp),
-                    MOVI(w.status, 1)
+                    MOVI(w.status, 20)
                 ],
             )
         )
@@ -133,7 +133,7 @@ class Console(SubR):
                 [
                     self.stringer.prompt(self.w.temp),
                     self.uart.writestring(self.w.temp),
-                    MOVI(w.status, 1),
+                    MOVI(w.status, 20),
                 ],
             )
         )
