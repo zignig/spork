@@ -70,10 +70,10 @@ class Bootloader(Firmware):
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
-        st.greetings = "\r\nBoneless-CPU-v3"
+        st.greetings = "\r\nBoneless-CPU-v3\r\n"
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
-        st.prompt = "\r\n" + self.LOADER_ID + ">"
+        st.prompt = self.LOADER_ID + ">"
 
         console = Console()
         action = Action()

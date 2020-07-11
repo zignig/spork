@@ -118,26 +118,7 @@ class Console(SubR):
         sel = self.selector
         sel.add((9, [MOVI(w.status, 3)]))  # horizontal tab
         # CR does prompt for now
-        sel.add(
-            (
-                10,
-                [
-                    # self.stringer.prompt(self.w.temp),
-                    # self.uart.writestring(self.w.temp),
-                    MOVI(w.status, 20)
-                ],
-            )
-        )
-        sel.add(
-            (
-                13,
-                [
-                    self.stringer.prompt(self.w.temp),
-                    self.uart.writestring(self.w.temp),
-                    MOVI(w.status, 20),
-                ],
-            )
-        )
+        sel.add((13, [MOVI(w.status, 20)]))
         # ^D Restart , warm boot
         sel.add(
             (
@@ -186,7 +167,6 @@ class Console(SubR):
             ll("cont"),
             Rem("Jump table select"),
             sel(),
-            Rem("Not working yet"),
             ll("exit"),
         ]
 

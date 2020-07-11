@@ -25,12 +25,12 @@ class Action(SubR):
     def build(self):
         # Bind the pad into the function
         self.selector = Switch(self.w, self.w.status)
-        self.uart = UART()
 
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
+        uart = UART()
         # make a CASE style selection
         sel = self.selector
         sel.add(
@@ -38,13 +38,17 @@ class Action(SubR):
                 20,
                 [
                     Rem("Just echo out the pad"),
-                    self.uart.writestring(self.w.pad_address),
+                    uart.cr(),
+                    uart.writestring(w.pad_address),
                     MOVI(w.status, 0),
                     ST(w.status, w.pad_address, 0),
+                    uart.cr(),
+                    self.stringer.prompt(self.w.temp),
+                    uart.writestring(self.w.temp),
                 ],
             )
         )
-        return [sel(), Rem("Actions not working"), ll("exit")]
+        return [sel()]
 
 
 if __name__ == "__main__":

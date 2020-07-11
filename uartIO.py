@@ -161,6 +161,16 @@ class Write(SubR):
         ]
 
 
+class CR(SubR):
+    def setup(self):
+        self.locals = ["char"]
+
+    def instr(self):
+        w = self.w
+        wc = Write()
+        return [MOVI(w.char, 13), wc(w.char), MOVI(w.char, 10), wc(w.char)]  # CR  # LF
+
+
 class WriteString(SubR):
     """ Write a string to the uart
         Strings are pascal style with the length as the first word
@@ -296,3 +306,4 @@ class UART:
     writeHex = WriteHex()
     readHex = ReadHex()
     readWait = ReadWait()
+    cr = CR()
