@@ -124,6 +124,10 @@ class Testing(Command):
     pass
 
 
+class LongName(Command):
+    name = "this_is_a_really_long_name"
+
+
 class Hello(Command):
     pass
 
