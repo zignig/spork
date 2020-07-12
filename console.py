@@ -8,6 +8,7 @@ from ideal_spork.firmware.stringer import Stringer
 from uartIO import UART
 from warm import WarmBoot
 from switch import Switch
+from commands import MetaCommand
 
 from ideal_spork.logger import logger
 
@@ -74,25 +75,6 @@ class CharPad(CodeObject):
 class Console(SubR):
     # Subroutines inside the console
 
-    class Enter(SubR):
-        " just write the pad back to the serial port for now"
-
-        def setup(self):
-            self.params = ["pad_address"]
-            self.locals = ["temp"]
-            self.uart = UART()
-
-        def instr(self):
-            w = self.w
-            return [
-                UART.writestring(w.pad_address),
-                MOVI(w.temp, 0),
-                Rem("clear the length"),
-                ST(w.pad_address, w.temp, 0),
-                Rem("clear the cursor"),
-                ST(w.pad_address, w.temp, 64),
-            ]
-
     def setup(self):
         self.params = ["char", "pad_address", "status"]
         self.locals = ["temp"]
@@ -106,7 +88,6 @@ class Console(SubR):
 
         self.selector = sel = Switch(self.w, self.w.char)
         ll = LocalLabels()
-        self.enter = self.Enter()
         self.uart = UART()
         self.wb = WarmBoot()
 
@@ -114,9 +95,10 @@ class Console(SubR):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
+        List = MetaCommand.List()
         # make a CASE style selection
         sel = self.selector
-        sel.add((9, [MOVI(w.status, 3)]))  # horizontal tab
+        sel.add((9, [self.uart.cr(), List(), self.uart.cr()]))  # horizontal tab
         # CR does prompt for now
         sel.add((13, [MOVI(w.status, 20)]))
         # ^D Restart , warm boot

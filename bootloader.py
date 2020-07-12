@@ -81,14 +81,13 @@ class Bootloader(Firmware):
         st.greetings = "\r\nBoneless-CPU-v3\r\n"
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
+        st.available = "Available Commands:"
         st.prompt = self.LOADER_ID + ">"
 
         console = Console()
         action = Action()
 
         return [
-            # list the existing commands
-            List(),
             # Write the greetings string
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),

@@ -57,7 +57,15 @@ class MetaCommand(type):
 
         return out
 
+    class Search(SubR):
+        "search for a given command and return a pointer"
+
+        def setup(self):
+            pass
+
     class List(SubR):
+        " List all the available commands"
+
         def setup(self):
             self.locals = ["incr", "start", "end", "current"]
 
@@ -72,11 +80,15 @@ class MetaCommand(type):
                 MOVR(w.end, "last_command"),
                 Rem("Load the string of the current command"),
                 ll("again"),
+                Rem("Move to the start of the string"),
                 ADDI(w.current, w.start, 1),
+                Rem("Write the string"),
                 uart.writestring(w.current),
                 uart.cr(),
+                Rem("Jump to the next command"),
                 LD(w.incr, w.start, 0),
                 ADD(w.start, w.start, w.incr),
+                Rem("Are we at the end"),
                 CMP(w.start, w.end),
                 BNE(ll.again),
             ]
@@ -120,19 +132,27 @@ class Command(metaclass=MetaCommand):
         ]
 
 
-class Testing(Command):
+class LedON(Command):
     pass
 
 
-class LongName(Command):
-    name = "this_is_a_really_long_name"
-
-
-class Hello(Command):
+class LedOFF(Command):
     pass
 
 
-class FNORD(Command):
+class Timer(Command):
+    pass
+
+
+class Warm(Command):
+    pass
+
+
+class Load(Command):
+    pass
+
+
+class Save(Command):
     pass
 
 
