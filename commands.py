@@ -4,10 +4,16 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 
+from uartIO import UART
+
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.stringer import SingleString
 
 from rich import print
+
+# debugging
+def r(val):
+    print(val)
 
 
 class MetaCommand(type):
@@ -32,24 +38,63 @@ class MetaCommand(type):
     @classmethod
     def code(cls):
         li = MetaCommand.commands
-        # loop through and add sub-subroutines to the list
-        c = [L("first_command")]
-        old = "first_command"
+        # loop through and add commandds to the list
+        # assemble the commands
+        c = []
         for i in li:
-            i.back = old
-            c.append(i.code())
-            old = i.label
-        return c
+            c.append(i)
+        li[0].next = "first_command"
+        # attach a pointer to the next command
+        for i, j in enumerate(li[1:]):
+            li[i].next = j.label
+
+        li[-1].next = "last_command"
+
+        out = [L("first_command")]
+        for i in li:
+            out.append(i.code())
+        out.append(L("last_command"))
+
+        return out
+
+    class List(SubR):
+        def setup(self):
+            self.locals = ["incr", "start", "end", "current"]
+
+        def instr(self):
+            w = self.w
+            ll = LocalLabels()
+            uart = UART()
+            return [
+                Rem("load the pointer of the first command"),
+                MOVR(w.start, "first_command"),
+                Rem("Load the end of the commands"),
+                MOVR(w.end, "last_command"),
+                Rem("Load the string of the current command"),
+                ll("again"),
+                ADDI(w.current, w.start, 1),
+                uart.writestring(w.current),
+                uart.cr(),
+                LD(w.incr, w.start, 0),
+                ADD(w.start, w.start, w.incr),
+                CMP(w.start, w.end),
+                BNE(ll.again),
+            ]
 
 
 class Command(metaclass=MetaCommand):
     def __init__(self):
-        self.back = None
-        self.forward = None
+        self.next = None
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-        self.commname = SingleString(self.name, self.name.lower(), self.post_fix)
+        self.commname = SingleString(self.name, self.name.lower(), "")
+
+    def __repr__(self):
+        t = self.label + " --> "
+        t += str(self.next) + "\n"
+        # t += str(self.code())
+        return t
 
     @property
     def label(self):
@@ -67,7 +112,16 @@ class Command(metaclass=MetaCommand):
         return []
 
     def code(self):
-        return [self.ref(self.back), self.commname.as_mem(), self.instr()]
+        return [
+            L(self.label),
+            self.ref(self.next),
+            self.commname.as_mem(),
+            self.instr(),
+        ]
+
+
+class Testing(Command):
+    pass
 
 
 class Hello(Command):
@@ -75,7 +129,7 @@ class Hello(Command):
 
 
 class FNORD(Command):
-    name = "reallylongname"
+    pass
 
 
 class List(Command):
@@ -91,14 +145,12 @@ class GO(Command):
     pass
 
 
-print(MetaCommand.commands)
+if __name__ == "__main__":
+    c = MetaCommand.code()
+    print(c)
+    fw = Instr.assemble(c)
+    print(fw)
 
-c = MetaCommand.code()
-print(c)
-
-fw = Instr.assemble(c)
-
-print(fw)
 # working jump refs
 
 

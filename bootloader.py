@@ -63,9 +63,9 @@ class Bootloader(Firmware):
         " code before the main loop "
         return Init(self.w, self.reg)
 
-    # def extra(self):
-    #    "add in the commands"
-    #    return MetaCommand.code()
+    def extra(self):
+        "add in the commands"
+        return MetaCommand.code()
 
     def instr(self):
         " Locals and the attached subroutine in the main loop "
@@ -74,6 +74,7 @@ class Bootloader(Firmware):
         ll = LocalLabels()
         # create the subroutine
         uart = UART()
+        List = MetaCommand.List()
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
@@ -86,6 +87,8 @@ class Bootloader(Firmware):
         action = Action()
 
         return [
+            # list the existing commands
+            List(),
             # Write the greetings string
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
