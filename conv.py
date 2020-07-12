@@ -21,7 +21,7 @@ class AsDec(SubR):
 
     def setup(self):
         self.params = ["value", "target"]
-        self.locals = ["holding", "leading", "index", "count"]
+        self.locals = ["holding", "leading", "index", "count", "extra"]
 
     def instr(self):
         """ Subtract from the the table set , until negative
@@ -39,6 +39,7 @@ class AsDec(SubR):
             10,
             1,
             ll("table_end"),
+            MOVI(w.extra, 0),
             MOVI(w.index, 0),
             MOVI(w.count, 0),
             MOV(w.holding, w.value),  # move into holding

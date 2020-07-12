@@ -20,7 +20,7 @@ log = logger(__name__)
 class CharSplash(Firmware):
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["counter", "wait"])
+        self.w.req(["temp", "counter", "wait"])
 
     def instr(self):
         " Locals and the attached subroutine in the main loop "
@@ -32,8 +32,12 @@ class CharSplash(Firmware):
 
         return [
             MOVI(w.counter, 32),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.statusled.en),
             ll("loop"),
             uart.write(w.counter),
+            XORI(w.temp, w.temp, 0xFFFF),
+            STXA(w.temp, reg.statusled.led),
             MOVI(w.wait, 0xFFFF),
             ll("wait"),
             SUBI(w.wait, w.wait, 1),
