@@ -33,8 +33,8 @@ class MetaCommand(type):
     def code(cls):
         li = MetaCommand.commands
         # loop through and add sub-subroutines to the list
-        c = [L("main")]
-        old = "main"
+        c = [L("first_command")]
+        old = "first_command"
         for i in li:
             i.back = old
             c.append(i.code())
@@ -49,7 +49,7 @@ class Command(metaclass=MetaCommand):
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-            self.commname = SingleString(self.name, self.name.lower(), self.post_fix)
+        self.commname = SingleString(self.name, self.name.lower(), self.post_fix)
 
     @property
     def label(self):
@@ -64,7 +64,7 @@ class Command(metaclass=MetaCommand):
         return relocate
 
     def instr(self):
-        return [0, 1, 1]
+        return []
 
     def code(self):
         return [self.ref(self.back), self.commname.as_mem(), self.instr()]
@@ -75,7 +75,7 @@ class Hello(Command):
 
 
 class FNORD(Command):
-    pass
+    name = "reallylongname"
 
 
 class List(Command):

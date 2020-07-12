@@ -14,6 +14,9 @@ from ideal_spork.firmware.firmware import Firmware
 
 from ideal_spork.logger import logger
 
+
+from commands import MetaCommand
+
 log = logger(__name__)
 
 """
@@ -59,6 +62,10 @@ class Bootloader(Firmware):
     def prelude(self):
         " code before the main loop "
         return Init(self.w, self.reg)
+
+    # def extra(self):
+    #    "add in the commands"
+    #    return MetaCommand.code()
 
     def instr(self):
         " Locals and the attached subroutine in the main loop "

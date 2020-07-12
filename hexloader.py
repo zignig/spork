@@ -1,4 +1,4 @@
-" Echo and Blink firmware"
+" LOAD memory from a hex file "
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
