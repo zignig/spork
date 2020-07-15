@@ -89,6 +89,16 @@ class Bootloader(Firmware):
 
         return [
             # Write the greetings string
+            J("g_end"),
+            L("g_test1"),
+            0,
+            L("g_test2"),
+            0,
+            L("g_test3"),
+            0,
+            L("g_test4"),
+            0,
+            L("g_end"),
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
             self.stringer.prompt(w.temp),

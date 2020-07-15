@@ -51,6 +51,43 @@ class CharPad(CodeObject):
                 ST(w.length, w.pad_address, 0),
             ]
 
+    # Split a char pad on space and remove from the source
+    class SplitChomp(SubR):
+        "Split and chomp a char pad"
+
+        def setup(self):
+            self.params = ["source_pad", "target_pad"]
+            self.locals = ["scounter", "char", "length"]
+            self.ret = ["status"]
+
+        def instr(self):
+            w = self.w
+            ll = LocalLabels()
+            # reuse code a much as possible
+            acc = CharPad.Accept()
+            return [
+                Rem("Reset the target pad"),
+                MOVI(w.scounter, 0),
+                MOVI(w.length, 0),
+                ST(w.length, w.target_pad, 0),
+                Rem("load the start of the pad"),
+                LD(w.length, w.source_pad, 0),
+                Rem("move to the first char"),
+                ADDI(w.source_pad, w.source_pad, 1),
+                ll("again"),
+                LD(w.char, w.source_pad, 0),
+                Rem("check if it is a space"),
+                CMPI(w.char, ord(" ")),
+                BEQ(ll.out),
+                acc(w.target_pad, w.char),
+                ADDI(w.source_pad, w.source_pad, 1),
+                ADDI(w.scounter, w.scounter, 1),
+                J(ll.again),
+                ll("out"),
+                Rem("target pad is ready"),
+                Rem("TODO shorten source pad"),
+            ]
+
     def __init__(self, name="CharPad", length=32):
         super().__init__()
         self.length = length
@@ -154,23 +191,26 @@ class Console(SubR):
 
 
 if __name__ == "__main__":
-    log.critical("TESTING")
-    console = Console()
-    w = Window()
-    w.req("val")
-    ll = LocalLabels()
-    s.test = "this is a test"
-    w.req(["pad", "value"])
-    cs = Switch(w, w.val)
-    cs.add(("c", [ll("a")]))
-    cs.add(("r", [ll("b")]))
-    cs.add(("s", [ll("c")]))
-    cs.add((43, [ll("d")]))
-    cs.add((10, [ll("e")]))
-    cs.add((13, [ll("f")]))
-    d = cs.dump()
-    print(d)
-    r = Instr.assemble(d)
-    d = Instr.disassemble(r)
-    print(r)
-    print(d)
+    r = CharPad.SplitChomp()
+    print(r.code())
+    if False:
+        log.critical("TESTING")
+        console = Console()
+        w = Window()
+        w.req("val")
+        ll = LocalLabels()
+        s.test = "this is a test"
+        w.req(["pad", "value"])
+        cs = Switch(w, w.val)
+        cs.add(("c", [ll("a")]))
+        cs.add(("r", [ll("b")]))
+        cs.add(("s", [ll("c")]))
+        cs.add((43, [ll("d")]))
+        cs.add((10, [ll("e")]))
+        cs.add((13, [ll("f")]))
+        d = cs.dump()
+        print(d)
+        r = Instr.assemble(d)
+        d = Instr.disassemble(r)
+        print(r)
+        print(d)

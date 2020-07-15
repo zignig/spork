@@ -35,7 +35,7 @@ class Action(SubR):
         sel = self.selector
         sel.add(
             (
-                20,
+                20,  # CR for now
                 [
                     Rem("Just echo out the pad"),
                     uart.cr(),
