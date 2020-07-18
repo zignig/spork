@@ -1,4 +1,4 @@
-# minimal boot loader for the boneless
+# minimal firmware the boneless, dump the char set and blink a light.
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

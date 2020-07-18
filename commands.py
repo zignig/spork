@@ -38,7 +38,7 @@ class MetaCommand(type):
     @classmethod
     def code(cls):
         li = MetaCommand.commands
-        # loop through and add commandds to the list
+        # loop through and add commands to the list
         # assemble the commands
         c = []
         for i in li:
