@@ -61,7 +61,32 @@ class MetaCommand(type):
         "search for a given command and return a pointer"
 
         def setup(self):
-            pass
+            self.params = ["command", "status"]
+            self.ret = ["status"]
+            self.locals = ["start", "end", "count"]
+
+        def instr(self):
+            w = self.w
+            ll = LocalLabels()
+            return [
+                Rem("load the pointer of the first command"),
+                MOVR(w.start, "first_command"),
+                Rem("Load the end of the commands"),
+                MOVR(w.end, "last_command"),
+                Rem("Load the string of the current command"),
+                ll("again"),
+                Rem("Move to the start of the string"),
+                ADDI(w.current, w.start, 1),
+                Rem("Write the string"),
+                uart.writestring(w.current),
+                uart.cr(),
+                Rem("Jump to the next command"),
+                LD(w.incr, w.start, 0),
+                ADD(w.start, w.start, w.incr),
+                Rem("Are we at the end"),
+                CMP(w.start, w.end),
+                BNE(ll.again),
+            ]
 
     class List(SubR):
         " List all the available commands"
