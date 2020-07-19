@@ -1,4 +1,4 @@
-" Weird meta lcass thing"
+" Wrapping all instructions for register allocation"
 
 
 from boneless.arch.opcode import Instr
@@ -17,6 +17,8 @@ class SpillError(Exception):
 
 
 class Register:
+    """ Register wrapper for allocation """
+
     def __init__(self, name, parent):
         self.name = name
         self.parent = parent
@@ -102,6 +104,7 @@ class Window:
         return instr
 
     def __getattr__(self, name):
+        """ create a new register on access """
         if name not in self.registers:
             new_reg = Register(name, self)
             setattr(self, name, new_reg)
@@ -117,8 +120,7 @@ class Window:
 
 
 class over:
-    # def encode(self):
-    #    return []
+    """ Wrapping instructions for register allocation"""
 
     def __call__(self, *stuff):
         " Weird meta thing"
@@ -158,6 +160,7 @@ class over:
 
 
 def generate():
+    # Build wrapped instructions for new window
     l = Instr.mnemonics
     other = {}
     for i, j in l.items():
@@ -184,11 +187,12 @@ def preproc(code):
 
 other = generate()
 o = other["OR"]
-m = other["MOVR"]
+m = other["MOVI"]
+mr = other["MOVR"]
 s = other["STXA"]
 w = Window()
 v = [
-    m(w.target, "bob"),
+    mr(w.target, "bob"),
     m(w.a, 4),
     m(w.b, 5),
     m(w.c, 7),
