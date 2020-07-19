@@ -5,6 +5,7 @@ from boneless.arch.opcode import Instr
 from boneless.arch import asm
 from boneless.arch.opcode import *
 
+from ideal_spork.firmware.base import *
 
 from rich import print
 
@@ -27,12 +28,13 @@ class Register:
 
     def __repr__(self):
         return (
-            self.name
-            + ":"
+            " name: "
+            + self.name
+            + " reg: "
             + str(self.current)
-            + ":"
+            + " loaded: "
             + str(self.loaded)
-            + ":"
+            + " offset: "
             + str(self.offset)
         )
 
@@ -55,7 +57,7 @@ class Window:
         self.spill = False
         self.free = [R0, R1, R2, R3, R4, R5]
         self.used = []
-        self.offset = 9
+        self.offset = 1
 
     def req(self):
         if len(self.free) > 0:
@@ -84,11 +86,13 @@ class Window:
                         self.offset += 1
                     print("target ", target)
                     print("copy out ", i.current)
-                    instr.append(ST(i.current, R6, i.offset))
+                    instr.append(ST(i.current, R6, 8 + i.offset))
                     i.spilt = True
-                    print("load in")
-                    if not target.spilt:
-                        instr.append(LD(i.current, R6, target.offset))
+                    if target.spilt:
+                        instr.append(LD(i.current, R6, 8 + target.offset))
+                    else:
+                        # register is empty , load with a zero
+                        instr.append(MOVI(i.current, 0))
                     print("return instruction")
                     target.loaded = True
                     target.current = i.current
@@ -105,15 +109,18 @@ class Window:
 
         return getattr(self, name)
 
+    def __repr__(self):
+        st = ""
+        for i in self.registers:
+            st += str(i) + "\n"
+        return st
+
 
 class over:
-    def cool(self):
-        print("Cool")
+    # def encode(self):
+    #    return []
 
-    def encode(self):
-        return []
-
-    def __call__(self, num):
+    def __call__(self, *stuff):
         " Weird meta thing"
         att = {}
         spill = False
@@ -143,9 +150,10 @@ class over:
         for i in spilled:
             reg = spilled[i]
             spill_code.append(reg.release(current))
-            att[i] = reg.resolve()
+            att[i] = reg.current
             print("no active for", i)
         spill_code.append(self._instr(**att))
+        # print(spill_code)
         return spill_code
 
 
@@ -163,9 +171,44 @@ def generate():
     return other
 
 
+def preproc(code):
+    # preexpand the code
+    new_code = []
+    for i in code:
+        if isinstance(i, over):
+            new_code.append(i(0))
+        else:
+            new_code.append(i)
+    return new_code
+
+
 other = generate()
 o = other["OR"]
+m = other["MOVR"]
+s = other["STXA"]
 w = Window()
-v = Instr.assemble(o(w.a, w.b, w.c))
-o(w.d, w.e, w.f)(0)
+v = [
+    m(w.target, "bob"),
+    m(w.a, 4),
+    m(w.b, 5),
+    m(w.c, 7),
+    m(w.d, 8),
+    m(w.e, 5),
+    m(w.f, 7),
+    m(w.g, 8),
+    m(w.h, 8),
+    m(w.i, 8),
+    m(w.j, 8),
+    m(w.k, 8),
+    o(w.a, w.b, w.c),
+    L("bob"),
+    s(w.target, 10),
+]
+print("INPUT")
 print(v)
+v = preproc(v)
+print("OUTPUT")
+print(v)
+d = Instr.assemble(v)
+print(d)
+print(Instr.disassemble(d))
