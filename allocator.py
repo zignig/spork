@@ -3,6 +3,8 @@
 # nod to https://github.com/tpwrules/ice_panel/blob/regalloc/regalloc.py
 # try this https://en.wikipedia.org/wiki/Register_allocation#Linear_Scan
 # https://web.cs.wpi.edu/~cs544/PLT11.6.3.html
+# http://www.brainkart.com/subject/Compiler-Design_133/
+
 from boneless.arch.opcode import Instr
 from boneless.arch import asm
 from boneless.arch import opcode
@@ -13,6 +15,27 @@ from ideal_spork.firmware.base import *
 from rich import print
 
 from collections import namedtuple
+
+
+def WrapBonelessInstructions():
+    # Build wrapped instructions for new window
+    l = Instr.mnemonics
+    other = {}
+    for i, j in l.items():
+        fields = list(j._field_types.keys())
+        field_dict = {}
+        for k in fields:
+            field_dict[k] = None
+        twister = namedtuple(i, field_dict)
+        other[i] = type(i, (twister, over), {"_instr": j, "_fields": fields})
+    # attach to the module ( cursed )
+    for i, j in other.items():
+        globals()[i] = j
+    return other
+
+
+# Create a set op wrapped
+other = WrapBonelessInstructions()
 
 
 class SpillError(Exception):
@@ -187,23 +210,6 @@ class over:
         return spill_code
 
 
-def generate():
-    # Build wrapped instructions for new window
-    l = Instr.mnemonics
-    other = {}
-    for i, j in l.items():
-        fields = list(j._field_types.keys())
-        field_dict = {}
-        for k in fields:
-            field_dict[k] = None
-        twister = namedtuple(i, field_dict)
-        other[i] = type(i, (twister, over), {"_instr": j, "_fields": fields})
-    # attach to the module ( cursed )
-    for i, j in other.items():
-        globals()[i] = j
-    return other
-
-
 def reverse_enum(L):
     for index in reversed(xrange(len(L))):
         yield index, L[index]
@@ -293,7 +299,6 @@ def expand(code):
     return new_code
 
 
-other = generate()
 o = other["OR"]
 m = other["MOVI"]
 mr = other["MOVR"]
