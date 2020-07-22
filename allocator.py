@@ -102,6 +102,8 @@ class SpillError(Exception):
 class Register:
     """ Register wrapper for allocation """
 
+    debug = False
+
     def __init__(self, name, parent, locked=False):
         self.name = name
         self.parent = parent
@@ -117,24 +119,31 @@ class Register:
         self.start = None
         self.finish = None
 
+    def within(self, val):
+        if (val >= self.start) and (val <= self.finish):
+            return True
+        return False
+
     def __repr__(self):
-        s = (
-            "<REG name: "
-            + self.name
-            + " reg: "
-            + str(self.current)
-            + " loaded: "
-            + str(self.loaded)
-            + " offset: "
-            + str(self.offset)
-            + " interval:"
-            + str(self.start)
-            + " -> "
-            + str(self.finish)
-            + ":"
-            + str(self.count)
-        )
-        s = "<REG " + self.name + ">"
+        if self.debug:
+            s = (
+                "<REG name: "
+                + self.name
+                + " reg: "
+                + str(self.current)
+                + " loaded: "
+                + str(self.loaded)
+                + " offset: "
+                + str(self.offset)
+                + " interval:"
+                + str(self.start)
+                + " -> "
+                + str(self.finish)
+                + ":"
+                + str(self.count)
+            )
+        else:
+            s = "<REG " + self.name + ">"
         return s
 
     def release(self, current):
@@ -210,6 +219,15 @@ class Window:
                     break
         return instr
 
+    def display(self, val):
+        r = []
+        count = 0
+        for i in self.registers:
+            # r.append(i.within(val))
+            if i.within(val):
+                count += 1
+        return count
+
     def __getattr__(self, name):
         """ create a new register on access """
         if name not in self.registers:
@@ -231,7 +249,7 @@ class Window:
 
 
 def reverse_enum(L):
-    for index in reversed(xrange(len(L))):
+    for index in reversed(range(len(L))):
         yield index, L[index]
 
 
@@ -260,7 +278,8 @@ class LSRA:
     INSTRS_RSD_SOURCE = {ST, STR, STX, STXA}
     INSTRS_JUMP = {J, JAL, JR, JRAL, JST, JVT}
 
-    def __init__(self, code):
+    def __init__(self, window, code):
+        self.window = window
         self.code = code
         self.mapper = {}
         self.blocks = []
@@ -270,7 +289,6 @@ class LSRA:
     def intervals(self):
         # Forward Scan
         for i, j in enumerate(self.code):
-            print(i, j)
             if hasattr(j, "_fields"):
                 for k in j._fields:
                     # Check all the registers
@@ -279,6 +297,15 @@ class LSRA:
                         val.count += 1
                         if val.start is None:
                             val.start = i
+        # Reverse Scan
+        for i, j in reverse_enum(self.code):
+            if hasattr(j, "_fields"):
+                for k in j._fields:
+                    # Check all the registers
+                    val = getattr(j, k)
+                    if isinstance(val, Register):
+                        if val.finish is None:
+                            val.finish = i
 
     def NextBlock(self):
         self.blocks.append(self.current_block)
@@ -291,7 +318,8 @@ class LSRA:
         for i, j in enumerate(self.code):
             # Find Lables
             if isinstance(j, L):
-                self.mapper[i] = (j, 0)
+                # labels ar the start of the next block
+                self.mapper[i - 1] = (j, 0)
             # Find branches
             for k in self.INSTRS_BRANCH:
                 if isinstance(j, k):
@@ -302,19 +330,32 @@ class LSRA:
                     self.mapper[i] = (j, 2)
         # Break into individual blocks
         snipper = list(self.mapper.items())
-        cur = snipper.pop(0)
+        snipper.pop(0)
+        cur = (0, 0)
         print(snipper)
         for i, j in enumerate(self.code):
             self.current_block.add(j)
-            print(i, snipper[0][0])
-            if i == snipper[0][0]:
-                snipper.pop(0)
+            if i == cur[0]:
+                print("new block")
+                if len(snipper) == 0:
+                    continue
+                cur = snipper.pop(0)
                 self.NextBlock()
+            print("-->", i, j, cur, snipper)
+        # and attach the last block
+        self.NextBlock()
 
     def show(self):
         for i, j in enumerate(self.blocks):
             print(i)
             print(j.code)
+
+    def show_counts(self):
+        for i, j in enumerate(self.code):
+            val = self.window.display(i)
+            if val > self.window.max:
+                print("----UH OH-----")
+            print(val, j)
 
     def run(self):
         self.intervals()
@@ -341,6 +382,11 @@ s = other["STXA"]
 w = Window()
 v = [
     L("main"),
+    MOVI(w.counter, 0),
+    L("wait"),
+    ADDI(w.counter, w.counter, 1),
+    CMPI(w.counter, 0xFFFF),
+    BNE("wait"),
     m(w.target, 0xFFFF),
     m(w.a, 4),
     m(w.b, 5),
@@ -367,7 +413,11 @@ v = [
     AND(w.target, w.target, w.counter),
     CMPI(w.counter, 0),
     BNE("again"),
-    J("main"),
+    JAL(w.bork, "main"),
+    STXA(w.stuff, 1),
+    MOVI(w.a, 4),
+    MOVI(w.h, 3),
+    MOVI(w.g, 4),
 ]
 if __name__ == "__main__":
     # print("INPUT")
@@ -378,12 +428,12 @@ if __name__ == "__main__":
     # d = Instr.assemble(pp)
     # print(d)
     # print(Instr.disassemble(d))
-    l = LSRA(v)
+    l = LSRA(w, v)
     l.run()
     l.show()
 
-    i = expand(v)
-    w.sort()
+    # i = expand(v)
+    # w.sort()
 
     # print(i)
     print(str(w))
