@@ -3,6 +3,9 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
+# from allocator import *
+# from boneless.arch.opcode import R0, R1, R2, R3, R4, R5, R6, R7, L
+
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.firmware import Firmware
 

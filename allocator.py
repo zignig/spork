@@ -5,6 +5,7 @@
 # https://web.cs.wpi.edu/~cs544/PLT11.6.3.html
 # http://www.brainkart.com/subject/Compiler-Design_133/
 
+import boneless
 from boneless.arch.opcode import Instr
 from boneless.arch import asm
 from boneless.arch import opcode
@@ -17,6 +18,45 @@ from rich import print
 from collections import namedtuple
 
 
+class Wrapper:
+    """ Wrapping instructions for register allocation"""
+
+    def allocate(self):
+        " Low quality request allocator "
+        att = {}
+        spill = False
+        spilled = {}
+        current = []
+        for i in self._fields:
+            # Check all the registers
+            val = getattr(self, i)
+            # print(val)
+            if isinstance(val, Register):
+                try:
+                    val = val.resolve()
+                    current.append(val)
+                except:
+                    spill = True
+                    spilled[i] = val
+
+            att[i] = val
+        # If the the registers are loaded , just return the instruction
+        # directly
+        if not spill:
+            return self._instr(**att)
+        # print(att)
+        # print(current)
+        # print(spilled)
+        spill_code = []
+        for i in spilled:
+            reg = spilled[i]
+            spill_code.append(reg.release(current))
+            att[i] = reg.current
+        spill_code.append(self._instr(**att))
+        # print(spill_code)
+        return spill_code
+
+
 def WrapBonelessInstructions():
     # Build wrapped instructions for new window
     l = Instr.mnemonics
@@ -27,15 +67,32 @@ def WrapBonelessInstructions():
         for k in fields:
             field_dict[k] = None
         twister = namedtuple(i, field_dict)
-        other[i] = type(i, (twister, over), {"_instr": j, "_fields": fields})
+        other[i] = type(i, (twister, Wrapper), {"_instr": j, "_fields": fields})
     # attach to the module ( cursed )
     for i, j in other.items():
         globals()[i] = j
     return other
 
 
+class BasicBlock:
+    def __init__(self):
+        self.code = []
+
+    def add(self, value):
+        self.code.append(value)
+
+
 # Create a set op wrapped
 other = WrapBonelessInstructions()
+
+
+def ListOfInstructions():
+    l = boneless.arch.opcode.__all__
+    l = list(Instr.mnemonics.keys())
+    return l
+
+
+__all__ = ListOfInstructions()
 
 
 class SpillError(Exception):
@@ -77,6 +134,7 @@ class Register:
             + ":"
             + str(self.count)
         )
+        s = "<REG " + self.name + ">"
         return s
 
     def release(self, current):
@@ -115,6 +173,7 @@ class Window:
 
     def release(self, target, current):
         # release a register
+        # TODO move this into the allocator
         instr = []
         # print("target ", target)
         for i in self.registers:
@@ -171,73 +230,17 @@ class Window:
         self.registers = newlist
 
 
-class over:
-    """ Wrapping instructions for register allocation"""
-
-    def allocate(self):
-        " Low quality request allocator "
-        att = {}
-        spill = False
-        spilled = {}
-        current = []
-        for i in self._fields:
-            # Check all the registers
-            val = getattr(self, i)
-            # print(val)
-            if isinstance(val, Register):
-                try:
-                    val = val.resolve()
-                    current.append(val)
-                except:
-                    spill = True
-                    spilled[i] = val
-
-            att[i] = val
-        # If the the registers are loaded , just return the instruction
-        # directly
-        if not spill:
-            return self._instr(**att)
-        # print(att)
-        # print(current)
-        # print(spilled)
-        spill_code = []
-        for i in spilled:
-            reg = spilled[i]
-            spill_code.append(reg.release(current))
-            att[i] = reg.current
-        spill_code.append(self._instr(**att))
-        # print(spill_code)
-        return spill_code
-
-
 def reverse_enum(L):
     for index in reversed(xrange(len(L))):
         yield index, L[index]
 
 
 class LSRA:
-    def __init__(self, code):
-        self.code = code
+    """Linear Register Allocator """
 
-    def intervals(self):
-        # Forward Scan
-        for i, j in enumerate(self.code):
-            print(i, j)
-            if hasattr(j, "_fields"):
-                for k in j._fields:
-                    # Check all the registers
-                    val = getattr(j, k)
-                    # print(val)
-                    if isinstance(val, Register):
-                        val.count += 1
-                        print("\t", val)
-                        if val.start is None:
-                            val.start = i
-
-
-def scan(code):
-    # preexpand the code
+    # Instruction groups
     INSTRS_BRANCH = {
+        BEQ,
         BNE,
         BZ1,
         BZ0,
@@ -257,34 +260,66 @@ def scan(code):
     INSTRS_RSD_SOURCE = {ST, STR, STX, STXA}
     INSTRS_JUMP = {J, JAL, JR, JRAL, JST, JVT}
 
-    new_code = []
-    block_count = 0
-    mapper = {}
-    for i, j in enumerate(code):
-        print(i, j)
-    # need to break into basic blocks
-    for i, j in enumerate(code):
-        print(i, j)
-        # Find Lables
-        if isinstance(j, L):
-            print("LABEL!!!")
-            print("-----------------------------")
-            print(j.name)
-            mapper[i] = j
-        # Find branches
-        for k in INSTRS_BRANCH:
-            if isinstance(j, k):
-                print("BRANCH!!!")
-                print(j.imm)
-                print("-----------------------------")
-                mapper[i] = j
-        # Find jumps
-        for k in INSTRS_JUMP:
-            if isinstance(j, k):
-                print("JUMP!!!")
-                print(j.imm)
-                print("-----------------------------")
-                mapper[i] = j
+    def __init__(self, code):
+        self.code = code
+        self.mapper = {}
+        self.blocks = []
+        self.block_count = 0
+        self.current_block = BasicBlock()
+
+    def intervals(self):
+        # Forward Scan
+        for i, j in enumerate(self.code):
+            print(i, j)
+            if hasattr(j, "_fields"):
+                for k in j._fields:
+                    # Check all the registers
+                    val = getattr(j, k)
+                    if isinstance(val, Register):
+                        val.count += 1
+                        if val.start is None:
+                            val.start = i
+
+    def NextBlock(self):
+        self.blocks.append(self.current_block)
+        self.block_count += 1
+        self.current_block = BasicBlock()
+
+    def CreateBasicBlocks(self):
+        # need to break into basic blocks
+        # map the division points
+        for i, j in enumerate(self.code):
+            # Find Lables
+            if isinstance(j, L):
+                self.mapper[i] = (j, 0)
+            # Find branches
+            for k in self.INSTRS_BRANCH:
+                if isinstance(j, k):
+                    self.mapper[i] = (j, 1)
+            # Find jumps
+            for k in self.INSTRS_JUMP:
+                if isinstance(j, k):
+                    self.mapper[i] = (j, 2)
+        # Break into individual blocks
+        snipper = list(self.mapper.items())
+        cur = snipper.pop(0)
+        print(snipper)
+        for i, j in enumerate(self.code):
+            self.current_block.add(j)
+            print(i, snipper[0][0])
+            if i == snipper[0][0]:
+                snipper.pop(0)
+                self.NextBlock()
+
+    def show(self):
+        for i, j in enumerate(self.blocks):
+            print(i)
+            print(j.code)
+
+    def run(self):
+        self.intervals()
+        self.CreateBasicBlocks()
+        print(self.mapper)
 
 
 def expand(code):
@@ -292,7 +327,7 @@ def expand(code):
     # stoopid useless allocator
     new_code = []
     for i, j in enumerate(code):
-        if isinstance(j, over):
+        if isinstance(j, Wrapper):
             new_code.append(j.allocate())
         else:
             new_code.append(j)
@@ -319,6 +354,8 @@ v = [
     m(w.g, 8),
     m(w.h, 9),
     m(w.i, 10),
+    CMPI(w.i, 40),
+    BEQ("main"),
     m(w.target, 0xF0FF),
     m(w.j, 11),
     m(w.k, 12),
@@ -332,18 +369,21 @@ v = [
     BNE("again"),
     J("main"),
 ]
-# print("INPUT")
-# print(v)
-# pp  = preproc(v)
-# print("OUTPUT")
-# print(pp)
-# d = Instr.assemble(pp)
-# print(d)
-# print(Instr.disassemble(d))
-l = LSRA(v)
-l.intervals()
-i = expand(v)
-w.sort()
+if __name__ == "__main__":
+    # print("INPUT")
+    # print(v)
+    # pp  = preproc(v)
+    # print("OUTPUT")
+    # print(pp)
+    # d = Instr.assemble(pp)
+    # print(d)
+    # print(Instr.disassemble(d))
+    l = LSRA(v)
+    l.run()
+    l.show()
 
-print(i)
-print(str(w))
+    i = expand(v)
+    w.sort()
+
+    # print(i)
+    print(str(w))
