@@ -77,6 +77,16 @@ def WrapBonelessInstructions():
 class BasicBlock:
     def __init__(self):
         self.code = []
+        self.registers = set()
+
+    def GetReg(self):
+        " get all the registers in this basic block"
+        for i, j in self.code:
+            if hasattr(j, "_fields"):
+                for k in j._fields:
+                    val = getattr(j, k)
+                    if isinstance(val, Register):
+                        self.registers.add(val)
 
     def add(self, value):
         self.code.append(value)
@@ -107,7 +117,9 @@ class Register:
     def __init__(self, name, parent, locked=False):
         self.name = name
         self.parent = parent
-        # self.active = False
+
+        self.live = False
+        self.dirty = False
         self.loaded = False
         self.spilt = False
         self.offset = None
@@ -167,7 +179,7 @@ class Window:
         self.used = []
         self.offset = 1
         if jumper:
-            # add in window pointer and jump target
+            # TODO add in window pointer and jump target
             pass
 
     def req(self):
@@ -221,12 +233,12 @@ class Window:
 
     def display(self, val):
         r = []
-        count = 0
+        # count = 0
         for i in self.registers:
-            # r.append(i.within(val))
-            if i.within(val):
-                count += 1
-        return count
+            r.append(i.within(val))
+            # if i.within(val):
+            #    count += 1
+        return r  # count
 
     def __getattr__(self, name):
         """ create a new register on access """
@@ -286,6 +298,44 @@ class LSRA:
         self.block_count = 0
         self.current_block = BasicBlock()
 
+    def scan(self):
+        """
+        LinearScanRegisterAllocation
+        active ←{}
+        foreach live interval i, in order of increasing start point
+            ExpireOldIntervals(i)
+            if length(active) = R then
+                SpillAtInterval(i)
+            else
+                register[i] ← a register removed from pool of free registers
+                add i to active, sorted by increasing end point
+        """
+        pass
+
+    def expire(self, interval):
+        """ExpireOldIntervals(i)
+            foreach interval j in active, in order of increasing end point
+                if endpoint[j] ≥ startpoint[i] then
+                    return
+                remove j from active
+                add register[j] to pool of free registers
+        """
+        pass
+
+    def spill(self, interval):
+        """
+            SpillAtInterval(i)
+            spill ← last interval in active
+            if endpoint[spill] > endpoint[i] then
+                register[i] ← register[spill]
+                location[spill] ← new stack location
+                remove spill from active
+                add i to active, sorted by increasing end point
+            else
+                location[i] ← new stack location
+        """
+        pass
+
     def intervals(self):
         # Forward Scan
         for i, j in enumerate(self.code):
@@ -318,7 +368,7 @@ class LSRA:
         for i, j in enumerate(self.code):
             # Find Lables
             if isinstance(j, L):
-                # labels ar the start of the next block
+                # labels are the start of the next block
                 self.mapper[i - 1] = (j, 0)
             # Find branches
             for k in self.INSTRS_BRANCH:
@@ -328,27 +378,32 @@ class LSRA:
             for k in self.INSTRS_JUMP:
                 if isinstance(j, k):
                     self.mapper[i] = (j, 2)
+
         # Break into individual blocks
         snipper = list(self.mapper.items())
         snipper.pop(0)
         cur = (0, 0)
         print(snipper)
         for i, j in enumerate(self.code):
-            self.current_block.add(j)
+            self.current_block.add((i, j))
             if i == cur[0]:
                 print("new block")
                 if len(snipper) == 0:
                     continue
                 cur = snipper.pop(0)
                 self.NextBlock()
-            print("-->", i, j, cur, snipper)
+            # print("-->", i, j, cur, snipper)
         # and attach the last block
         self.NextBlock()
+        # Attach all the registers used in block
+        for i in self.blocks:
+            i.GetReg()
 
     def show(self):
         for i, j in enumerate(self.blocks):
             print(i)
             print(j.code)
+            print(j.registers)
 
     def show_counts(self):
         for i, j in enumerate(self.code):
@@ -380,8 +435,8 @@ m = other["MOVI"]
 mr = other["MOVR"]
 s = other["STXA"]
 w = Window()
+# random code test
 v = [
-    L("main"),
     MOVI(w.counter, 0),
     L("wait"),
     ADDI(w.counter, w.counter, 1),
