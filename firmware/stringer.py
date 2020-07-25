@@ -12,7 +12,8 @@ log = logger(__name__)
 import random
 
 # TODO , strings are currently word encoded , wastes a lot of space
-# have a compact version that byte packs them
+# have a compact version that byte packs them, use top bit as switch
+# limits string length to 15 bits
 
 
 class SingleString:
@@ -20,15 +21,15 @@ class SingleString:
         If it has been called , _used is true and it is added to the string data in the firmware
     """
 
-    def __init__(self, name, value, prefix):
+    def __init__(self, name, value, postfix):
         self.name = name
         self.value = value
-        self._prefix = prefix
+        self._postfix = postfix
 
         self._used = False
 
     def get_name(self):
-        return self._prefix + self.name
+        return self.name + self._postfix
 
     def __call__(self, register):
         self._used = True
@@ -37,13 +38,13 @@ class SingleString:
     def as_mem(self):
         length = len(self.value)
         chars = [ord(c) for c in self.value]
-        return [L(self._prefix + self.name), Rem(self.value), length, chars]
+        return [L(self.name + self._postfix), Rem(self.value), length, chars]
 
 
 class Stringer(CodeObject):
     " Collection of string objects "
 
-    def __init__(self, prefix=None):
+    def __init__(self, postfix=None):
         super().__init__()
         # need to make attrs like this becuase of the __setattr__
         object.__setattr__(self, "_strings", {})
@@ -59,12 +60,9 @@ class Stringer(CodeObject):
         return used
 
     def __setattr__(self, item, value):
-        val = SingleString(item, value, self._prefix)
+        val = SingleString(item, value, self._postfix)
         self._strings[item] = val
         object.__setattr__(self, item, val)
-
-    # def __getattr__(self, item):
-    # return self._strings[item]
 
     def code(self):
         string_rep = [Rem("String Construct")]
