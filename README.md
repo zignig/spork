@@ -1,4 +1,4 @@
 # SPORK 
 
-this is a test repo for ideal_spork
+this is some nmigen infrastructure for the Boneless-v3 gateware CPU
 

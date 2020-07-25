@@ -3,8 +3,8 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
-from ideal_spork.firmware.base import *
-from ideal_spork.firmware.firmware import Firmware
+from spork.firmware.base import *
+from spork.firmware.firmware import Firmware
 
 # Subroutine
 class EchoChar(SubR):

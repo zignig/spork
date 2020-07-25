@@ -10,7 +10,7 @@ from .warm import WarmBoot
 from .switch import Switch
 from .commands import MetaCommand
 
-from ideal_spork.logger import logger
+from ..logger import logger
 
 log = logger(__name__)
 

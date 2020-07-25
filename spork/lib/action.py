@@ -8,7 +8,7 @@ from ..firmware.stringer import Stringer
 from .switch import Switch
 from .uartIO import UART
 
-from ideal_spork.logger import logger
+from ..logger import logger
 
 log = logger(__name__)
 

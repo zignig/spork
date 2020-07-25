@@ -127,7 +127,6 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
         if detail:
             f.show()
         # Sporkify it !
-        print(f.code())
         spork.cpu.firmware(f.code())
         if detail:
             print(f.hex())

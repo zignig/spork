@@ -11,7 +11,7 @@ from boneless.arch import asm
 from boneless.arch import opcode
 from boneless.arch.opcode import R0, R1, R2, R3, R4, R5, R6, R7, L
 
-from ideal_spork.firmware.base import *
+from ..firmware.base import *
 
 from rich import print
 

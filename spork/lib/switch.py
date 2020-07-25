@@ -2,10 +2,10 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
-from ideal_spork.firmware.base import *
-from ideal_spork.firmware.stringer import Stringer
+from ..firmware.base import *
+from ..firmware.stringer import Stringer
 
-from ideal_spork.logger import logger
+from ..logger import logger
 
 log = logger(__name__)
 
