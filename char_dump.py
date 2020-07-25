@@ -3,16 +3,16 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
-from ideal_spork.firmware.base import *
+from spork.firmware.base import *
 
-from uartIO import UART
-from console import Console
-from action import Action
+from spork.lib.uartIO import UART
+from spork.lib.console import Console
+from spork.lib.action import Action
 
-from ideal_spork.firmware.stringer import Stringer
-from ideal_spork.firmware.firmware import Firmware
+from spork.firmware.stringer import Stringer
+from spork.firmware.firmware import Firmware
 
-from ideal_spork.logger import logger
+from spork.logger import logger
 
 log = logger(__name__)
 

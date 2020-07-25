@@ -1,7 +1,7 @@
 # stored string handling functions
 
-from ideal_spork.firmware.base import *
-from ideal_spork.logger import logger
+from ..firmware.base import *
+from ..logger import logger
 
 
 from boneless.arch.opcode import Instr

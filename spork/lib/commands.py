@@ -6,8 +6,8 @@ from boneless.arch.opcode import *
 
 from .uartIO import UART
 
-from ideal_spork.firmware.base import *
-from ideal_spork.firmware.stringer import SingleString
+from ..firmware.base import *
+from ..firmware.stringer import SingleString
 
 from rich import print
 

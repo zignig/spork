@@ -3,7 +3,7 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
-from ideal_spork.firmware.base import *
+from ..firmware.base import *
 
 
 class WarmBoot(SubR):
