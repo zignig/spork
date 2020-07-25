@@ -1,16 +1,16 @@
 " Example firmware"
 
 from nmigen import *
-from ideal_spork.cpu.boneless import BonelessSpork
+from spork.cpu.boneless import BonelessSpork
 
-from ideal_spork.peripheral.serial import AsyncSerialPeripheral
-from ideal_spork.peripheral.timer import TimerPeripheral
-from ideal_spork.peripheral.leds import LedPeripheral
-from ideal_spork.peripheral.kermit_crc import KermitCRC
-from ideal_spork.peripheral.warmboot import WarmBoot, FakeWarm
+from spork.peripheral.serial import AsyncSerialPeripheral
+from spork.peripheral.timer import TimerPeripheral
+from spork.peripheral.leds import LedPeripheral
+from spork.peripheral.kermit_crc import KermitCRC
+from spork.peripheral.warmboot import WarmBoot, FakeWarm
 
-from ideal_spork.cores.ext_reset import ExternalReset
-from ideal_spork.cores.debounce import Debounce
+from spork.cores.ext_reset import ExternalReset
+from spork.cores.debounce import Debounce
 
 from nmigen_boards.tinyfpga_bx import TinyFPGABXPlatform
 from nmigen_boards.resources.interface import UARTResource
@@ -127,6 +127,7 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
         if detail:
             f.show()
         # Sporkify it !
+        print(f.code())
         spork.cpu.firmware(f.code())
         if detail:
             print(f.hex())

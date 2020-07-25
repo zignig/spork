@@ -3,19 +3,19 @@
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
-from ideal_spork.firmware.base import *
+from spork.firmware.base import *
 
-from lib.uartIO import UART
-from lib.console import Console
-from lib.action import Action
+from spork.lib.uartIO import UART
+from spork.lib.console import Console
+from spork.lib.action import Action
 
-from ideal_spork.firmware.stringer import Stringer
-from ideal_spork.firmware.firmware import Firmware
+from spork.firmware.stringer import Stringer
+from spork.firmware.firmware import Firmware
 
-from ideal_spork.logger import logger
+from spork.logger import logger
 
 
-from lib.commands import MetaCommand
+from spork.lib.commands import MetaCommand
 
 log = logger(__name__)
 
@@ -126,5 +126,5 @@ if __name__ == "__main__":
     import fwtest
 
     spork = fwtest.build(Bootloader, detail=True)
-    up = Uploader()
-    up.upload(spork)
+    # up = Uploader()
+    # up.upload(spork)
