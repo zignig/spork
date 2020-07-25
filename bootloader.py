@@ -5,9 +5,9 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 
-from uartIO import UART
-from console import Console
-from action import Action
+from lib.uartIO import UART
+from lib.console import Console
+from lib.action import Action
 
 from ideal_spork.firmware.stringer import Stringer
 from ideal_spork.firmware.firmware import Firmware
@@ -15,7 +15,7 @@ from ideal_spork.firmware.firmware import Firmware
 from ideal_spork.logger import logger
 
 
-from commands import MetaCommand
+from lib.commands import MetaCommand
 
 log = logger(__name__)
 

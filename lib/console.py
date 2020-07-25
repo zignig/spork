@@ -5,10 +5,10 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.stringer import Stringer
-from uartIO import UART
-from warm import WarmBoot
-from switch import Switch
-from commands import MetaCommand
+from .uartIO import UART
+from .warm import WarmBoot
+from .switch import Switch
+from .commands import MetaCommand
 
 from ideal_spork.logger import logger
 

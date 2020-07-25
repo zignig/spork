@@ -9,7 +9,7 @@ from boneless.arch.opcode import *
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.firmware import Firmware
 
-from uartIO import UART
+from lib.uartIO import UART
 
 
 class CoreDump(SubR):

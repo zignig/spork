@@ -5,8 +5,8 @@ from boneless.arch.opcode import *
 
 from ideal_spork.firmware.base import *
 from ideal_spork.firmware.stringer import Stringer
-from switch import Switch
-from uartIO import UART
+from .switch import Switch
+from .uartIO import UART
 
 from ideal_spork.logger import logger
 
