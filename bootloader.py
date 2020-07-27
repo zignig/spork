@@ -8,8 +8,8 @@ from spork.firmware.base import *
 from spork.lib.uartIO import UART
 from spork.lib.console import Console
 from spork.lib.action import Action
+from spork.lib.stringer import Stringer
 
-from spork.firmware.stringer import Stringer
 from spork.firmware.firmware import Firmware
 
 from spork.logger import logger

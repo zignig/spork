@@ -4,7 +4,8 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 from ..firmware.base import *
-from ..firmware.stringer import Stringer
+
+from .stringer import Stringer
 from .switch import Switch
 from .uartIO import UART
 

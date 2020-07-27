@@ -430,51 +430,51 @@ def expand(code):
     return new_code
 
 
-o = other["OR"]
-m = other["MOVI"]
-mr = other["MOVR"]
-s = other["STXA"]
-w = Window()
-# random code test
-v = [
-    MOVI(w.counter, 0),
-    L("wait"),
-    ADDI(w.counter, w.counter, 1),
-    CMPI(w.counter, 0xFFFF),
-    BNE("wait"),
-    m(w.target, 0xFFFF),
-    m(w.a, 4),
-    m(w.b, 5),
-    m(w.c, 7),
-    m(w.d, 8),
-    m(w.e, 5),
-    CMPI(w.e, 100),
-    BNE("main"),
-    m(w.target, 0x0FFF),
-    m(w.f, 7),
-    m(w.g, 8),
-    m(w.h, 9),
-    m(w.i, 10),
-    CMPI(w.i, 40),
-    BEQ("main"),
-    m(w.target, 0xF0FF),
-    m(w.j, 11),
-    m(w.k, 12),
-    o(w.a, w.b, w.c),
-    s(w.target, 10),
-    MOVI(w.counter, 100),
-    L("again"),
-    SUBI(w.counter, w.counter, 1),
-    AND(w.target, w.target, w.counter),
-    CMPI(w.counter, 0),
-    BNE("again"),
-    JAL(w.bork, "main"),
-    STXA(w.stuff, 1),
-    MOVI(w.a, 4),
-    MOVI(w.h, 3),
-    MOVI(w.g, 4),
-]
 if __name__ == "__main__":
+    o = other["OR"]
+    m = other["MOVI"]
+    mr = other["MOVR"]
+    s = other["STXA"]
+    w = Window()
+    # random code test
+    v = [
+        MOVI(w.counter, 0),
+        L("wait"),
+        ADDI(w.counter, w.counter, 1),
+        CMPI(w.counter, 0xFFFF),
+        BNE("wait"),
+        m(w.target, 0xFFFF),
+        m(w.a, 4),
+        m(w.b, 5),
+        m(w.c, 7),
+        m(w.d, 8),
+        m(w.e, 5),
+        CMPI(w.e, 100),
+        BNE("main"),
+        m(w.target, 0x0FFF),
+        m(w.f, 7),
+        m(w.g, 8),
+        m(w.h, 9),
+        m(w.i, 10),
+        CMPI(w.i, 40),
+        BEQ("main"),
+        m(w.target, 0xF0FF),
+        m(w.j, 11),
+        m(w.k, 12),
+        o(w.a, w.b, w.c),
+        s(w.target, 10),
+        MOVI(w.counter, 100),
+        L("again"),
+        SUBI(w.counter, w.counter, 1),
+        AND(w.target, w.target, w.counter),
+        CMPI(w.counter, 0),
+        BNE("again"),
+        JAL(w.bork, "main"),
+        STXA(w.stuff, 1),
+        MOVI(w.a, 4),
+        MOVI(w.h, 3),
+        MOVI(w.g, 4),
+    ]
     # print("INPUT")
     # print(v)
     # pp  = preproc(v)

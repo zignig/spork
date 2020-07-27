@@ -7,7 +7,7 @@ from boneless.arch.opcode import *
 from .uartIO import UART
 
 from ..firmware.base import *
-from ..firmware.stringer import SingleString
+from .stringer import SingleString
 
 from rich import print
 

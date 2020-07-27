@@ -8,7 +8,7 @@ log = logger(__name__)
 from boneless.arch.opcode import *
 from boneless.arch.instr import Instr
 
-from .stringer import Stringer
+from ..lib.stringer import Stringer
 
 
 class Firmware:
