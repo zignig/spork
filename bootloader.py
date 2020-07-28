@@ -1,4 +1,4 @@
-# minimal boot loader for the boneless
+# minimal shell for the boneless
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -48,7 +48,7 @@ def Init(w, reg):
 
 
 class Bootloader(Firmware):
-    LOADER_ID = "BL_0"
+    LOADER_ID = "BNLS"
 
     # TODO check requirements
     requires = ["timer", "uart", "crc", "led"]
