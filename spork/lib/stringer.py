@@ -37,7 +37,14 @@ class SingleString:
 
     def as_mem(self):
         length = len(self.value)
-        chars = [ord(c) for c in self.value]
+        chars = []
+        for c in self.value:
+            log.debug("char -> %s", c)
+            if type(c) == type(""):
+                val = ord(c)
+            else:
+                val = c
+            chars.append(val)
         return [L(self.name + self._postfix), Rem(self.value), length, chars]
 
 

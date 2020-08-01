@@ -19,7 +19,7 @@ class RegMap:
 
     def _add_sub(self, name_list, value):
         front = name_list.pop(0)
-        log.debug(name_list)
+        log.debug("%s %d", name_list, value)
         if len(name_list) == 0:
             setattr(self, front, value)
             self._children[front] = value

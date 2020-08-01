@@ -82,9 +82,9 @@ class TestSpork(Elaboratable):
             # the warmboot instance
             wb = warm.warm
             self.er = ExternalReset(wb.select, wb.ext_image, wb.ext_boot, dtr)
-        else:
-            warm = FakeWarm()
-            cpu.add_peripheral(warm)
+        # else:
+        #    warm = FakeWarm()
+        #    cpu.add_peripheral(warm)
 
         # build the register map
         cpu.build()
@@ -140,7 +140,6 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
 
 
 if __name__ == "__main__":
-
     Elaboratable._Elaboratable__silence = True
     import argparse
 

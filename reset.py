@@ -8,7 +8,7 @@ bl = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5, dsrdtr=False)
 def toggle(count):
     for i in range(count):
         print("toggle 0")
-        time.sleep(0.05)
+        time.sleep(0.2)
         bl.dtr = 1
         print("toggle 1")
         bl.dtr = 0

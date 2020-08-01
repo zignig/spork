@@ -84,7 +84,6 @@ class HexLoader(Firmware):
             BNE(ll.loop),
             Rem("And boot into your newly minted firmware"),
             Rem("TODO, fix checksum"),
-            cd(),
             MOVI(R0, 0),
             MOVI(R1, 0),
             MOVI(R2, 0),

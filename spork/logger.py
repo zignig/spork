@@ -2,7 +2,7 @@ import logging, sys
 
 from rich.logging import RichHandler
 
-log_level = logging.ERROR
+log_level = logging.DEBUG
 
 fomattingter = logging.Formatter(
     fmt="%(asctime)s - %(levelname)s - %(message)s \t  %(name)s - line %(lineno)s - (%(funcName)s)",
