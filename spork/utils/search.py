@@ -32,7 +32,7 @@ def Enroll(**info):
 
     def inner(cls):
         for section, name in info.items():
-            log.info("Peripheral : %s - %s - %s", section, name, cls.__name__)
+            log.debug("Peripheral : %s - %s - %s", section, name, cls.__name__)
             if isinstance(name, str):
                 catalog.insert(section, name, cls)
             elif isinstance(name, list):
