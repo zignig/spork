@@ -8,6 +8,7 @@ from ..firmware.base import *
 from .stringer import Stringer
 from .switch import Switch
 from .uartIO import UART
+from .action_list import Actions
 
 from ..logger import logger
 
@@ -36,7 +37,7 @@ class Action(SubR):
         sel = self.selector
         sel.add(
             (
-                20,  # CR for now
+                Actions.RUN,  # CR for now
                 [
                     Rem("Just echo out the pad"),
                     uart.cr(),
@@ -52,7 +53,7 @@ class Action(SubR):
         )
         sel.add(
             (
-                21,  # escape sequence
+                Actions.ESCAPE,  # escape sequence
                 [self.stringer.escape(w.temp), uart.writestring(w.temp)],
             )
         )

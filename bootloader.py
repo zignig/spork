@@ -84,7 +84,7 @@ class Bootloader(Firmware):
         st.warmboot = "Warmboot!"
         st.reset = "Reset!"
         st.available = "Available Commands:"
-        st.escape = "ESC>"
+        st.escape = "<ESC>"
         st.banner = banner.encode("utf-8")
         st.prompt = self.LOADER_ID + ">"
 

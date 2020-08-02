@@ -10,6 +10,9 @@ from .warm import WarmBoot
 from .switch import Switch
 from .commands import MetaCommand
 
+
+from .action_list import Actions
+
 from ..logger import logger
 
 log = logger(__name__)
@@ -137,8 +140,8 @@ class Console(SubR):
         sel = self.selector
         sel.add((9, [self.uart.cr(), List(), self.uart.cr()]))  # horizontal tab
         # CR does prompt for now
-        sel.add((13, [MOVI(w.status, 20)]))
-        sel.add((27, [MOVI(w.status, 21)]))
+        sel.add((13, [MOVI(w.status, Actions.RUN)]))  # enter
+        sel.add((27, [MOVI(w.status, Actions.ESCAPE)]))  # escape sequence
         # ^D Restart , warm boot
         sel.add(
             (

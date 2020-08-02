@@ -185,6 +185,10 @@ class List(Command):
     pass
 
 
+class Demo(Command):
+    pass
+
+
 class Help(Command):
     def instr(self):
         return [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
