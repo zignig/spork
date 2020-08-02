@@ -9,6 +9,7 @@ from .stringer import Stringer
 from .switch import Switch
 from .uartIO import UART
 from .action_list import Actions
+from .commands import MetaCommand
 
 from ..logger import logger
 
@@ -33,6 +34,7 @@ class Action(SubR):
         reg = self.reg
         ll = LocalLabels()
         uart = UART()
+        List = MetaCommand.List()
         # make a CASE style selection
         sel = self.selector
         sel.add(
@@ -57,6 +59,7 @@ class Action(SubR):
                 [self.stringer.escape(w.temp), uart.writestring(w.temp)],
             )
         )
+        sel.add((Actions.COMPLETE, [List()]))  # complete
         return [sel()]
 
 

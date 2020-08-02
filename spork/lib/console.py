@@ -138,7 +138,7 @@ class Console(SubR):
         List = MetaCommand.List()
         # make a CASE style selection
         sel = self.selector
-        sel.add((9, [self.uart.cr(), List(), self.uart.cr()]))  # horizontal tab
+        sel.add((9, [MOVI(w.status, Actions.COMPLETE)]))  # horizontal tab
         # CR does prompt for now
         sel.add((13, [MOVI(w.status, Actions.RUN)]))  # enter
         sel.add((27, [MOVI(w.status, Actions.ESCAPE)]))  # escape sequence
