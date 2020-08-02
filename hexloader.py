@@ -44,30 +44,52 @@ class CoreDump(SubR):
 
 
 class HexLoader(Firmware):
+    """
+        This takes a CAPITAL hex string and loads it, and jumps to the first instruction
+        
+        Format is 
+
+        Length
+        CheckSum
+        DATA
+
+    """
+
     def setup(self):
+        # Define the registers used in this firmware "
+        # TODO register allocator
         self.w.req(["value", "counter", "checksum", "address", "status", "char"])
 
     def instr(self):
-        serial = UART()
+        " instr returns an array of boneless instructions, make python things first "
+        # the map of the IO registers
         reg = self.reg
+        # the current register window
         w = self.w
+        # make a collections of SubR , add only what you use
+        serial = UART()
+        # short cuts to subroutines
         ho = serial.writeHex
         wc = serial.write
         rh = serial.readHex
+        # make some ASM labels that will not collide.
         ll = LocalLabels()
+        # Steaming and probably really smellly.
         cd = CoreDump()
+        # return an array of instructions , this has a main loop wrapped around it
         return [
+            # clean the registers, for a clean reset
             MOVI(R0, 0),
             MOVI(R1, 0),
             MOVI(R2, 0),
             MOVI(R3, 0),
             MOVI(R4, 0),
             MOVI(R5, 0),
-            Rem("length word"),
+            Rem("Get the count of instructions"),
             rh(ret=[w.counter, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
-            Rem("checksum word"),
+            Rem("Get the checksum"),
             rh(ret=[w.checksum, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
@@ -84,6 +106,7 @@ class HexLoader(Firmware):
             BNE(ll.loop),
             Rem("And boot into your newly minted firmware"),
             Rem("TODO, fix checksum"),
+            Rem("Clear the working registers"),
             MOVI(R0, 0),
             MOVI(R1, 0),
             MOVI(R2, 0),

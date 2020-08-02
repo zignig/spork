@@ -11,6 +11,10 @@ from .stringer import SingleString
 
 from rich import print
 
+from ..logger import logger
+
+log = logger(__name__)
+
 # debugging
 def r(val):
     print(val)
@@ -33,6 +37,7 @@ class MetaCommand(type):
             # Don't add root subclass
             return
         if cls not in d:
+            log.critical("ADD COMMAND %s", cls.__qualname__)
             d.append(cls())
 
     @classmethod
@@ -195,6 +200,10 @@ class Help(Command):
 
 
 class GO(Command):
+    pass
+
+
+class Export(Command):
     pass
 
 

@@ -21,9 +21,10 @@ class SingleString:
         If it has been called , _used is true and it is added to the string data in the firmware
     """
 
-    def __init__(self, name, value, postfix):
+    def __init__(self, name, value, postfix, compact=True):
         self.name = name
         self.value = value
+        self.compact = compact
         self._postfix = postfix
 
         self._used = False
@@ -38,6 +39,8 @@ class SingleString:
     def as_mem(self):
         length = len(self.value)
         chars = []
+        if self.compact:
+            log.warning("WRITE COMPACT STRINGS")
         for c in self.value:
             log.debug("char -> %s", c)
             if type(c) == type(""):
@@ -51,10 +54,11 @@ class SingleString:
 class Stringer(CodeObject):
     " Collection of string objects "
 
-    def __init__(self, postfix=None):
+    def __init__(self, postfix=None, compact=True):
         super().__init__()
         # need to make attrs like this becuase of the __setattr__
         object.__setattr__(self, "_strings", {})
+        object.__setattr__(self, "compact", compact)
 
     @property
     def _used(self):
@@ -67,7 +71,7 @@ class Stringer(CodeObject):
         return used
 
     def __setattr__(self, item, value):
-        val = SingleString(item, value, self._postfix)
+        val = SingleString(item, value, self._postfix, self.compact)
         self._strings[item] = val
         object.__setattr__(self, item, val)
 

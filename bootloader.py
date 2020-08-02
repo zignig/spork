@@ -15,7 +15,7 @@ from spork.firmware.firmware import Firmware
 from spork.logger import logger
 
 
-from spork.lib.commands import MetaCommand
+from spork.lib.commands import MetaCommand, Command
 
 from spork.lib.banner import banner
 
@@ -121,6 +121,6 @@ if __name__ == "__main__":
     from upload import Uploader
     import fwtest
 
-    spork = fwtest.build(Bootloader, detail=False)
+    spork = fwtest.build(Bootloader, detail=True)
     up = Uploader()
     up.upload(spork)

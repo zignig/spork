@@ -174,6 +174,7 @@ class CR(SubR):
 class WriteString(SubR):
     """ Write a string to the uart
         Strings are pascal style with the length as the first word
+        TODO,  deal with compact strings
     """
 
     def setup(self):

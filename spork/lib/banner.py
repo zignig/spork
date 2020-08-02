@@ -7,6 +7,14 @@ banner = """
 """
 text_command = 'toilet -F border -f pagga " Boneless_V3 "'
 
+_banner = """
+┌───────────────────────────────────────┐
+│   ┏┓ ┏━┓┏┓╻┏━╸╻  ┏━╸┏━┓┏━┓   ╻ ╻┏━┓   │
+│   ┣┻┓┃ ┃┃┗┫┣╸ ┃  ┣╸ ┗━┓┗━┓   ┃┏┛╺━┫   │
+│   ┗━┛┗━┛╹ ╹┗━╸┗━╸┗━╸┗━┛┗━┛╺━╸┗┛ ┗━┛   │
+└───────────────────────────────────────┘
+"""
+
 
 class Encoder:
     def __init__(self, text_object):
@@ -14,7 +22,11 @@ class Encoder:
         self.breakdown = self.symbol_list()
         self.len = len(self.breakdown)
         self.slide_dict = {}
+
         self.enc = []
+        self.rle()
+
+        self.symbols()
 
     def symbol_list(self):
         dict = {}
@@ -26,6 +38,7 @@ class Encoder:
         return dict
 
     def slide(self, length):
+        "unused"
         for i in range(len(self.text)):
             v = self.text[i : i + length]
             if v not in self.slide_dict:
@@ -34,10 +47,12 @@ class Encoder:
                 self.slide_dict[v] += 1
 
     def chunk(self, start=2, finish=20):
+        "unused"
         for i in range(start, finish):
             self.slide(i)
 
     def clean(self, l=2):
+        "unused"
         c = self.slide_dict.copy()
         sd = self.slide_dict
         for i in sd:
@@ -45,11 +60,19 @@ class Encoder:
                 del (c[i])
         self.slide_dict = c
 
-    def rle(self):
+    def symbols(self):
+        for i in self.breakdown:
+            val = i.encode("utf-8")
+            print(i, val)
+
+    def rlerle(self, depth=3):
+        log.critical("Check for RLE patterns")
+
+    def rle(self, max_chunk=16):
         cur = self.text[0]
         count = 1
         for i in range(1, len(self.text)):
-            if self.text[i] == cur:
+            if (self.text[i] == cur) and (count < max_chunk):
                 count += 1
             else:
                 self.enc.append((cur, count))
@@ -63,3 +86,5 @@ if __name__ == "__main__":
     print("Unecoded", len(banner.encode("utf-8")))
     print("Symbols", len(cl))
     print(cl)
+    print(e.enc)
+    print(len(e.enc))
