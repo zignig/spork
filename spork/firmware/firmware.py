@@ -51,7 +51,7 @@ class Firmware:
         return []
 
     def extra(self):
-        "Add extra code/data to the firmaware, override "
+        "Add extra code/data to the firmware, override "
         return []
 
     def code(self):

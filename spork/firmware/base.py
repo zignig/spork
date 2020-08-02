@@ -333,6 +333,9 @@ class MetaSub(type):
                     c.append(i.code())
             if len(old_c) == len(c):
                 break
+        for i in li:
+            if i._called:
+                log.info("SubR %s ", i.name)
         return c
 
 

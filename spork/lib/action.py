@@ -50,6 +50,12 @@ class Action(SubR):
                 ],
             )
         )
+        sel.add(
+            (
+                21,  # escape sequence
+                [self.stringer.escape(w.temp), uart.writestring(w.temp)],
+            )
+        )
         return [sel()]
 
 

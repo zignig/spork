@@ -138,6 +138,7 @@ class Console(SubR):
         sel.add((9, [self.uart.cr(), List(), self.uart.cr()]))  # horizontal tab
         # CR does prompt for now
         sel.add((13, [MOVI(w.status, 20)]))
+        sel.add((27, [MOVI(w.status, 21)]))
         # ^D Restart , warm boot
         sel.add(
             (
