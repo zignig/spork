@@ -9,6 +9,7 @@ from boneless.arch.opcode import *
 from boneless.arch.instr import Instr
 
 from ..lib.stringer import Stringer
+from ..lib.globals import Globals
 
 
 class Firmware:
@@ -27,6 +28,9 @@ class Firmware:
         # global string set
         self.stringer = st = Stringer()
 
+        # global variables
+        self.globals = gl = Globals()
+
         # attach the io_map to all the subroutines
         SubR.reg = self.reg
         Inline.reg = self.reg
@@ -34,6 +38,9 @@ class Firmware:
         # attach global string to other
         SubR.stringer = self.stringer
         Inline.stringer = self.stringer
+        SubR.globals = gl
+        Inline.globals = gl
+
         # code objects
         self.obj = []
         self._built = False
@@ -75,8 +82,6 @@ class Firmware:
                 self.extra(),
                 Rem("--- Data Objects ---"),
                 CodeObject.get_code(),
-                0,
-                0,
                 L("program_start"),
             ]
             self._built = True
