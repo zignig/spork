@@ -109,11 +109,11 @@ class Firmware:
         asm = self.assemble()
         # save the length
         full_hex = hex_string(len(asm))
-        # will be the checksum
-        full_hex += hex_string(0xFFFF)
         # append the code
         for i in asm:
             full_hex += hex_string(i)
+        # will be the checksum
+        full_hex += hex_string(0xFFFF)
         return full_hex
 
     def disassemble(self):

@@ -51,14 +51,14 @@ class SingleString:
             while counter < length:
                 first_char = self.value[counter]
                 second_char = self.value[counter + 1]
-                if type(second_char) == type(""):
-                    word = ord(second_char) << 8
-                else:
-                    word = second_char << 8
                 if type(first_char) == type(""):
-                    word = word | ord(first_char)
+                    word = ord(first_char) << 8
                 else:
-                    word = word | first_char
+                    word = first_char << 8
+                if type(second_char) == type(""):
+                    word = word | ord(second_char)
+                else:
+                    word = word | second_char
                 chars.append(word)
                 log.debug("val {0:016b}".format(word))
                 counter += 2

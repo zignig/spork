@@ -89,10 +89,6 @@ class HexLoader(Firmware):
             rh(ret=[w.counter, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
-            Rem("Get the checksum"),
-            rh(ret=[w.checksum, w.status]),
-            CMPI(w.status, 1),  # error
-            BEQ(ll.err),
             Rem("Load the memory"),
             MOVR(w.address, "program_start"),
             ll("loop"),
@@ -106,6 +102,10 @@ class HexLoader(Firmware):
             BNE(ll.loop),
             Rem("And boot into your newly minted firmware"),
             Rem("TODO, fix checksum"),
+            Rem("Get the checksum"),
+            rh(ret=[w.checksum, w.status]),
+            CMPI(w.status, 1),  # error
+            BEQ(ll.err),
             Rem("Clear the working registers"),
             MOVI(R0, 0),
             MOVI(R1, 0),

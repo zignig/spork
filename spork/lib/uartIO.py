@@ -209,13 +209,13 @@ class WriteString(SubR):
             ll("cf_loop"),
             LD(w.value, w.address, 0),
             # first char
-            ANDI(w.char, w.value, 0xFF),
+            SRLI(w.char, w.value, 8),
             uart_out(w.char),
             ADDI(w.counter, w.counter, 1),
             CMP(w.length, w.counter),
             BEQ(ll.exit),
             # second char
-            SRLI(w.char, w.value, 8),
+            ANDI(w.char, w.value, 0xFF),
             uart_out(w.char),
             ADDI(w.counter, w.counter, 1),
             ADDI(w.address, w.address, 1),
