@@ -19,6 +19,8 @@ from spork.lib.commands import MetaCommand, Command
 
 from spork.lib.banner import banner
 
+import datetime
+
 log = logger(__name__)
 
 """
@@ -87,6 +89,7 @@ class Bootloader(Firmware):
         st.escape = "<ESC>"
         st.banner = banner.encode("utf-8")
         st.prompt = self.LOADER_ID + ">"
+        st.date = str(datetime.datetime.now()) + "\r\n"
 
         console = Console()
         action = Action()
@@ -94,6 +97,8 @@ class Bootloader(Firmware):
         return [
             # Write the greetings string
             self.stringer.banner(w.temp),
+            uart.writestring(w.temp),
+            self.stringer.date(w.temp),
             uart.writestring(w.temp),
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),

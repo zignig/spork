@@ -40,14 +40,40 @@ class SingleString:
         length = len(self.value)
         chars = []
         if self.compact:
-            log.warning("WRITE COMPACT STRINGS")
-        for c in self.value:
-            log.debug("char -> %s", c)
-            if type(c) == type(""):
-                val = ord(c)
-            else:
-                val = c
-            chars.append(val)
+            # log.warning("WRITE COMPACT STRINGS for %s",self.value)
+            length = len(self.value)
+            # if the length is odd , add a space
+            # for the byte encoder
+            if (length % 2) != 0:
+                self.value += " "
+            counter = 0
+            word = 0
+            while counter < length:
+                first_char = self.value[counter]
+                second_char = self.value[counter + 1]
+                if type(second_char) == type(""):
+                    word = ord(second_char) << 8
+                else:
+                    word = second_char << 8
+                if type(first_char) == type(""):
+                    word = word | ord(first_char)
+                else:
+                    word = word | first_char
+                chars.append(word)
+                log.debug("val {0:016b}".format(word))
+                counter += 2
+            # set the high bit for compact string
+            length = len(self.value) | (1 << 15)
+            log.debug("length {0:016b}".format(length))
+
+        else:
+            for c in self.value:
+                log.debug("char -> %s", c)
+                if type(c) == type(""):
+                    val = ord(c)
+                else:
+                    val = c
+                chars.append(val)
         return [L(self.name + self._postfix), Rem(self.value), length, chars]
 
 

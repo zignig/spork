@@ -68,7 +68,7 @@ class Encoder:
     def rlerle(self, depth=3):
         log.critical("Check for RLE patterns")
 
-    def rle(self, max_chunk=16):
+    def rle(self, max_chunk=256):
         cur = self.text[0]
         count = 1
         for i in range(1, len(self.text)):

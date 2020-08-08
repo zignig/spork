@@ -179,7 +179,7 @@ class WriteString(SubR):
 
     def setup(self):
         self.params = ["address"]
-        self.locals = ["length", "counter", "value"]
+        self.locals = ["length", "counter", "value", "char"]
 
     def instr(self):
         w = self.w
@@ -190,6 +190,7 @@ class WriteString(SubR):
         return [
             # Value is the address of the string
             # Load the length of the string
+            Rem("empty string bail"),
             LD(w.length, w.address, 0),
             CMPI(w.length, 0),
             BEQ(ll.exit),
@@ -197,7 +198,32 @@ class WriteString(SubR):
             ADDI(w.address, w.address, 1),
             # Reset the counter
             MOVI(w.counter, 0),
-            ll("loop"),
+            Rem("Check if it is a compact string"),
+            # sign bit is set?
+            CMPI(w.length, 0),
+            BNS(ll.lf_loop),
+            # drop the high bit
+            ANDI(w.length, w.length, 0x8000 - 1),
+            Rem("Compant Strings"),
+            # strings are byte encoded
+            ll("cf_loop"),
+            LD(w.value, w.address, 0),
+            # first char
+            ANDI(w.char, w.value, 0xFF),
+            uart_out(w.char),
+            ADDI(w.counter, w.counter, 1),
+            CMP(w.length, w.counter),
+            BEQ(ll.exit),
+            # second char
+            SRLI(w.char, w.value, 8),
+            uart_out(w.char),
+            ADDI(w.counter, w.counter, 1),
+            ADDI(w.address, w.address, 1),
+            CMP(w.length, w.counter),
+            BEQ(ll.exit),
+            J(ll.cf_loop),
+            Rem("Long form strings"),
+            ll("lf_loop"),
             # Write out the char
             LD(w.value, w.address, 0),
             uart_out(w.value),
@@ -208,7 +234,7 @@ class WriteString(SubR):
             # check if we are at length
             CMP(w.length, w.counter),
             BEQ(ll.exit),
-            J(ll.loop),
+            J(ll.lf_loop),
             ll("exit"),
         ]
 

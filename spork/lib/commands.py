@@ -37,7 +37,7 @@ class MetaCommand(type):
             # Don't add root subclass
             return
         if cls not in d:
-            log.critical("ADD COMMAND %s", cls.__qualname__)
+            log.debug("ADD COMMAND %s", cls.__qualname__)
             d.append(cls())
 
     @classmethod
@@ -130,7 +130,7 @@ class Command(metaclass=MetaCommand):
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-        self.commname = SingleString(self.name, self.name.lower(), "")
+        self.commname = SingleString(self.name, self.name.lower(), "", compact=False)
 
     def __repr__(self):
         t = self.label + " --> "
