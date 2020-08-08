@@ -1,3 +1,4 @@
+#!/usr/bin/python
 " Echo and Blink firmware"
 
 from boneless.arch.opcode import Instr

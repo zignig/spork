@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # minimal shell for the boneless
 
 from boneless.arch.opcode import Instr
