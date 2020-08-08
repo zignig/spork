@@ -6,9 +6,6 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 from spork.lib.uartIO import UART
-from spork.lib.console import Console
-from spork.lib.action import Action
-from spork.lib.stringer import Stringer
 
 from spork.firmware.firmware import Firmware
 
@@ -34,12 +31,17 @@ class CharSplash(Firmware):
         uart = UART()
 
         return [
+            # start at space, ignore control char
             MOVI(w.counter, 32),
+            # enable and , turn on the led
             MOVI(w.temp, 1),
             STXA(w.temp, reg.statusled.en),
+            # there is a main loop around these instrutions
             ll("loop"),
             uart.write(w.counter),
+            # invert the led
             XORI(w.temp, w.temp, 0xFFFF),
+            #
             STXA(w.temp, reg.statusled.led),
             MOVI(w.wait, 0xFFFF),
             ll("wait"),

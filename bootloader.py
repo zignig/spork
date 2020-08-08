@@ -14,7 +14,6 @@ from spork.firmware.firmware import Firmware
 
 from spork.logger import logger
 
-
 from spork.lib.commands import MetaCommand, Command
 
 from spork.lib.banner import banner
@@ -52,7 +51,7 @@ def Init(w, reg):
 
 
 class Bootloader(Firmware):
-    LOADER_ID = "BNLS"
+    LOADER_ID = "ZIG_0.0"
 
     # TODO check requirements
     requires = ["timer", "uart", "crc", "led"]
@@ -95,7 +94,7 @@ class Bootloader(Firmware):
         action = Action()
 
         return [
-            # Write the greetings string
+            # Write the prelude strings
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),

@@ -1,5 +1,7 @@
 " Serial interface for uploading boneless firmware"
 
+# TODO , move this into the spork
+
 from itertools import zip_longest
 from serial.tools import miniterm
 import serial

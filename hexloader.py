@@ -23,7 +23,7 @@ class CoreDump(SubR):
         ho = serial.writeHex
         wc = serial.write
         return [
-            Rem("DUMP the bootloader"),
+            Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
             MOVI(w.endpoint, 4096),
             ll("dumper"),
@@ -130,6 +130,6 @@ if __name__ == "__main__":
     from upload import Uploader
     import fwtest
 
-    spork = fwtest.build(firmware)
-    # up = Uploader()
-    # up.upload(spork, console=False)
+    spork = fwtest.build(firmware, detail=True)
+    up = Uploader()
+    up.upload(spork, console=False)

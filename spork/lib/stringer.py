@@ -11,9 +11,10 @@ log = logger(__name__)
 
 import random
 
+# this is nearly done , have a fence post error on newlines... 20200808
 # TODO , strings are currently word encoded , wastes a lot of space
 # have a compact version that byte packs them, use top bit as switch
-# limits string length to 15 bits
+# limits string length to 15 bits, oh NO, only 32K length strings !!
 
 
 class SingleString:
@@ -59,17 +60,19 @@ class SingleString:
                     word = ord(first_char) << 8
                 else:
                     word = first_char << 8
+
                 if type(second_char) == type(""):
                     word = word | ord(second_char)
                 else:
                     word = word | second_char
+
                 chars.append(word)
                 log.debug("val {0:016b}".format(word))
                 counter += 2
+
             # set the high bit for compact string
             length = len(self.value) | (1 << 15)
             log.debug("length {0:016b}".format(length))
-
         else:
             for c in self.value:
                 log.debug("char -> %s", c)
@@ -92,6 +95,7 @@ class Stringer(CodeObject):
 
     @property
     def _used(self):
+        " any of the string used?"
         used = False
         for i in self._strings:
             single = self._strings[i]

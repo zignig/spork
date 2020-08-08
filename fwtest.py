@@ -106,10 +106,12 @@ from bootloader import Bootloader
 from nmigen.hdl.ir import UnusedElaboratable
 
 
+# TODO this needs to be moved into the spork
 def build(TheFirmware, mem_size=4096, sim=False, detail=False):
     # for programming from a firmware file
     if detail:
         print("Testing Spork")
+    # TODO abstract this plaform set
     platform = TinyFPGABXPlatform()
     # FTDI on the tinybx
     platform.add_resources(
@@ -121,12 +123,14 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
             # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
         ]
     )
-    # print(platform.resources)
+
     # Spork it up
     spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size, sim=sim)
+
     # Build the firmware
     if detail:
         print(spork.cpu.map.show())
+
     f = TheFirmware(spork.cpu.map, start_window=mem_size)
     spork.fw = f
     if detail:
@@ -138,6 +142,8 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
     spork.hex_blob = f.hex()
     return spork
 
+
+# TODO this main needs to be moved below the spork.
 
 if __name__ == "__main__":
     Elaboratable._Elaboratable__silence = True
