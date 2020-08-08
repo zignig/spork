@@ -13,6 +13,8 @@ from spork.lib.uartIO import UART
 
 
 class CoreDump(SubR):
+    " not used , move to util "
+
     def setup(self):
         self.locals = ["counter", "endpoint", "char", "value"]
 
@@ -25,18 +27,11 @@ class CoreDump(SubR):
         return [
             Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
-            MOVI(w.endpoint, 4096),
+            MOVI(w.endpoint, 4096),  # TODO share full mem size into SubR
             ll("dumper"),
             Rem("current address"),
-            # ho(w.counter),
-            # MOVI(w.char, 32),  # SPACE
-            # wc(w.char),
             LD(w.value, w.counter, 0),  # load the data from the address
             ho(w.value),
-            # MOVI(w.char, 13),  # CR
-            # wc(w.char),
-            # MOVI(w.char, 10),  # LF
-            # wc(w.char),
             ADDI(w.counter, w.counter, 1),  # increment the address
             CMP(w.counter, w.endpoint),
             BNE(ll.dumper),

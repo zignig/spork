@@ -64,6 +64,7 @@ class MetaCommand(type):
 
     class Search(SubR):
         "search for a given command and return a pointer"
+        __unfinished = True
 
         def setup(self):
             self.params = ["command", "status"]
@@ -104,6 +105,7 @@ class MetaCommand(type):
             ll = LocalLabels()
             uart = UART()
             return [
+                uart.cr(),
                 Rem("load the pointer of the first command"),
                 MOVR(w.start, "first_command"),
                 Rem("Load the end of the commands"),
@@ -195,8 +197,7 @@ class Demo(Command):
 
 
 class Help(Command):
-    def instr(self):
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+    pass
 
 
 class Start(Command):

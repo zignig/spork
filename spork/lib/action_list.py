@@ -7,4 +7,7 @@ class Actions(IntEnum):
     NONE = auto()
     RUN = auto()
     ESCAPE = auto()
+    ESCAPE_0 = auto()
+    ESCAPE_1 = auto()
+    ESCAPE_2 = auto()
     COMPLETE = auto()
