@@ -22,6 +22,9 @@ class CharSplash(Firmware):
         " registers in the bottom Window "
         self.w.req(["temp", "counter", "wait"])
 
+    def prelude(self):
+        return []
+
     def instr(self):
         " Locals and the attached subroutine in the main loop "
         w = self.w

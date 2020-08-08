@@ -45,7 +45,11 @@ class SingleString:
             # if the length is odd , add a space
             # for the byte encoder
             if (length % 2) != 0:
-                self.value += " "
+                if type(self.value) == type(""):
+                    self.value += " "
+                else:
+                    self.value += b" "
+
             counter = 0
             word = 0
             while counter < length:
