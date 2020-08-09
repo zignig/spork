@@ -102,6 +102,7 @@ class Bootloader(Firmware):
             uart.writestring(w.temp),
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
+            uart.cr(),
             self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
             # load the pad address into the register
@@ -112,7 +113,7 @@ class Bootloader(Firmware):
             # if the status is zero skip
             CMPI(w.status, 0),
             BZ(ll.skip),
-            # write the char back out
+            # process the keystroke
             console(w.incoming_word, w.pad_address, w.status, ret=[w.status]),
             action(w.pad_address, w.status, ret=[w.status]),
             ll("skip"),

@@ -1,3 +1,8 @@
+"Encoded Banner"
+
+from ..firmware.base import *
+from .stringer import Stringer
+
 banner = """
 ┌────────────────────────────────────────────────┐
 │░░░█▀▄░█▀█░█▀█░█▀▀░█░░░█▀▀░█▀▀░█▀▀░░░░░█░█░▀▀█░░│
@@ -16,7 +21,16 @@ _banner = """
 """
 
 
+class EncodedData(CodeObject):
+    pass
+
+
 class Encoder:
+    """
+         Take a text block and compress,
+        Currently run length encoding an a dictionary
+    """
+
     def __init__(self, text_object):
         self.text = text_object
         self.breakdown = self.symbol_list()
@@ -27,6 +41,10 @@ class Encoder:
         self.rle()
 
         self.symbols()
+
+    def build(self):
+        s = Stringer()
+        e = EncodedData()
 
     def symbol_list(self):
         dict = {}
@@ -83,6 +101,7 @@ class Encoder:
 if __name__ == "__main__":
     e = Encoder(banner)
     cl = e.breakdown
+    e.build()
     print("Unecoded", len(banner.encode("utf-8")))
     print("Symbols", len(cl))
     print(cl)

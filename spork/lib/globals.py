@@ -67,7 +67,3 @@ class Globals(CodeObject):
 
     def show(self):
         print(self.code())
-
-
-a = Globals()
-print(a.code())

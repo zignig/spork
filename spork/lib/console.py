@@ -89,7 +89,6 @@ class CharPad(CodeObject):
                 J(ll.again),
                 ll("out"),
                 Rem("target pad is ready"),
-                Rem("TODO shorten source pad"),
             ]
 
     def __init__(self, name="CharPad", length=32):

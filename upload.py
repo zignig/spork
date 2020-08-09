@@ -7,6 +7,8 @@ from serial.tools import miniterm
 import serial
 import time
 
+from rich import print
+
 
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
@@ -30,13 +32,21 @@ class Uploader:
         time.sleep(0.5)
 
     def upload(self, firmware, console=True):
-        self.toggle(4)
-        self.hex_blob = firmware.hex_blob
-        self.ser.readall()  # clear out the buffer
-        for i in grouper(self.hex_blob, 4):
-            data = "".join(i).encode()
-            self.ser.write(data)
-            # l = self.ser.readline()
-        #    # print(l)
-        if console:
-            miniterm.main(self.port, self.baud)
+        import argparse
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-l", "--list", action="store_true")
+        parser.add_argument("-v", "--verbose", action="store_true")
+
+        args = parser.parse_args()
+        if args.list:
+            print(firmware.fw.code())
+        else:
+            self.toggle(4)
+            self.hex_blob = firmware.hex_blob
+            self.ser.readall()  # clear out the buffer
+            for i in grouper(self.hex_blob, 4):
+                data = "".join(i).encode()
+                self.ser.write(data)
+            if console:
+                miniterm.main(self.port, self.baud)

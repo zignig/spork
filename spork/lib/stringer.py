@@ -11,6 +11,8 @@ log = logger(__name__)
 
 import random
 
+__all__ = ["SingleString", "Stringer"]
+
 # this is nearly done , have a fence post error on newlines... 20200808
 # TODO , strings are currently word encoded , wastes a lot of space
 # have a compact version that byte packs them, use top bit as switch
@@ -81,7 +83,11 @@ class SingleString:
                 else:
                     val = c
                 chars.append(val)
-        return [L(self.name + self._postfix), Rem(self.value), length, chars]
+        if len(self.value) < 20:
+            comment = Rem(self.value)
+        else:
+            comment = Rem(self.value[:20])
+        return [L(self.name + self._postfix), comment, length, chars]
 
 
 class Stringer(CodeObject):
