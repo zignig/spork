@@ -59,7 +59,7 @@ class Action(SubR):
                 [self.stringer.escape(w.temp), uart.writestring(w.temp)],
             )
         )
-        sel.add((Actions.COMPLETE, [List()]))  # complete
+        sel.add((Actions.COMPLETE, [List(), uart.cr()]))  # complete
         return [sel()]
 
 

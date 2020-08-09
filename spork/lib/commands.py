@@ -200,6 +200,10 @@ class Help(Command):
     pass
 
 
+class ShortHelp(Command):
+    name = "?"
+
+
 class Start(Command):
     pass
 

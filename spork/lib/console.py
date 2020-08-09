@@ -33,6 +33,7 @@ class CharPad(CodeObject):
         A character pad with console editing
     """
 
+    # TODO hard fail on overflow
     # Add functions for the Char pad here
     class Accept(SubR):
         def setup(self):
@@ -168,6 +169,7 @@ class Console(SubR):
                 3,
                 [
                     Rem("^C Init processor"),
+                    # TODO make this a vector
                     self.stringer.reset(self.w.temp),
                     self.uart.writestring(self.w.temp),
                     J("init"),
