@@ -124,7 +124,7 @@ class Bootloader(Firmware):
 firmware = Bootloader
 
 if __name__ == "__main__":
-    from upload import Uploader
+    from spork.upload import Uploader
     import fwtest
 
     spork = fwtest.build(Bootloader, detail=False)

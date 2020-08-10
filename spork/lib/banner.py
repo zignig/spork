@@ -41,10 +41,12 @@ class Encoder:
         self.rle()
 
         self.symbols()
+        self.build
 
     def build(self):
         s = Stringer()
         e = EncodedData()
+        e._used = True
 
     def symbol_list(self):
         dict = {}

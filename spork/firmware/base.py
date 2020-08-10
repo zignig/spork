@@ -367,8 +367,8 @@ class SubR(metaclass=MetaSub):
         # return registers to upper window
         self._ret = False
         self._ret_target = []
-        self.setup()
         self._size = 8  # for later ( stack frames ) TODO
+        self.setup()
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
         if hasattr(self, "params"):

@@ -14,8 +14,7 @@ import random
 __all__ = ["SingleString", "Stringer"]
 
 # this is nearly done , have a fence post error on newlines... 20200808
-# TODO , strings are currently word encoded , wastes a lot of space
-# have a compact version that byte packs them, use top bit as switch
+# A compact version that byte packs them, use top bit as switch
 # limits string length to 15 bits, oh NO, only 32K length strings !!
 
 
@@ -43,7 +42,6 @@ class SingleString:
         length = len(self.value)
         chars = []
         if self.compact:
-            # log.warning("WRITE COMPACT STRINGS for %s",self.value)
             length = len(self.value)
             # if the length is odd , add a space
             # for the byte encoder

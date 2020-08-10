@@ -88,7 +88,7 @@ class Echo(Firmware):
 
 if __name__ == "__main__":
     print("build echo firmware")
-    from upload import Uploader
+    from spork.upload import Uploader
     import fwtest
 
     spork = fwtest.build(Echo)

@@ -1,6 +1,5 @@
 " Serial interface for uploading boneless firmware"
 
-# TODO , move this into the spork
 
 from itertools import zip_longest
 from serial.tools import miniterm
@@ -22,6 +21,7 @@ class Uploader:
         self.ser = serial.Serial(port, baud, timeout=0.5, dsrdtr=False)
 
     def toggle(self, count):
+        # toggles the DTR pin, there is a internal reset device
         for i in range(count):
             # print("toggle 0")
             time.sleep(0.05)

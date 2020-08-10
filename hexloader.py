@@ -122,7 +122,7 @@ firmware = HexLoader
 
 if __name__ == "__main__":
     print("uploading bootloader")
-    from upload import Uploader
+    from spork.upload import Uploader
     import fwtest
 
     spork = fwtest.build(firmware, detail=False)

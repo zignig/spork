@@ -58,7 +58,7 @@ class CharSplash(Firmware):
 firmware = CharSplash
 
 if __name__ == "__main__":
-    from upload import Uploader
+    from spork.upload import Uploader
     import fwtest
 
     spork = fwtest.build(firmware)
