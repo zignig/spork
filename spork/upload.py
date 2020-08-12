@@ -39,7 +39,7 @@ class Uploader:
         # toggles the DTR pin, there is a internal reset device
         for i in range(count):
             # print("toggle 0")
-            time.sleep(0.05)
+            time.sleep(0.1)
             self.ser.dtr = 1
             # print("toggle 1")
             self.ser.dtr = 0
@@ -62,6 +62,7 @@ class Uploader:
             self.ser.readall()  # clear out the buffer
             for i in grouper(self.hex_blob, 4):
                 data = "".join(i).encode()
+                time.sleep(0.001)
                 self.ser.write(data)
             if console:
                 miniterm.main(self.port, self.baud)

@@ -15,6 +15,8 @@ from ..logger import logger
 
 log = logger(__name__)
 
+# TODO , convert to radix tree ?
+
 # debugging
 def r(val):
     print(val)

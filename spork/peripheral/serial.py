@@ -67,7 +67,7 @@ class AsyncSerialPeripheral(Peripheral, Elaboratable):
         Interrupt request line.
     """
 
-    def __init__(self, *, rx_depth=16, tx_depth=16, **kwargs):
+    def __init__(self, *, rx_depth=64, tx_depth=32, **kwargs):
         log.info("Create Async UART with %d/%d FIFO", rx_depth, tx_depth)
         super().__init__()
 
