@@ -24,16 +24,15 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 import struct
-import crcmod.predefined
 
 from spork.logger import logger
 
 log = logger("root")
 
-# silece the unused elaboratable
+# silence the unused elaboratable
+# this builds the to get the register map.
+# so ssh, please.
 MustUse._MustUse__silence = True
-
-crc_16_kermit = crcmod.predefined.mkPredefinedCrcFun("kermit")
 
 
 class TestSpork(Elaboratable):

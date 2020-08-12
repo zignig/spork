@@ -9,6 +9,21 @@ import time
 from rich import print
 
 
+# CRC
+# implementation taken from crcany
+# lifted from https://github.com/tpwrules/ice_panel/
+def _crc(words):
+    crc = 0
+    for word in words:
+        crc ^= word
+        for bi in range(16):
+            if crc & 1:
+                crc = (crc >> 1) ^ 0x8408
+            else:
+                crc >>= 1
+    return crc
+
+
 def grouper(iterable, n, fillvalue=None):
     args = [iter(iterable)] * n
     return zip_longest(*args, fillvalue=fillvalue)

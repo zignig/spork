@@ -45,8 +45,8 @@ class HexLoader(Firmware):
         Format is 
 
         Length
-        CheckSum
         DATA
+        CheckSum
 
     """
 

@@ -20,7 +20,7 @@ class _glob_var:
         self.name = name
         self.value = value
         self._postfix = postfix
-        self._used = False
+        self._used = True
 
     def get_name(self):
         return self.name + self._postfix
