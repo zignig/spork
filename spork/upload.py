@@ -39,12 +39,12 @@ class Uploader:
         # toggles the DTR pin, there is a internal reset device
         for i in range(count):
             # print("toggle 0")
-            time.sleep(0.1)
+            time.sleep(0.05)
             self.ser.dtr = 1
             # print("toggle 1")
             self.ser.dtr = 0
         self.ser.dtr = 1
-        time.sleep(0.5)
+        time.sleep(0.8)
 
     def upload(self, firmware, console=True):
         import argparse
@@ -60,9 +60,12 @@ class Uploader:
             self.toggle(4)
             self.hex_blob = firmware.hex_blob
             self.ser.readall()  # clear out the buffer
+            counter = 0
             for i in grouper(self.hex_blob, 4):
                 data = "".join(i).encode()
-                time.sleep(0.001)
+                # counter += 1
+                # if counter % 4 == 0:
+                #    print('.',end="")
                 self.ser.write(data)
             if console:
                 miniterm.main(self.port, self.baud)

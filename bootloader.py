@@ -96,7 +96,7 @@ class Bootloader(Firmware):
 
         return [
             # Write the prelude strings
-            self.globals.test(w.temp),
+            # self.globals.test(w.temp),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),
