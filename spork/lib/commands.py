@@ -218,6 +218,10 @@ class Export(Command):
     pass
 
 
+class HexLoader(Command):
+    name = "BL_0"
+
+
 if __name__ == "__main__":
     c = MetaCommand.code()
     print(c)

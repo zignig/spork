@@ -44,7 +44,7 @@ class CharSplash(Firmware):
             XORI(w.temp, w.temp, 0xFFFF),
             #
             STXA(w.temp, reg.statusled.led),
-            MOVI(w.wait, 0xFFFF),
+            MOVI(w.wait, 0x0FFF),
             ll("wait"),
             SUBI(w.wait, w.wait, 1),
             CMPI(w.wait, 0),

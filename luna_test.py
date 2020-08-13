@@ -144,6 +144,9 @@ class ACMwrap(Peripheral, Elaboratable):
     def __init__(self, tx, rx):
         log.info("USB acm CSR wrapper")
         super().__init__()
+        self.tx = tx
+        self.rx = rx
+
         bank = self.csr_bank()
         self._rx_ready = bank.csr(1, "r")
         self._rx_first = bank.csr(1, "r")
@@ -154,7 +157,7 @@ class ACMwrap(Peripheral, Elaboratable):
         self._tx_ready = bank.csr(1, "w")
         self._tx_first = bank.csr(1, "w")
         self._tx_last = bank.csr(1, "w")
-        self._rx_valid = bank.csr(1, "r")
+        self._tx_valid = bank.csr(1, "r")
         self._tx_payload = bank.csr(8, "w")
 
     def elaborate(self, platform):
