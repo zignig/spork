@@ -90,13 +90,15 @@ class Bootloader(Firmware):
         st.banner = banner.encode("utf-8")
         st.prompt = self.LOADER_ID + ">"
         st.date = str(datetime.datetime.now()) + "\r\n"
-        self.globals.test = 400
+
+        self.globals.led = 0
+
         console = Console()
         action = Action()
 
         return [
             # Write the prelude strings
-            # self.globals.test(w.temp),
+            self.globals.led(w.temp),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),

@@ -50,7 +50,7 @@ class Action(SubR):
                     Search(w.pad_address, ret=[w.status, w.command]),
                     CMPI(w.status, 1),
                     BNE(ll.skip),
-                    uart.writeHex(w.command),
+                    # uart.writeHex(w.command),
                     self.stringer.runner(w.temp),
                     uart.writestring(w.temp),
                     Run(w.command),

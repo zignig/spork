@@ -72,13 +72,21 @@ class MetaCommand(type):
         def setup(self):
             self.params = ["command"]
             self.ret = ["status"]
-            self.locals = ["tmp"]
+            self.locals = ["tmp", "exe"]
 
         def instr(self):
             w = self.w
             ll = LocalLabels()
             self.stringer.run = "running command"
-            return [self.stringer.run(w.tmp), uart.writestring(w.tmp)]
+            return [
+                self.stringer.run(w.tmp),
+                uart.writestring(w.tmp),
+                uart.writeHex(w.command),
+                Rem("Get the execute pointer"),
+                LD(w.tmp, w.command, 1),
+                ADD(w.exe, w.command, w.tmp),
+                JRAL(w.ret, w.exe),
+            ]
 
     class Compare(SubR):
         "Compare string to command"
@@ -91,7 +99,6 @@ class MetaCommand(type):
         def instr(self):
             w = self.w
             ll = LocalLabels()
-            uart = UART()
             return [
                 Rem("find and run the command"),
                 Rem("Current points to the top of the command"),
@@ -152,7 +159,6 @@ class MetaCommand(type):
             w = self.w
             ll = LocalLabels()
             compare = MetaCommand.Compare()
-            uart = UART()
             return [
                 Rem("load the pointer of the first command"),
                 MOVR(w.current, "first_command"),
@@ -189,7 +195,6 @@ class MetaCommand(type):
         def instr(self):
             w = self.w
             ll = LocalLabels()
-            uart = UART()
             return [
                 uart.cr(),
                 Rem("load the pointer of the first command"),
@@ -218,7 +223,7 @@ class Command(metaclass=MetaCommand):
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-        self.commname = SingleString(self.name, self.name, "", compact=False)
+        self.commname = SingleString(self.name, self.name.lower(), "", compact=False)
 
     def __repr__(self):
         t = self.label + " --> "
@@ -247,15 +252,22 @@ class Command(metaclass=MetaCommand):
             self.ref(self.next),
             self.commname.as_mem(),
             self.instr(),
+            JR(R7, 0),
         ]
 
 
 class LedON(Command):
-    pass
+    def instr(self):
+        return []
 
 
 class LedOFF(Command):
     pass
+
+
+class Reboot(Command):
+    def instr(self):
+        return [J("init")]
 
 
 class Timer(Command):
