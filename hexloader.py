@@ -16,32 +16,6 @@ from spork.logger import logger
 log = logger(__name__)
 
 
-class CoreDump(SubR):
-    " not used , move to util "
-
-    def setup(self):
-        self.locals = ["counter", "endpoint", "char", "value"]
-
-    def instr(self):
-        w = self.w
-        ll = LocalLabels()
-        serial = UART()
-        ho = serial.writeHex
-        wc = serial.write
-        return [
-            Rem("DUMP the entire memory space"),
-            MOVI(w.counter, 0),
-            MOVI(w.endpoint, 4096),  # TODO share full mem size into SubR
-            ll("dumper"),
-            Rem("current address"),
-            LD(w.value, w.counter, 0),  # load the data from the address
-            ho(w.value),
-            ADDI(w.counter, w.counter, 1),  # increment the address
-            CMP(w.counter, w.endpoint),
-            BNE(ll.dumper),
-        ]
-
-
 class HexLoader(Firmware):
     """
         This takes a CAPITAL hex string and loads it, and jumps to the first instruction
@@ -75,8 +49,6 @@ class HexLoader(Firmware):
         rh = serial.readHex
         # make some ASM labels that will not collide.
         ll = LocalLabels()
-        # Steaming and probably really smellly.
-        cd = CoreDump()
         # return an array of instructions , this has a main loop wrapped around it
         return [
             # clean the registers, for a clean reset

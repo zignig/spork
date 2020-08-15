@@ -171,6 +171,26 @@ class CR(SubR):
         return [MOVI(w.char, 13), wc(w.char), MOVI(w.char, 10), wc(w.char)]  # CR  # LF
 
 
+class COLON(SubR):
+    def setup(self):
+        self.locals = ["char"]
+
+    def instr(self):
+        w = self.w
+        wc = Write()
+        return [MOVI(w.char, 58), wc(w.char)]  # SPACE
+
+
+class SP(SubR):
+    def setup(self):
+        self.locals = ["char"]
+
+    def instr(self):
+        w = self.w
+        wc = Write()
+        return [MOVI(w.char, 32), wc(w.char)]  # SPACE
+
+
 class WriteString(SubR):
     """ Write a string to the uart
         Strings are pascal style with the length as the first word
@@ -324,6 +344,46 @@ class ReadWord(SubR):
         ]
 
 
+class CoreDump(SubR):
+    " just dump the core "
+
+    def setup(self):
+        self.locals = ["counter", "endpoint", "char", "value", "slice"]
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        uart = UART()
+        ho = uart.writeHex
+        wc = uart.write
+        return [
+            Rem("DUMP the entire memory space"),
+            MOVI(w.counter, 0),
+            MOVI(w.endpoint, 2048),  # TODO share full mem size into SubR
+            ll("dumper"),
+            Rem("current address"),
+            LD(w.value, w.counter, 0),  # load the data from the address
+            # ho(w.value),
+            # uart.sp(),
+            ANDI(w.slice, w.counter, 0x1F),
+            # ho(w.slice),
+            # uart.cr(),
+            CMPI(w.slice, 0),
+            BNE(ll.cont),
+            uart.cr(),
+            ho(w.counter),
+            uart.sp(),
+            uart.colon(),
+            uart.sp(),
+            ll("cont"),
+            ho(w.value),
+            uart.sp(),
+            ADDI(w.counter, w.counter, 1),  # increment the address
+            CMP(w.counter, w.endpoint),
+            BNE(ll.dumper),
+        ]
+
+
 class UART:
     readword = ReadWord()
     writeword = WriteWord()
@@ -334,3 +394,6 @@ class UART:
     readHex = ReadHex()
     readWait = ReadWait()
     cr = CR()
+    sp = SP()
+    colon = COLON()
+    core = CoreDump()

@@ -13,15 +13,18 @@ from spork.lib.stringer import Stringer
 
 from spork.firmware.firmware import Firmware
 
-from spork.logger import logger
 
 from spork.lib.commands import MetaCommand, Command
 
+import spork.lib.base_command
 from spork.lib.banner import banner
 
 import datetime
 
+from spork.logger import logger
+
 log = logger(__name__)
+
 
 """
 An interactive console shell for the Boneless-v3 cpu"
@@ -51,12 +54,36 @@ def Init(w, reg):
     ]
 
 
-class LedON(Command):
-    pass
+# class ON(Command):
+#    class _ledon(SubR):
+#        def setup(self):
+#            self.locals = ["temp"]
+#            self.mark()
+#
+#        def instr(self):
+#            w = self.w
+#            return [
+#                MOVI(w.temp,1),
+#                STXA(w.temp, self.reg.statusled.led),
+#            ]
+#
+#    #call = _ledon()
 
 
-class LedOFF(Command):
-    pass
+# class OFF(Command):
+#    class _ledoff(SubR):
+#        def setup(self):
+#            self.locals = ["temp"]
+#            self.mark()
+#
+#        def instr(self):
+#            w = self.w
+#            return [
+#                MOVI(w.temp,0),
+#                STXA(w.temp, self.reg.statusled.led),
+#            ]
+#
+#    #call = _ledoff()
 
 
 class Bootloader(Firmware):
@@ -105,8 +132,8 @@ class Bootloader(Firmware):
         action = Action()
 
         return [
-            # Write the prelude strings
             self.globals.led(w.temp),
+            Rem("Write the prelude strings"),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),
@@ -114,17 +141,18 @@ class Bootloader(Firmware):
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
             uart.cr(),
+            Rem("Write the prompt"),
             self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
-            # load the pad address into the register
+            Rem("load the pad address into the register"),
             console.pad(w.pad_address),
             ll("loop"),
-            # get the uart status
+            Rem("get the uart status"),
             uart.read(ret=[w.incoming_word, w.status]),
-            # if the status is zero skip
+            Rem("if the status is zero skip"),
             CMPI(w.status, 0),
             BZ(ll.skip),
-            # process the keystroke
+            Rem("process the keystroke"),
             console(w.incoming_word, w.pad_address, w.status, ret=[w.status]),
             action(w.pad_address, w.status, ret=[w.status]),
             ll("skip"),

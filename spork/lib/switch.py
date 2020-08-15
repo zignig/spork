@@ -42,7 +42,7 @@ class Switch:
         data = [Rem("start of the jump table")]
         # map the values
         for i, j in enumerate(self.mapping):
-            log.debug("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
+            # log.debug("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
             data += [
                 Rem("start-" + str(j)),
                 [
@@ -54,7 +54,7 @@ class Switch:
             ]
         data += [J(ll.table_end), Rem("end of jump table")]
         for i, j in enumerate(self.mapping):
-            log.debug("trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
+            # log.debug("trace {:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
             data += [ll("{:04d}".format(i))]
             data += [self.mapping[j], J(ll.table_end)]
         data += [ll("table_end")]

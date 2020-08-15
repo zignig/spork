@@ -106,9 +106,10 @@ class TestSpork(Elaboratable):
         return m
 
 
-from echo_fw import Echo
+# from echo_fw import Echo
 from hexloader import HexLoader
-from bootloader import Bootloader
+
+# from bootloader import Bootloader
 from nmigen.hdl.ir import UnusedElaboratable
 
 

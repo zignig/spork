@@ -75,23 +75,6 @@ class MetaCommand(type):
 
         return out
 
-    class Unbound(SubR):
-        " Unbound commands get attached to this"
-
-        def setup(self):
-            self.locals = ["tmp"]
-            self.mark()
-
-        def instr(self):
-            self.stringer.unbound = "This command is unbound."
-            w = self.w
-            return [
-                uart.cr(),
-                self.stringer.unbound(w.tmp),
-                uart.writestring(w.tmp),
-                uart.cr(),
-            ]
-
     class Run(SubR):
         " given a pointer run the command"
 
@@ -248,7 +231,7 @@ class Command(metaclass=MetaCommand):
     # with no parameters
     # TODO pass down chomped strings
 
-    call = MetaCommand.Unbound()
+    call = None
 
     def __init__(self):
         self.next = None
@@ -293,82 +276,6 @@ class Command(metaclass=MetaCommand):
             ADJW(8),
             JR(R7, 0),
         ]
-
-
-class Out(Command):
-    class outtest(SubR):
-        def setup(self):
-            self.locals = ["tmp"]
-            self.mark()
-
-        def instr(self):
-            self.stringer.hello = "this is a test"
-            w = self.w
-            return [
-                uart.cr(),
-                self.stringer.hello(w.tmp),
-                uart.writestring(w.tmp),
-                uart.cr(),
-            ]
-
-    call = outtest()
-
-
-class Warm(Command):
-    class _warmer(SubR):
-        def setup(self):
-            self.locals = ["temp"]
-            self.mark()
-
-        def instr(self):
-            reg = self.reg
-            w = self.w
-            return [
-                MOVI(w.temp, 1),
-                STXA(w.temp, reg.warm.image),
-                STXA(w.temp, reg.warm.en),
-            ]
-
-    call = _warmer()
-
-
-class _helptext(SubR):
-    def setup(self):
-        self.locals = ["tmp"]
-        self.mark()
-
-    def instr(self):
-        self.stringer.helper = """
-Please refer to 
-
-    https://github.com/zignig/spork
-
-For more information
-        """
-        w = self.w
-        return [
-            uart.cr(),
-            self.stringer.helper(w.tmp),
-            uart.writestring(w.tmp),
-            uart.cr(),
-        ]
-
-
-class Help(Command):
-    call = _helptext()
-
-
-class ShortHelp(Command):
-    name = "?"
-    call = _helptext()
-
-
-class Start(Command):
-    pass
-
-
-class HexLoader(Command):
-    name = "BL_0"
 
 
 if __name__ == "__main__":
