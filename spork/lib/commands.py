@@ -15,6 +15,8 @@ from ..logger import logger
 
 log = logger(__name__)
 
+uart = UART()
+
 # TODO , convert to radix tree ?
 
 # debugging
@@ -63,6 +65,20 @@ class MetaCommand(type):
         out.append(L("last_command"))
 
         return out
+
+    class Run(SubR):
+        " given a pointer run the command"
+
+        def setup(self):
+            self.params = ["command"]
+            self.ret = ["status"]
+            self.locals = ["tmp"]
+
+        def instr(self):
+            w = self.w
+            ll = LocalLabels()
+            self.stringer.run = "running command"
+            return [self.stringer.run(w.tmp), uart.writestring(w.tmp)]
 
     class Compare(SubR):
         "Compare string to command"
@@ -137,7 +153,6 @@ class MetaCommand(type):
             ll = LocalLabels()
             compare = MetaCommand.Compare()
             uart = UART()
-            self.stringer.found = "Found it : "
             return [
                 Rem("load the pointer of the first command"),
                 MOVR(w.current, "first_command"),
@@ -156,10 +171,12 @@ class MetaCommand(type):
                 Rem("Are we at the end"),
                 CMP(w.current, w.end),
                 BNE(ll.again),
-                J(ll.exit),
+                J(ll.fail),
                 ll("found"),
-                self.stringer.found(w.tmp),
-                uart.writestring(w.tmp),
+                MOVI(w.status, 1),
+                J(ll.exit),
+                ll("fail"),
+                MOVI(w.status, 0),
                 ll("exit"),
             ]
 

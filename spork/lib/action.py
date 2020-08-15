@@ -22,7 +22,7 @@ class Action(SubR):
     # Actions from the console
     def setup(self):
         self.params = ["pad_address", "status"]
-        self.locals = ["temp"]
+        self.locals = ["temp", "command"]
         self.ret = ["status"]
 
     def build(self):
@@ -36,15 +36,29 @@ class Action(SubR):
         uart = UART()
         List = MetaCommand.List()
         Search = MetaCommand.Search()
+        Run = MetaCommand.Run()
         # make a CASE style selection
         sel = self.selector
+        self.stringer.runner = "@ run ->> "
+        self.stringer.notfound = "Command not found "
         sel.add(
             (
                 Actions.RUN,  # CR for now
                 [
                     Rem("Just echo out the pad"),
                     uart.cr(),
-                    Search(w.pad_address),
+                    Search(w.pad_address, ret=[w.status, w.command]),
+                    CMPI(w.status, 1),
+                    BNE(ll.skip),
+                    uart.writeHex(w.command),
+                    self.stringer.runner(w.temp),
+                    uart.writestring(w.temp),
+                    Run(w.command),
+                    J(ll.cont),
+                    ll("skip"),
+                    self.stringer.notfound(w.temp),
+                    uart.writestring(w.temp),
+                    ll("cont"),
                     uart.writestring(w.pad_address),
                     MOVI(w.status, 0),
                     Rem("Reset the pad"),
