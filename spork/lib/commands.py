@@ -112,6 +112,7 @@ class MetaCommand(type):
                 Rem("find and run the command"),
                 Rem("Current points to the top of the command"),
                 Rem("Add 1 for string pointer"),
+                # TODO , restructure the headers
                 ADDI(w.current, w.current, 1),
                 Rem("Get the string lengths"),
                 LD(w.com_len, w.command, 0),
