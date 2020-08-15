@@ -10,6 +10,7 @@ from boneless.arch.instr import Instr
 
 from ..lib.stringer import Stringer
 from ..lib.globals import Globals
+from ..lib.commands import Command
 
 
 class Firmware:
@@ -34,12 +35,16 @@ class Firmware:
         # attach the io_map to all the subroutines
         SubR.reg = self.reg
         Inline.reg = self.reg
+        Command.reg = self.reg
 
         # attach global string to other
         SubR.stringer = self.stringer
         Inline.stringer = self.stringer
+        Command.stringer = self.stringer
+
         SubR.globals = gl
         Inline.globals = gl
+        Command.globals = gl
 
         # code objects
         self.obj = []

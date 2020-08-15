@@ -51,6 +51,14 @@ def Init(w, reg):
     ]
 
 
+class LedON(Command):
+    pass
+
+
+class LedOFF(Command):
+    pass
+
+
 class Bootloader(Firmware):
     LOADER_ID = "ZIG_0"
 

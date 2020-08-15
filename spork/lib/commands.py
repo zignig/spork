@@ -7,7 +7,11 @@ from boneless.arch.opcode import *
 from .uartIO import UART
 
 from ..firmware.base import *
+
 from .stringer import SingleString
+from .warm import WarmBoot
+
+wb = WarmBoot()
 
 from rich import print
 
@@ -26,6 +30,7 @@ def r(val):
 
 class MetaCommand(type):
     commands = []
+    names = []
     """
     Meta Command is a class for collecting all the commands together
     """
@@ -37,12 +42,16 @@ class MetaCommand(type):
 
     def register(cls):
         d = MetaCommand.commands
+        name = cls.__qualname__
+        names = MetaCommand.names
         if cls.__qualname__ == "Command":
             # Don't add root subclass
             return
-        if cls not in d:
-            log.debug("ADD COMMAND %s", cls.__qualname__)
+        log.debug(names)
+        if name not in names:
+            log.debug("ADD COMMAND %s", name)
             d.append(cls())
+            names.append(name)
 
     @classmethod
     def code(cls):
@@ -65,6 +74,23 @@ class MetaCommand(type):
         out.append(L("last_command"))
 
         return out
+
+    class Unbound(SubR):
+        " Unbound commands get attached to this"
+
+        def setup(self):
+            self.locals = ["tmp"]
+            self.mark()
+
+        def instr(self):
+            self.stringer.unbound = "This command is unbound."
+            w = self.w
+            return [
+                uart.cr(),
+                self.stringer.unbound(w.tmp),
+                uart.writestring(w.tmp),
+                uart.cr(),
+            ]
 
     class Run(SubR):
         " given a pointer run the command"
@@ -148,7 +174,6 @@ class MetaCommand(type):
 
     class Search(SubR):
         "search for a given command and return a pointer"
-        __unfinished = True
 
         def setup(self):
             self.params = ["command"]
@@ -218,6 +243,13 @@ class MetaCommand(type):
 
 
 class Command(metaclass=MetaCommand):
+    " Define a command and add it to the metacommand list"
+    # just has a subroutine that it points to
+    # with no parameters
+    # TODO pass down chomped strings
+
+    call = MetaCommand.Unbound()
+
     def __init__(self):
         self.next = None
         self.post_fix = "_comm"
@@ -244,73 +276,94 @@ class Command(metaclass=MetaCommand):
         return relocate
 
     def instr(self):
-        return []
+        if self.call == None:
+            return []
+        else:
+            s = self.call()
+            return s
 
     def code(self):
         return [
             L(self.label),
             self.ref(self.next),
             self.commname.as_mem(),
+            ADJW(-8),
+            LDW(R6, 0),
             self.instr(),
+            ADJW(8),
             JR(R7, 0),
         ]
 
 
-class LedON(Command):
-    def instr(self):
-        return []
+class Out(Command):
+    class outtest(SubR):
+        def setup(self):
+            self.locals = ["tmp"]
+            self.mark()
 
+        def instr(self):
+            self.stringer.hello = "this is a test"
+            w = self.w
+            return [
+                uart.cr(),
+                self.stringer.hello(w.tmp),
+                uart.writestring(w.tmp),
+                uart.cr(),
+            ]
 
-class LedOFF(Command):
-    pass
-
-
-class Reboot(Command):
-    def instr(self):
-        return [J("init")]
-
-
-class Timer(Command):
-    pass
+    call = outtest()
 
 
 class Warm(Command):
-    pass
+    class _warmer(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            reg = self.reg
+            w = self.w
+            return [
+                MOVI(w.temp, 1),
+                STXA(w.temp, reg.warm.image),
+                STXA(w.temp, reg.warm.en),
+            ]
+
+    call = _warmer()
 
 
-class Load(Command):
-    pass
+class _helptext(SubR):
+    def setup(self):
+        self.locals = ["tmp"]
+        self.mark()
 
+    def instr(self):
+        self.stringer.helper = """
+Please refer to 
 
-class Save(Command):
-    pass
+    https://github.com/zignig/spork
 
-
-class List(Command):
-    pass
-
-
-class Demo(Command):
-    pass
+For more information
+        """
+        w = self.w
+        return [
+            uart.cr(),
+            self.stringer.helper(w.tmp),
+            uart.writestring(w.tmp),
+            uart.cr(),
+        ]
 
 
 class Help(Command):
-    pass
+    call = _helptext()
 
 
 class ShortHelp(Command):
     name = "?"
+    call = _helptext()
 
 
 class Start(Command):
-    pass
-
-
-class Stop(Command):
-    pass
-
-
-class Export(Command):
     pass
 
 

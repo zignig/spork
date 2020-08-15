@@ -1,4 +1,4 @@
-"Console"
+"Actions to run on the console"
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -19,7 +19,8 @@ from rich import print
 
 
 class Action(SubR):
-    # Actions from the console
+    " Action switch from the console status"
+
     def setup(self):
         self.params = ["pad_address", "status"]
         self.locals = ["temp", "command"]
@@ -39,20 +40,25 @@ class Action(SubR):
         Run = MetaCommand.Run()
         # make a CASE style selection
         sel = self.selector
-        self.stringer.runner = "@ run ->> "
-        self.stringer.notfound = "Command not found "
+        self.stringer.notfound = "Command not found :"
         sel.add(
             (
                 Actions.RUN,  # CR for now
                 [
-                    Rem("Just echo out the pad"),
+                    Rem("Search for a matching command and run"),
+                    Rem("Check for empty command"),
+                    LD(w.temp, w.pad_address, 0),
+                    CMPI(w.temp, 0),
+                    BZ(ll.cont),
                     uart.cr(),
                     Search(w.pad_address, ret=[w.status, w.command]),
                     CMPI(w.status, 1),
                     BNE(ll.skip),
                     # uart.writeHex(w.command),
-                    self.stringer.runner(w.temp),
-                    uart.writestring(w.temp),
+                    Rem("Reset the pad"),
+                    MOVI(w.status, 0),
+                    ST(w.status, w.pad_address, 0),
+                    Rem("Found a command run"),
                     Run(w.command),
                     J(ll.cont),
                     ll("skip"),
@@ -60,8 +66,8 @@ class Action(SubR):
                     uart.writestring(w.temp),
                     ll("cont"),
                     uart.writestring(w.pad_address),
-                    MOVI(w.status, 0),
                     Rem("Reset the pad"),
+                    MOVI(w.status, 0),
                     ST(w.status, w.pad_address, 0),
                     uart.cr(),
                     self.stringer.prompt(self.w.temp),
@@ -72,10 +78,25 @@ class Action(SubR):
         sel.add(
             (
                 Actions.ESCAPE,  # escape sequence
-                [self.stringer.escape(w.temp), uart.writestring(w.temp)],
+                [
+                    Rem("write the escape sequence"),
+                    self.stringer.escape(w.temp),
+                    uart.writestring(w.temp),
+                ],
             )
         )
-        sel.add((Actions.COMPLETE, [List(), uart.cr()]))  # complete
+        sel.add(
+            (
+                Actions.COMPLETE,  # tab complete
+                [
+                    Rem("list all commands"),
+                    List(),
+                    self.stringer.prompt(self.w.temp),
+                    uart.writestring(self.w.temp),
+                    uart.writestring(w.pad_address),
+                ],
+            )
+        )  # complete
         return [sel()]
 
 
