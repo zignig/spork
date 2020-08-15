@@ -67,6 +67,8 @@ class PeripheralCollection(Elaboratable):
         if not self._built:
             log.debug("Building Peripheral Collection")
             # bind and add the bus if the device does not have one
+            # TODO this makes a double decoder
+            # rip it out for a single bridge
             for i in self.devices:
                 try:
                     self._decoder.add(i.bus)

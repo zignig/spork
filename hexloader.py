@@ -11,6 +11,10 @@ from spork.firmware import Firmware
 
 from spork.lib.uartIO import UART
 
+from spork.logger import logger
+
+log = logger(__name__)
+
 
 class CoreDump(SubR):
     " not used , move to util "
@@ -49,6 +53,8 @@ class HexLoader(Firmware):
         CheckSum
 
     """
+
+    log.critical("search for bootloader ID")
 
     def setup(self):
         # Define the registers used in this firmware "

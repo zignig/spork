@@ -52,7 +52,7 @@ def Init(w, reg):
 
 
 class Bootloader(Firmware):
-    LOADER_ID = "ZIG_0.0"
+    LOADER_ID = "ZIG_0"
 
     # TODO check requirements
     requires = ["timer", "uart", "crc", "led"]

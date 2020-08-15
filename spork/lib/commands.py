@@ -134,7 +134,7 @@ class Command(metaclass=MetaCommand):
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-        self.commname = SingleString(self.name, self.name.lower(), "", compact=False)
+        self.commname = SingleString(self.name, self.name, "", compact=False)
 
     def __repr__(self):
         t = self.label + " --> "
