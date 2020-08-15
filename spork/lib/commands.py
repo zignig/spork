@@ -64,36 +64,103 @@ class MetaCommand(type):
 
         return out
 
+    class Compare(SubR):
+        "Compare string to command"
+
+        def setup(self):
+            self.params = ["command", "current"]
+            self.ret = ["status"]
+            self.locals = ["com_len", "temp2", "temp"]
+
+        def instr(self):
+            w = self.w
+            ll = LocalLabels()
+            uart = UART()
+            return [
+                Rem("find and run the command"),
+                Rem("Current points to the top of the command"),
+                Rem("Add 1 for string pointer"),
+                ADDI(w.current, w.current, 1),
+                Rem("Get the string lengths"),
+                LD(w.com_len, w.command, 0),
+                LD(w.temp, w.current, 0),
+                Rem("compare lengths"),
+                CMP(w.com_len, w.temp),
+                BNE(ll.fail),
+                Rem("Lengths Match, search through chars"),
+                # uart.writestring(w.current),
+                # uart.cr(),
+                # uart.writestring(w.command),
+                # uart.cr(),
+                Rem("reuse status as counter"),
+                MOVI(w.status, 1),
+                Rem("Advance to the first char"),
+                ADDI(w.command, w.command, 1),
+                ADDI(w.current, w.current, 1),
+                ll("scan"),
+                Rem("load the chars"),
+                LD(w.temp, w.command, 0),
+                LD(w.temp2, w.current, 0),
+                Rem("Check the chars"),
+                CMP(w.temp, w.temp2),
+                BNE(ll.fail),
+                Rem("Are we at the end?"),
+                CMP(w.status, w.com_len),
+                BEQ(ll.cont),
+                Rem("Advance the counters"),
+                ADDI(w.command, w.command, 1),
+                ADDI(w.current, w.current, 1),
+                ADDI(w.status, w.status, 1),
+                Rem("Check next char"),
+                J(ll.scan),
+                ll("cont"),
+                Rem("got to the end without failing"),
+                MOVI(w.status, 1),
+                J(ll.exit),
+                ll("fail"),
+                Rem("No match"),
+                MOVI(w.status, 0),
+                ll("exit"),
+            ]
+
     class Search(SubR):
         "search for a given command and return a pointer"
         __unfinished = True
 
         def setup(self):
-            self.params = ["command", "status"]
-            self.ret = ["status"]
-            self.locals = ["start", "end", "count"]
+            self.params = ["command"]
+            self.ret = ["status", "current"]
+            self.locals = ["end", "incr", "tmp"]
 
         def instr(self):
             w = self.w
             ll = LocalLabels()
+            compare = MetaCommand.Compare()
+            uart = UART()
+            self.stringer.found = "Found it : "
             return [
                 Rem("load the pointer of the first command"),
-                MOVR(w.start, "first_command"),
+                MOVR(w.current, "first_command"),
                 Rem("Load the end of the commands"),
                 MOVR(w.end, "last_command"),
                 Rem("Load the string of the current command"),
                 ll("again"),
-                Rem("Move to the start of the string"),
-                ADDI(w.current, w.start, 1),
-                Rem("Write the string"),
-                uart.writestring(w.current),
-                uart.cr(),
+                Rem("compare the commands"),
+                compare(w.command, w.current, ret=[w.status]),
+                CMPI(w.status, 1),
+                BEQ(ll.found),
+                Rem("contains the length to the next command"),
+                LD(w.incr, w.current, 0),
                 Rem("Jump to the next command"),
-                LD(w.incr, w.start, 0),
-                ADD(w.start, w.start, w.incr),
+                ADD(w.current, w.current, w.incr),
                 Rem("Are we at the end"),
-                CMP(w.start, w.end),
+                CMP(w.current, w.end),
                 BNE(ll.again),
+                J(ll.exit),
+                ll("found"),
+                self.stringer.found(w.tmp),
+                uart.writestring(w.tmp),
+                ll("exit"),
             ]
 
     class List(SubR):

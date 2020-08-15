@@ -35,6 +35,7 @@ class Action(SubR):
         ll = LocalLabels()
         uart = UART()
         List = MetaCommand.List()
+        Search = MetaCommand.Search()
         # make a CASE style selection
         sel = self.selector
         sel.add(
@@ -43,6 +44,7 @@ class Action(SubR):
                 [
                     Rem("Just echo out the pad"),
                     uart.cr(),
+                    Search(w.pad_address),
                     uart.writestring(w.pad_address),
                     MOVI(w.status, 0),
                     Rem("Reset the pad"),
