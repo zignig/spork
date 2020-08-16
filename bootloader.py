@@ -10,7 +10,7 @@ from spork.lib.uartIO import UART
 from spork.lib.console import Console
 from spork.lib.action import Action
 from spork.lib.stringer import Stringer
-
+from spork.lib.ansi_codes import AnsiStrings
 from spork.firmware.firmware import Firmware
 
 
@@ -120,6 +120,7 @@ class Bootloader(Firmware):
         st.prompt = self.LOADER_ID + ">"
         st.date = str(datetime.datetime.now()) + "\r\n"
         st.backspace = "<BS>"
+        AnsiStrings(st)
 
         self.globals.led = 0
 
@@ -129,6 +130,8 @@ class Bootloader(Firmware):
         return [
             self.globals.led(w.temp),
             Rem("Write the prelude strings"),
+            self.stringer.cls(w.temp),
+            uart.writestring(w.temp),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),

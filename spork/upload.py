@@ -2,7 +2,7 @@
 
 
 from itertools import zip_longest
-from serial.tools import miniterm
+from serial.tools.miniterm import Miniterm
 import serial
 import time
 
@@ -68,4 +68,9 @@ class Uploader:
                 #    print('.',end="")
                 self.ser.write(data)
             if console:
-                miniterm.main(self.port, self.baud)
+                term = Miniterm(self.ser)
+                term.set_rx_encoding("utf-8")
+                term.set_tx_encoding("utf-8")
+                term.exit_character = "\x1d"
+                term.start()
+                term.join(True)
