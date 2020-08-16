@@ -78,11 +78,10 @@ class _helptext(SubR):
 
     def instr(self):
         self.stringer.helper = """
-Please refer to 
-
-    https://github.com/zignig/spork
-
-For more information
+<tab> List commands
+^C reset
+^D warmboot into the bootloader
+refer to https://github.com/zignig/spork/
         """
         w = self.w
         return [

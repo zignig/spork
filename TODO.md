@@ -1,0 +1,2 @@
+- [ ] Fixwarm boot selector
+- [ ] HexLoader needs : checksum , modes and header
