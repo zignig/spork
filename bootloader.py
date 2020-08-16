@@ -54,36 +54,30 @@ def Init(w, reg):
     ]
 
 
-# class ON(Command):
-#    class _ledon(SubR):
-#        def setup(self):
-#            self.locals = ["temp"]
-#            self.mark()
-#
-#        def instr(self):
-#            w = self.w
-#            return [
-#                MOVI(w.temp,1),
-#                STXA(w.temp, self.reg.statusled.led),
-#            ]
-#
-#    #call = _ledon()
+class ON(Command):
+    class _ledon(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            return [MOVI(w.temp, 1), STXA(w.temp, self.reg.statusled.led)]
+
+    call = _ledon()
 
 
-# class OFF(Command):
-#    class _ledoff(SubR):
-#        def setup(self):
-#            self.locals = ["temp"]
-#            self.mark()
-#
-#        def instr(self):
-#            w = self.w
-#            return [
-#                MOVI(w.temp,0),
-#                STXA(w.temp, self.reg.statusled.led),
-#            ]
-#
-#    #call = _ledoff()
+class OFF(Command):
+    class _ledoff(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            return [MOVI(w.temp, 0), STXA(w.temp, self.reg.statusled.led)]
+
+    call = _ledoff()
 
 
 class Bootloader(Firmware):

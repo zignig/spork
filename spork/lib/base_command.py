@@ -23,6 +23,17 @@ class Dump(Command):
     call = _dump()
 
 
+class Reset(Command):
+    class _reset(SubR):
+        def setup(self):
+            self.mark()
+
+        def instr(self):
+            return [J("init")]
+
+    call = _reset()
+
+
 class Out(Command):
     class outtest(SubR):
         def setup(self):

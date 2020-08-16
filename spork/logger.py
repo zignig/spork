@@ -11,7 +11,7 @@ fomattingter = logging.Formatter(
 # fomattingter = logging.Formatter( fmt="%(asctime)s - %(levelname)s %(name)s.%(funcName)s - %(message)s")
 
 handler = logging.StreamHandler(sys.stdout)
-# handler.setFormatter(fomattingter)
+handler.setFormatter(fomattingter)
 root_logger = logging.getLogger()
 root_logger.addHandler(RichHandler())
 root_logger.setLevel(log_level)
