@@ -87,6 +87,12 @@ class Action(SubR):
         )
         sel.add(
             (
+                Actions.BACKSPACE,  # escape sequence
+                [self.stringer.backspace(w.temp), uart.writestring(w.temp)],
+            )
+        )
+        sel.add(
+            (
                 Actions.COMPLETE,  # tab complete
                 [
                     Rem("list all commands"),
@@ -96,7 +102,7 @@ class Action(SubR):
                     uart.writestring(w.pad_address),
                 ],
             )
-        )  # complete
+        )
         return [sel()]
 
 

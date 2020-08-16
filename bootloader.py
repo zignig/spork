@@ -125,6 +125,7 @@ class Bootloader(Firmware):
         st.banner = banner.encode("utf-8")
         st.prompt = self.LOADER_ID + ">"
         st.date = str(datetime.datetime.now()) + "\r\n"
+        st.backspace = "<BS>"
 
         self.globals.led = 0
 

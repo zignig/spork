@@ -11,3 +11,4 @@ class Actions(IntEnum):
     ESCAPE_1 = auto()
     ESCAPE_2 = auto()
     COMPLETE = auto()
+    BACKSPACE = auto()

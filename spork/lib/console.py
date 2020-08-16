@@ -42,9 +42,12 @@ class CharPad(CodeObject):
 
         def instr(self):
             w = self.w
+            ll = LocalLabels()
             return [
                 Rem("Copy the length"),
                 LD(w.length, w.pad_address, 0),
+                CMPI(w.length, 64),
+                BGTU(ll.exit),
                 Rem("Add the length to the address"),
                 # MOVI(w.target_address,1),
                 ADD(w.target_address, w.pad_address, w.length),
@@ -53,6 +56,7 @@ class CharPad(CodeObject):
                 Rem("Offset to the next char slot"),
                 ADDI(w.length, w.length, 1),
                 ST(w.length, w.pad_address, 0),
+                ll("exit"),
             ]
 
     # Split a char pad on space and remove from the source
@@ -138,6 +142,7 @@ class Console(SubR):
         List = MetaCommand.List()
         # make a CASE style selection
         sel = self.selector
+        sel.add((8, [MOVI(w.status, Actions.BACKSPACE)]))  # backspace
         sel.add((9, [MOVI(w.status, Actions.COMPLETE)]))  # horizontal tab
         # CR does prompt for now
         sel.add((13, [MOVI(w.status, Actions.RUN)]))  # enter

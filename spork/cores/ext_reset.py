@@ -52,6 +52,8 @@ class ExternalReset(Elaboratable):
                     # save the new state
                     m.d.sync += current.eq(self.pin)
                     m.next = "COUNT"
+                with m.If(counter == self.timeout):
+                    m.next = "CHOOSE"
 
             with m.State("COUNT"):
                 # count the toggles
