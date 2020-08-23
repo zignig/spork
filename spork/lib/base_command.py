@@ -23,6 +23,20 @@ class Dump(Command):
     call = _dump()
 
 
+class JumpToBootloader(Command):
+    name = "BL_0"
+    case = True
+
+    class _bl(SubR):
+        def setup(self):
+            self.mark()
+
+        def instr(self):
+            return [MOVI(R0, 0), JR(R0, 0)]
+
+    call = _bl()
+
+
 class Reset(Command):
     class _reset(SubR):
         def setup(self):
@@ -81,6 +95,7 @@ class _helptext(SubR):
 <tab> List commands
 ^C reset
 ^D warmboot into the bootloader
+
 refer to https://github.com/zignig/spork/
         """
         w = self.w

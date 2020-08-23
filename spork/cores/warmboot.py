@@ -24,6 +24,7 @@ class warmboot(Elaboratable):
             i_S0=image_internal[0],
             i_BOOT=boot_internal,
         )
+        # TODO fix the internal selector
         m.d.comb += [
             image_internal.eq(Mux(self.select, self.ext_image, self.image)),
             boot_internal.eq(Mux(self.select, self.ext_boot, self.boot)),

@@ -46,7 +46,7 @@ class Uploader:
         self.ser.dtr = 1
         time.sleep(0.8)
 
-    def upload(self, firmware, console=True):
+    def upload(self, firmware, console=True, reset=True):
         import argparse
 
         parser = argparse.ArgumentParser()
@@ -56,17 +56,19 @@ class Uploader:
         args = parser.parse_args()
         if args.list:
             print(firmware.fw.code())
+            print(firmware.fw.reg.show())
         else:
-            self.toggle(4)
-            self.hex_blob = firmware.hex_blob
-            self.ser.readall()  # clear out the buffer
-            counter = 0
-            for i in grouper(self.hex_blob, 4):
-                data = "".join(i).encode()
-                # counter += 1
-                # if counter % 4 == 0:
-                #    print('.',end="")
-                self.ser.write(data)
+            if reset:
+                self.toggle(4)
+                self.hex_blob = firmware.hex_blob
+                self.ser.readall()  # clear out the buffer
+                counter = 0
+                for i in grouper(self.hex_blob, 4):
+                    data = "".join(i).encode()
+                    # counter += 1
+                    # if counter % 4 == 0:
+                    #    print('.',end="")
+                    self.ser.write(data)
             if console:
                 term = Miniterm(self.ser)
                 term.set_rx_encoding("utf-8")

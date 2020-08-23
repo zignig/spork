@@ -15,10 +15,23 @@ uart = UART
 from rich import print
 
 
+class Term(SubR):
+    def setup(self):
+        self.params = ["string"]
+        self.locals = ["escape", "temp"]
+
+    def instr(self):
+        w = self.w
+        return [
+            self.stringer.a_esc(w.temp),
+            uart.writestring(w.temp),
+            uart.writestring(w.string),
+        ]
+
+
 def AnsiStrings(s):
-    s.a_esc = u"\u001b[".encode("utf-8")
+    s.a_esc = u"\x1b["
     # colors
-    s.cls = "\u001b[0J"
     s.black = "30m"
     s.red = "31m"
     s.green = "32m"
@@ -29,5 +42,6 @@ def AnsiStrings(s):
     s.white = "37m"
     s.creset = "0m"
     # clears
-    s.clearscreen = "0J"
+    s.clearscreen = "2J"
     s.clearline = "2K"
+    s.home = "H"

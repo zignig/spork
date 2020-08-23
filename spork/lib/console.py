@@ -46,7 +46,7 @@ class CharPad(CodeObject):
             return [
                 Rem("Copy the length"),
                 LD(w.length, w.pad_address, 0),
-                CMPI(w.length, 64),
+                CMPI(w.length, 32),
                 BGTU(ll.exit),
                 Rem("Add the length to the address"),
                 # MOVI(w.target_address,1),
@@ -109,10 +109,19 @@ class CharPad(CodeObject):
         self._used = True
         return [MOVR(register, self.name + self._postfix)]
 
+    def cursor(self, register):
+        return []
+
     def code(self):
         data = [Rem("Data Pad"), L(self.name + self._postfix), Rem("length")]
         data.extend([0] * self.length)
-        data += [Rem("total_length"), [self.length], Rem("cursor"), [0]]
+        data += [
+            Rem("total_length"),
+            [self.length],
+            L("cursor" + self._postfix),
+            Rem("cursor"),
+            [0],
+        ]
         return data
 
 

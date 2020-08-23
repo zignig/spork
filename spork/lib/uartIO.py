@@ -46,10 +46,11 @@ class ReadHex(SubR):
             SUBI(w.repeat, w.repeat, 1),  # decrement the counter
             CMPI(w.repeat, 0),  # check the counter
             BNE(ll.again),
-            # Set the status to 1
+            # Set the status to 0
             MOVI(w.status, 0),
             J(ll.out),
             ll("err"),
+            # Set the status to 1
             MOVI(w.status, 1),
             ll("out"),
         ]
@@ -108,7 +109,7 @@ class ReadWait(SubR):
             ll("wait"),
             LDXA(w.status, reg.serial.rx.rdy),
             CMPI(w.status, 0),
-            BEQ(ll.wait),  # skip if not ready
+            BEQ(ll.wait),  # wait if not ready
             # Load the char
             LDXA(w.value, reg.serial.rx.data),
         ]
@@ -194,7 +195,6 @@ class SP(SubR):
 class WriteString(SubR):
     """ Write a string to the uart
         Strings are pascal style with the length as the first word
-        TODO,  deal with compact strings
     """
 
     def setup(self):
@@ -359,7 +359,7 @@ class CoreDump(SubR):
         return [
             Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
-            MOVI(w.endpoint, 2048),  # TODO share full mem size into SubR
+            MOVR(w.endpoint, "program_start"),  # TODO share full mem size into SubR
             ll("dumper"),
             Rem("current address"),
             LD(w.value, w.counter, 0),  # load the data from the address
