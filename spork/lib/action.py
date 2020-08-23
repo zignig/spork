@@ -10,12 +10,15 @@ from .switch import Switch
 from .uartIO import UART
 from .action_list import Actions
 from .commands import MetaCommand
+from .ansi_codes import Term
 
 from ..logger import logger
 
 log = logger(__name__)
 
 from rich import print
+
+term = Term()
 
 
 class Action(SubR):
@@ -43,7 +46,7 @@ class Action(SubR):
         self.stringer.notfound = "Command not found :"
         sel.add(
             (
-                Actions.RUN,  # CR for now
+                Actions.RUN,  # find a command if any and run.
                 [
                     Rem("Search for a matching command and run"),
                     Rem("Check for empty command"),
@@ -88,7 +91,14 @@ class Action(SubR):
         sel.add(
             (
                 Actions.BACKSPACE,  # escape sequence
-                [self.stringer.backspace(w.temp), uart.writestring(w.temp)],
+                [
+                    self.stringer.backspace(w.temp),
+                    uart.writestring(w.temp),
+                    # self.stringer.clearline(w.temp),
+                    # term(w.temp),
+                    # self.stringer.start(w.temp),
+                    # term(w.temp),
+                ],
             )
         )
         sel.add(

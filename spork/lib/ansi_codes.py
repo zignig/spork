@@ -45,3 +45,5 @@ def AnsiStrings(s):
     s.clearscreen = "2J"
     s.clearline = "2K"
     s.home = "H"
+    # moves
+    s.start = "999D"
