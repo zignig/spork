@@ -124,6 +124,7 @@ class Bootloader(Firmware):
         term = Term()
 
         self.globals.led = 0
+        self.globals.cursor = 0
 
         console = Console()
         action = Action()
@@ -131,10 +132,6 @@ class Bootloader(Firmware):
         return [
             self.globals.led(w.temp),
             Rem("Write the prelude strings"),
-            self.stringer.clearscreen(w.temp),
-            term(w.temp),
-            self.stringer.home(w.temp),
-            term(w.temp),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),
             self.stringer.date(w.temp),

@@ -4,11 +4,13 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 from .commands import Command
+from .ansi_codes import Term
 from ..firmware.base import *
 
 from .uartIO import UART
 
 uart = UART()
+term = Term()
 
 
 class Dump(Command):
@@ -21,6 +23,26 @@ class Dump(Command):
             return [uart.cr(), uart.core(), uart.cr()]
 
     call = _dump()
+
+
+class ClearScreen(Command):
+    name = "cls"
+
+    class _cls(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            return [
+                self.stringer.clearscreen(w.temp),
+                term(w.temp),
+                self.stringer.home(w.temp),
+                term(w.temp),
+            ]
+
+    call = _cls()
 
 
 class JumpToBootloader(Command):
