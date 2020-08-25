@@ -359,7 +359,7 @@ class CoreDump(SubR):
         return [
             Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
-            MOVR(w.endpoint, "program_start"),  # TODO share full mem size into SubR
+            MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
             ll("dumper"),
             Rem("current address"),
             LD(w.value, w.counter, 0),  # load the data from the address

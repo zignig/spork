@@ -333,10 +333,10 @@ class MetaSub(type):
                     c.append(i.code())
             if len(old_c) == len(c):
                 break
-        log.info("Working subroutiness ")
+        log.info("Working subroutines")
         for i in li:
             if i._called:
-                log.info("\tSubR %s ", i.name)
+                log.info("\t  - %s ", i.name)
         return c
 
 

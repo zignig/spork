@@ -85,6 +85,29 @@ class Reset(Command):
     call = _reset()
 
 
+class Demo(Command):
+    class _demo(SubR):
+        " turn this into a fancy demo"
+
+        def setup(self):
+            self.locals = ["tmp"]
+            self.mark()
+
+        def instr(self):
+            self.stringer.demo = (
+                "This is actually a really fancy ANSI demo, no really..."
+            )
+            w = self.w
+            return [
+                uart.cr(),
+                self.stringer.demo(w.tmp),
+                uart.writestring(w.tmp),
+                uart.cr(),
+            ]
+
+    call = _demo()
+
+
 class Out(Command):
     class outtest(SubR):
         def setup(self):

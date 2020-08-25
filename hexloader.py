@@ -63,7 +63,7 @@ class HexLoader(Firmware):
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
             Rem("Load the memory"),
-            MOVR(w.address, "program_start"),
+            MOVR(w.address, "end_of_data"),
             ll("loop"),
             rh(ret=[w.value, w.status]),
             CMPI(w.status, 1),  # error
@@ -86,10 +86,10 @@ class HexLoader(Firmware):
             MOVI(R3, 0),
             MOVI(R4, 0),
             MOVI(R5, 0),
-            MOVR(w.address, "program_start"),
+            MOVR(w.address, "end_of_data"),
             MOVI(w.fp, self.sw - 8),
             STW(w.fp),
-            J("program_start"),
+            J("end_of_data"),
             ll("err"),
             MOVI(w.char, 33),  # ! for error
             wc(w.char),

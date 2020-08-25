@@ -87,7 +87,7 @@ class Firmware:
                 self.extra(),
                 Rem("--- Data Objects ---"),
                 CodeObject.get_code(),
-                L("program_start"),
+                L("end_of_data"),
             ]
             self._built = True
             self.fw = fw

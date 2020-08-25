@@ -50,7 +50,7 @@ def Init(w, reg):
         MOVI(w.temp, 1),
         STXA(w.temp, reg.crc.reset),
         Rem("Move the start pointer into register for later jumpage"),
-        MOVR(w.address, "program_start"),
+        MOVR(w.address, "end_of_data"),
     ]
 
 
