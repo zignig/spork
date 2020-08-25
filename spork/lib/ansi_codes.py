@@ -47,3 +47,5 @@ def AnsiStrings(s):
     s.home = "H"
     # moves
     s.start = "999D"
+    # move bottom right
+    s.br = "999;999H"

@@ -25,6 +25,21 @@ class Dump(Command):
     call = _dump()
 
 
+class ClearLine(Command):
+    name = "cl"
+
+    class _cl(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            return [self.stringer.br(w.temp), term(w.temp)]
+
+    call = _cl()
+
+
 class ClearScreen(Command):
     name = "cls"
 
@@ -117,6 +132,7 @@ class _helptext(SubR):
 <tab> List commands
 ^C reset
 ^D warmboot into the bootloader
+^] exit shell
 
 refer to https://github.com/zignig/spork/
         """
