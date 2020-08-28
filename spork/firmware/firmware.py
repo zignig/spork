@@ -83,10 +83,10 @@ class Firmware:
                 J("main"),
                 Rem("--- Library Code ---"),
                 MetaSub.code(),
-                Rem("--- Extra Code ---"),
-                self.extra(),
                 Rem("--- Data Objects ---"),
                 CodeObject.get_code(),
+                Rem("--- Extra Code ---"),
+                self.extra(),
                 L("end_of_data"),
             ]
             self._built = True

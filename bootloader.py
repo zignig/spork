@@ -13,10 +13,12 @@ from spork.lib.stringer import Stringer
 from spork.lib.ansi_codes import AnsiStrings, Term
 from spork.firmware.firmware import Firmware
 
-
 from spork.lib.commands import MetaCommand, Command
 
+# these automatically get added to the firmware
 import spork.lib.base_command
+
+# TODO compress the banner, it is phat.
 from spork.lib.banner import banner
 
 import datetime
@@ -58,12 +60,15 @@ class ON(Command):
     class _ledon(SubR):
         def setup(self):
             self.locals = ["temp"]
+            # mark the SubR so it is included without
+            # being called
             self.mark()
 
         def instr(self):
             w = self.w
             return [MOVI(w.temp, 1), STXA(w.temp, self.reg.statusled.led)]
 
+    # Bind the subroutine to the code
     call = _ledon()
 
 

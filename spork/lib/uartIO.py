@@ -219,22 +219,22 @@ class WriteString(SubR):
             # Reset the counter
             MOVI(w.counter, 0),
             Rem("Check if it is a compact string"),
-            # sign bit is set?
+            Rem("sign bit is set?"),
             CMPI(w.length, 0),
             BNS(ll.lf_loop),
-            # drop the high bit
+            Rem("Set high bit to zero"),
             ANDI(w.length, w.length, 0x8000 - 1),
             Rem("Compant Strings"),
-            # strings are byte encoded
+            Rem("strings are byte encoded"),
             ll("cf_loop"),
             LD(w.value, w.address, 0),
-            # first char
+            Rem("first char"),
             SRLI(w.char, w.value, 8),
             uart_out(w.char),
             ADDI(w.counter, w.counter, 1),
             CMP(w.length, w.counter),
             BEQ(ll.exit),
-            # second char
+            Rem("second char"),
             ANDI(w.char, w.value, 0xFF),
             uart_out(w.char),
             ADDI(w.counter, w.counter, 1),

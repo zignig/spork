@@ -1,6 +1,6 @@
 # SPORK 
 
-this is some nmigen infrastructure for the Boneless-v3 gateware CPU
+This is some nmigen infrastructure for the Boneless-v3 gateware CPU
 
 TODO
 
@@ -11,3 +11,5 @@ TODO
 - [ ] Debug Symbols
 - [ ] Tree menu on commands
 - [ ] Escape code parser
+- [ ] Triple check the bootload sequence
+- [ ] Fix the warmboot fail

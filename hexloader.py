@@ -17,6 +17,7 @@ log = logger(__name__)
 
 
 class HexLoader(Firmware):
+    BOOTLOADER_ID = "BL_1"
     """
         This takes a CAPITAL hex string and loads it, and jumps to the first instruction
         

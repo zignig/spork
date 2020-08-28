@@ -55,8 +55,8 @@ class Uploader:
 
         args = parser.parse_args()
         if args.list:
-            print(firmware.fw.code())
             print(firmware.fw.reg.show())
+            print(firmware.fw.code())
         else:
             if reset:
                 self.toggle(4)

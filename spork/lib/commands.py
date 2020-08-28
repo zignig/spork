@@ -88,9 +88,9 @@ class MetaCommand(type):
             ll = LocalLabels()
             self.stringer.run = "running command"
             return [
-                self.stringer.run(w.tmp),
-                uart.writestring(w.tmp),
-                uart.writeHex(w.command),
+                # self.stringer.run(w.tmp),
+                # uart.writestring(w.tmp),
+                # uart.writeHex(w.command),
                 Rem("Get the execute pointer"),
                 LD(w.tmp, w.command, 1),
                 ADD(w.exe, w.command, w.tmp),
