@@ -13,11 +13,18 @@ from ..lib.globals import Globals
 from ..lib.commands import Command
 
 
+__done__ = False
+
+
 class Firmware:
     """ 
     Firmware construct 
 
     does initialization , main loop and library code
+
+    this construct has a number of meta classes that will auto bind.
+
+    SubR , Inline  , Command and strings will attch if they are used
     """
 
     def __init__(self, reg=None, start_window=512):
@@ -60,6 +67,7 @@ class Firmware:
         return []
 
     def instr(self):
+        log.warning("There is nothing in the main loop fix instr():")
         return []
 
     def extra(self):
@@ -67,6 +75,7 @@ class Firmware:
         return []
 
     def code(self):
+        # Only build once, don't double allocate
         if not self._built:
             w = self.w = Window()
             ll = LocalLabels()
@@ -81,12 +90,16 @@ class Firmware:
                 L("main"),
                 self.instr(),
                 J("main"),
+                ll("library_code"),
                 Rem("--- Library Code ---"),
                 MetaSub.code(),
+                ll("data_objects"),
                 Rem("--- Data Objects ---"),
                 CodeObject.get_code(),
+                ll("extra_code"),
                 Rem("--- Extra Code ---"),
                 self.extra(),
+                ll("heap_start"),
                 L("end_of_data"),
             ]
             self._built = True

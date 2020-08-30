@@ -16,17 +16,20 @@ __all__ = [
     "Window",
     "MetaSub",
     "Rem",
-    "Block",
     "CodeObject",
     "Inline",
     "FWError",
 ]
 
+__done__ = False
 """
+Some text 
+
 ideas
 
 allocate variables into a register bank, break it into windows 
 limit the total number of windows and spill into ram if needed
+, it's all flat ram in the boneless , minimise EXTI...
 
 work out how to make sure that the variables are in the correct window
 for actions 
@@ -119,6 +122,7 @@ class FWError(Exception):
 
 
 class PostFix:
+    # TODO make this sequential
     _postfixes = []
 
     def __init__(self):
@@ -188,11 +192,6 @@ class Rem:
         return 'Rem("' + str(self.val) + '")'
 
 
-class Block:
-    " A Block of code "
-    pass
-
-
 class LocalLabels:
     """ Local random labels for inside subr
         create a local labeler
@@ -220,7 +219,9 @@ class LocalLabels:
 
 
 class Window:
-    " Allocatable register window "
+    """ Allocatable register window 
+    this needs to be converted for the register allocator
+    """
 
     _REGS = [R0, R1, R2, R3, R4, R5, R6, R7]
     _size = 8
@@ -324,6 +325,8 @@ class MetaSub(type):
     def code(cls):
         li = MetaSub.subroutines
         # loop through and add sub-subroutines to the list
+        # this will scan through the subs and add called subs
+        # to the list
         c = []
         while True:
             old_c = c
@@ -418,7 +421,6 @@ class SubR(metaclass=MetaSub):
 
         instr += [JAL(self.w.ret, self.name)]
 
-        # TODO fix register passing
         # This adds a code to copy registers down a window
         # if requested with a ret=[return,register] in the call
         if "ret" in kwargs:
@@ -462,6 +464,6 @@ class SubR(metaclass=MetaSub):
             data += [Rem(self.w._name)]
         data += [ADJW(-self._size)]  # window shift up
         data += [LDW(self.w.fp, 0)]  # save window
-        data += self.instr()
+        data += self.instr()  # all it's instructions
         data += [ADJW(self._size), JR(R7, 0)]  # shift window down
         return [data]

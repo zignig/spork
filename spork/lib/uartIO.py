@@ -224,7 +224,7 @@ class WriteString(SubR):
             BNS(ll.lf_loop),
             Rem("Set high bit to zero"),
             ANDI(w.length, w.length, 0x8000 - 1),
-            Rem("Compant Strings"),
+            Rem("Compact Strings"),
             Rem("strings are byte encoded"),
             ll("cf_loop"),
             LD(w.value, w.address, 0),

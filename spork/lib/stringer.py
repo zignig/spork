@@ -81,6 +81,7 @@ class SingleString:
                 else:
                     val = c
                 chars.append(val)
+        # chop the preview string
         if len(self.value) < 20:
             comment = Rem(self.value)
         else:
@@ -99,7 +100,7 @@ class Stringer(CodeObject):
 
     @property
     def _used(self):
-        " any of the string used?"
+        "Are any of the string used?"
         used = False
         for i in self._strings:
             single = self._strings[i]
@@ -109,11 +110,13 @@ class Stringer(CodeObject):
         return used
 
     def __setattr__(self, item, value):
+        # If you assign a attr it will create a string
         val = SingleString(item, value, self._postfix, self.compact)
         self._strings[item] = val
         object.__setattr__(self, item, val)
 
     def code(self):
+        # return all the strings a memory.
         string_rep = [Rem("String Construct")]
         for i in self._strings:
             single = self._strings[i]
