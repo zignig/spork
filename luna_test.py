@@ -117,9 +117,6 @@ class USBSerialDeviceExample(Elaboratable):
     def elaborate(self, platform):
         m = Module()
 
-        # Generate our domain clocks/resets.
-        m.submodules.car = platform.clock_domain_generator()
-
         # Create our USB-to-serial converter.
         ulpi = platform.request(platform.default_usb_connection)
         m.submodules.usb_serial = usb_serial = USBSerialDevice(
@@ -141,13 +138,12 @@ class USBSerialDeviceExample(Elaboratable):
 
 
 class ACMwrap(Peripheral, Elaboratable):
-    def __init__(self, tx, rx):
+    def __init__(self):
         log.info("USB acm CSR wrapper")
         super().__init__()
-        self.tx = tx
-        self.rx = rx
 
         bank = self.csr_bank()
+
         self._rx_ready = bank.csr(1, "r")
         self._rx_first = bank.csr(1, "r")
         self._rx_last = bank.csr(1, "r")
@@ -162,6 +158,21 @@ class ACMwrap(Peripheral, Elaboratable):
 
     def elaborate(self, platform):
         m = Module()
+        # The usb device
+        ulpi = platform.request(platform.default_usb_connection)
+        usb_serial = USBSerialDevice(bus=ulpi, idVendor=0x16d0, idProduct=0x0f3b)
+        m.submodules.usb_serial = usb_serial
+        # use existing loopback for now
+        m.d.comb += [
+            # Place the streams into a loopback configuration...
+            usb_serial.tx.payload.eq(usb_serial.rx.payload),
+            usb_serial.tx.valid.eq(usb_serial.rx.valid),
+            usb_serial.tx.first.eq(usb_serial.rx.first),
+            usb_serial.tx.last.eq(usb_serial.rx.last),
+            usb_serial.rx.ready.eq(usb_serial.tx.ready),
+            # ... and always connect by default.
+            usb_serial.connect.eq(1),
+        ]
         # Code here
         return m
 
@@ -175,12 +186,22 @@ class UPPER(Elaboratable):
 
     def elaborate(self, platform):
         m = Module()
-        acm = USBSerialDeviceExample()
-        m.submodules.acm = acm
+
+        # Generate our domain clocks/resets.
+        m.submodules.car = platform.clock_domain_generator()
+
+        # acm = USBSerialDeviceExample()
+        # m.submodules.acm = acm
+        acm = ACMwrap()
 
         spork = TestSpork(
             platform, uart_speed=115200, mem_size=4096, firmware=HexLoader
         )
+
+        spork.cpu.add_peripheral(acm)
+
+        spork.build()
+        spork.fw.reg.show()
 
         ts = DomainRenamer({"sync": "usb"})(spork)
         m.submodules.ts = ts

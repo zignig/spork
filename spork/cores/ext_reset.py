@@ -38,6 +38,7 @@ class ExternalReset(Elaboratable):
                 # get the current pin state
                 m.d.sync += current.eq(self.pin)
                 # reset everything
+                m.d.sync += self.select.eq(0)
                 m.d.sync += enable.eq(0)
                 m.d.sync += counter.eq(0)
                 m.d.sync += toggle_count.eq(0)
@@ -61,6 +62,7 @@ class ExternalReset(Elaboratable):
                     m.d.sync += toggle_count.eq(toggle_count + 1)
                     m.next = "NEXT"
                 with m.If(counter == self.timeout):
+                    m.d.sync += self.select.eq(1)
                     m.next = "CHOOSE"
 
             with m.State("NEXT"):
@@ -69,7 +71,6 @@ class ExternalReset(Elaboratable):
 
             with m.State("CHOOSE"):
                 # switch the warmboot to external
-                m.d.sync += self.select.eq(1)
                 # select the image count based on toggles
                 with m.Switch(toggle_count):
                     with m.Case(4):

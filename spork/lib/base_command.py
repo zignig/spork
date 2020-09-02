@@ -145,6 +145,25 @@ class Warm(Command):
     call = _warmer()
 
 
+class Prog(Command):
+    class _prog(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            self.mark()
+
+        def instr(self):
+            reg = self.reg
+            w = self.w
+            return [
+                MOVI(w.temp, 0),
+                STXA(w.temp, reg.warm.image),
+                MOVI(w.temp, 1),
+                STXA(w.temp, reg.warm.en),
+            ]
+
+    call = _prog()
+
+
 class _helptext(SubR):
     def setup(self):
         self.locals = ["tmp"]

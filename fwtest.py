@@ -42,6 +42,8 @@ class TestSpork(Elaboratable):
         self.platform = platform
         self.cpu = cpu = BonelessSpork(firmware=firmware, mem_size=mem_size)
         self.sim = sim
+        self.firmware = firmware
+        self.mem_size = mem_size
 
         # Request a uart at speed from the platform
         uart = platform.request("uart")
@@ -86,13 +88,15 @@ class TestSpork(Elaboratable):
         #    cpu.add_peripheral(warm)
 
         # build the register map
-        cpu.build()
+
+    def build(self):
+        self.cpu.build()
         # Attach the firmware
-        if firmware is not None:
-            f = firmware(self.cpu.map, start_window=mem_size)
+        if self.firmware is not None:
+            f = self.firmware(self.cpu.map, start_window=self.mem_size)
             self.fw = f
             # Sporkify it !
-            cpu.firmware(f.code())
+            self.cpu.firmware(f.code())
             self.hex_blob = f.hex()
 
     def elaborate(self, platform):
@@ -135,6 +139,7 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
     spork = TestSpork(platform, uart_speed=115200, mem_size=mem_size, sim=sim)
 
     # Build the firmware
+    spork.build()
     if detail:
         print(spork.cpu.map.show())
 

@@ -26,7 +26,7 @@ class ReadHex(SubR):
             MOVI(w.repeat, 4),
             ll("again"),
             readw(ret=w.char),  # wait for a char
-            # convert char to value
+            Rem("convert char to value"),
             CMPI(w.char, 48),  # 0 char
             BLTU(ll.err),  # out of hex range
             CMPI(w.char, 57),  # 9 char
@@ -40,7 +40,7 @@ class ReadHex(SubR):
             BLTU(ll.err),  # in the gap 0 - A
             SUBI(w.char, w.char, 55),  # make the number A - (10)
             ll("cont"),
-            # at this point the w.char register should be a number 0-15
+            Rem("at this point the w.char register should be a number 0-15"),
             SLLI(w.value, w.value, 4),  # rotate the nibble to the left.
             OR(w.value, w.value, w.char),  # insert the nibble into the value
             SUBI(w.repeat, w.repeat, 1),  # decrement the counter

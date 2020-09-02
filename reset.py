@@ -2,7 +2,7 @@
 
 import serial, time
 
-bl = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5, dsrdtr=False)
+bl = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5)  # , dsrdtr=False)
 
 
 def toggle(count):

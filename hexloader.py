@@ -17,11 +17,11 @@ log = logger(__name__)
 
 
 class HexLoader(Firmware):
-    BOOTLOADER_ID = "BL_1"
+    BOOTLOADER_ID = "BL_0"
     """
         This takes a CAPITAL hex string and loads it, and jumps to the first instruction
         
-        Format is 
+        Format is 16 bit 0000 - FFFF
 
         Length
         DATA
@@ -50,9 +50,10 @@ class HexLoader(Firmware):
         rh = serial.readHex
         # make some ASM labels that will not collide.
         ll = LocalLabels()
+
         # return an array of instructions , this has a main loop wrapped around it
         return [
-            # clean the registers, for a clean reset
+            # clean the registers, for a nice reset
             MOVI(R0, 0),
             MOVI(R1, 0),
             MOVI(R2, 0),
@@ -94,6 +95,7 @@ class HexLoader(Firmware):
             ll("err"),
             MOVI(w.char, 33),  # ! for error
             wc(w.char),
+            Rem("any error will reset the bootloader"),
         ]
 
 
