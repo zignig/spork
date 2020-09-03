@@ -163,17 +163,26 @@ class ACMwrap(Peripheral, Elaboratable):
         usb_serial = USBSerialDevice(bus=ulpi, idVendor=0x16d0, idProduct=0x0f3b)
         m.submodules.usb_serial = usb_serial
         # use existing loopback for now
+        # m.d.comb += [
+        # Place the streams into a loopback configuration...
+        #    usb_serial.tx.payload.eq(usb_serial.rx.payload),
+        #    usb_serial.tx.valid.eq(usb_serial.rx.valid),
+        #    usb_serial.tx.first.eq(usb_serial.rx.first),
+        #    usb_serial.tx.last.eq(usb_serial.rx.last),
+        #    usb_serial.rx.ready.eq(usb_serial.tx.ready),
+        #    # ... and always connect by default.
+        # ]
+        # Enable , this should be under control
+        m.d.comb += [usb_serial.connect.eq(1)]
+        # RX
         m.d.comb += [
-            # Place the streams into a loopback configuration...
-            usb_serial.tx.payload.eq(usb_serial.rx.payload),
-            usb_serial.tx.valid.eq(usb_serial.rx.valid),
-            usb_serial.tx.first.eq(usb_serial.rx.first),
-            usb_serial.tx.last.eq(usb_serial.rx.last),
-            usb_serial.rx.ready.eq(usb_serial.tx.ready),
-            # ... and always connect by default.
-            usb_serial.connect.eq(1),
+            usb_serial.rx.ready.eq(self._rx_ready.r_data),
+            self._rx_payload.r_data.eq(usb_serial.rx.payload),
+            self._rx_first.r_data.eq(usb_serial.rx.first),
+            self._rx_last.r_data.eq(usb_serial.rx.last),
+            self._rx_valid.r_data.eq(usb_serial.rx.valid),
         ]
-        # Code here
+        # TX
         return m
 
 

@@ -18,3 +18,4 @@ def toggle(count):
 toggle(2)  # bootloader
 # toggle(4) # warm boot into image
 bl.close()
+time.sleep(0.5)
