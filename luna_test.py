@@ -147,20 +147,17 @@ class ACMwrap(Peripheral, Elaboratable):
 
         bank = self.csr_bank()
 
-        self._test = bank.csr(16, "rw")
         self._enable = bank.csr(1, "w")
 
         self._rx_rdy = bank.csr(1, "r")
-        self._rx_data = bank.csr(1, "r")
+        self._rx_data = bank.csr(8, "r")
 
         self._tx_rdy = bank.csr(1, "w")
-        self._tx_data = bank.csr(1, "w")
+        self._tx_data = bank.csr(8, "w")
 
         self.depth = depth
         self._rx_fifo = SyncFIFO(width=8, depth=depth)
         self._tx_fifo = SyncFIFO(width=8, depth=depth)
-
-        self.val = Signal(16)
 
     def elaborate(self, platform):
         m = Module()
@@ -174,10 +171,7 @@ class ACMwrap(Peripheral, Elaboratable):
         m.submodules.rx_fifo = self._rx_fifo
         m.submodules.tx_fifo = self._tx_fifo
 
-        m.d.comb += self._test.r_data.eq(self.val)
-        with m.If(self._test.w_stb):
-            m.d.sync += self.val.eq(self._test.w_data)
-        # m.d.comb += usb_serial.connect.eq(1)
+        m.d.comb += usb_serial.connect.eq(1)
         # with m.If(self._enable.w_stb):
         # m.d.sync  += [usb_serial.connect.eq(self._enable.w_data)]
         #    m.d.sync  += [usb_serial.connect.eq(1)]
@@ -193,27 +187,28 @@ class ACMwrap(Peripheral, Elaboratable):
         # TX
 
         # fifod RX
-        # m.d.comb += [
-        #   # hooks the csr to the inside of the fifo
-        #    self._rx_data.r_data.eq(self._rx_fifo.r_data),
-        #    self._rx_rdy.r_data.eq(self._rx_fifo.r_rdy),
-        #    self._rx_fifo.r_en.eq(self._rx_data.r_stb),
-        #    # usb to the outside of the fifo
-        #    self._rx_fifo.w_data.eq(usb_serial.rx.payload),
-        #    self._rx_fifo.w_en.eq(usb_serial.rx.valid),
-        #    usb_serial.rx.ready.eq(self._rx_fifo.w_rdy),
-        # ]
-
-        m.d.sync += [
-            # Place the streams into a loopback configuration...
-            usb_serial.tx.payload.eq(usb_serial.rx.payload),
-            usb_serial.tx.valid.eq(usb_serial.rx.valid),
-            usb_serial.tx.first.eq(usb_serial.rx.first),
-            usb_serial.tx.last.eq(usb_serial.rx.last),
-            usb_serial.rx.ready.eq(usb_serial.tx.ready),
-            # ... and always connect by default.
-            usb_serial.connect.eq(1),
+        m.d.comb += [
+            # hooks the csr to the inside of the fifo
+            self._rx_data.r_data.eq(self._rx_fifo.r_data),
+            self._rx_rdy.r_data.eq(self._rx_fifo.r_rdy),
+            self._rx_fifo.r_en.eq(self._rx_data.r_stb),
+            # usb to the outside of the fifo
+            self._rx_fifo.w_data.eq(usb_serial.rx.payload),
+            self._rx_fifo.w_en.eq(usb_serial.rx.valid),
+            usb_serial.rx.ready.eq(self._rx_fifo.w_rdy),
         ]
+
+        # ORIGINAL LOOPBACK
+        # m.d.sync += [
+        #    # Place the streams into a loopback configuration...
+        #    usb_serial.tx.payload.eq(usb_serial.rx.payload),
+        #    usb_serial.tx.valid.eq(usb_serial.rx.valid),
+        #    usb_serial.tx.first.eq(usb_serial.rx.first),
+        #    usb_serial.tx.last.eq(usb_serial.rx.last),
+        #    usb_serial.rx.ready.eq(usb_serial.tx.ready),
+        #    # ... and always connect by default.
+        #    usb_serial.connect.eq(1),
+        # ]
         return m
 
 

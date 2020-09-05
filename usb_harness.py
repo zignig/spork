@@ -40,13 +40,14 @@ class USBHarness(Firmware):
         uart = UART()
 
         return [
-            MOVI(w.counter, 0),
             ll("loop"),
-            ADDI(w.counter, w.counter, 1),
-            STXA(w.counter, reg.acm.test),
-            LDXA(w.value, reg.acm.test),
-            uart.writeHex(w.value),
-            uart.cr(),
+            ll("wait"),
+            LDXA(w.status, reg.acm.rx.rdy),
+            # uart.writeHex(w.status),
+            CMPI(w.status, 1),
+            BNE(ll.wait),
+            LDXA(w.value, reg.acm.rx.data),
+            uart.write(w.value),
             J(ll.loop),
         ]
 
