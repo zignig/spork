@@ -152,7 +152,7 @@ class ACMwrap(Peripheral, Elaboratable):
         self._rx_rdy = bank.csr(1, "r")
         self._rx_data = bank.csr(8, "r")
 
-        self._tx_rdy = bank.csr(1, "w")
+        self._tx_rdy = bank.csr(1, "r")
         self._tx_data = bank.csr(8, "w")
 
         self.depth = depth
@@ -161,6 +161,7 @@ class ACMwrap(Peripheral, Elaboratable):
 
     def elaborate(self, platform):
         m = Module()
+        # THIS WAS MISSING (20200905) FAIL
         m.submodules.bridge = self._bridge
         # The usb device
         ulpi = platform.request(platform.default_usb_connection)
@@ -188,7 +189,7 @@ class ACMwrap(Peripheral, Elaboratable):
 
         # fifod RX
         m.d.comb += [
-            # hooks the csr to the inside of the fifo
+            # hooks the csr to the inside of the rx fifo
             self._rx_data.r_data.eq(self._rx_fifo.r_data),
             self._rx_rdy.r_data.eq(self._rx_fifo.r_rdy),
             self._rx_fifo.r_en.eq(self._rx_data.r_stb),
@@ -197,7 +198,19 @@ class ACMwrap(Peripheral, Elaboratable):
             self._rx_fifo.w_en.eq(usb_serial.rx.valid),
             usb_serial.rx.ready.eq(self._rx_fifo.w_rdy),
         ]
+        # fifod TX
+        # m.d.comb += [
+        # hooks the csr to the inside of the tx fifo
+        #    self._tx_fifo.w_data.eq(self._tx_data.w_data),
+        #    self._tx_fifo.w_en.eq(self._tx_data.w_stb),
 
+        #    self._tx_rdy.r_data.eq(self._tx_fifo.w_rdy),
+        #
+        # usb to the outside of the fifo
+        #            usb_serial.tx.payload.eq(self._tx_fifo.r_data),
+        #            usb_serial.tx.valid.eq(self._tx_fifo.r_rdy),
+        #            self._rx_fifo.r_en.eq(usb_serial.tx.ready)
+        #        ]
         # ORIGINAL LOOPBACK
         # m.d.sync += [
         #    # Place the streams into a loopback configuration...
