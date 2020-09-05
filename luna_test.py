@@ -147,6 +147,7 @@ class ACMwrap(Peripheral, Elaboratable):
 
         bank = self.csr_bank()
 
+        self._test = bank.csr(16, "rw")
         self._enable = bank.csr(1, "w")
 
         self._rx_rdy = bank.csr(1, "r")
@@ -159,8 +160,11 @@ class ACMwrap(Peripheral, Elaboratable):
         self._rx_fifo = SyncFIFO(width=8, depth=depth)
         self._tx_fifo = SyncFIFO(width=8, depth=depth)
 
+        self.val = Signal(16)
+
     def elaborate(self, platform):
         m = Module()
+        m.submodules.bridge = self._bridge
         # The usb device
         ulpi = platform.request(platform.default_usb_connection)
         usb_serial = USBSerialDevice(bus=ulpi, idVendor=0x16d0, idProduct=0x0f3b)
@@ -170,6 +174,9 @@ class ACMwrap(Peripheral, Elaboratable):
         m.submodules.rx_fifo = self._rx_fifo
         m.submodules.tx_fifo = self._tx_fifo
 
+        m.d.comb += self._test.r_data.eq(self.val)
+        with m.If(self._test.w_stb):
+            m.d.sync += self.val.eq(self._test.w_data)
         # m.d.comb += usb_serial.connect.eq(1)
         # with m.If(self._enable.w_stb):
         # m.d.sync  += [usb_serial.connect.eq(self._enable.w_data)]
@@ -220,7 +227,7 @@ class UPPER(Elaboratable):
         self.car = platform.clock_domain_generator()
 
         acm = ACMwrap()
-        # acm = DomainRenamer({"sync": "usb"})(ACMwrap())
+        # acm = DomainRenamer({"sync": "usb"})(acmw)
         spork.cpu.add_peripheral(acm)
 
         spork.build()

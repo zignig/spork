@@ -26,7 +26,7 @@ USB test harness
 class USBHarness(Firmware):
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["value", "status", "temp"])
+        self.w.req(["value", "status", "temp", "counter"])
 
     def prelude(self):
         return []
@@ -40,15 +40,11 @@ class USBHarness(Firmware):
         uart = UART()
 
         return [
+            MOVI(w.counter, 0),
             ll("loop"),
-            ll("wait"),
-            LDXA(w.status, reg.acm.rx.rdy),
-            # CMPI(w.status, 0),
-            # BEQ(ll.wait),  # wait if not ready
-            uart.writeHex(w.status),
-            # Load the char
-            LDXA(w.value, reg.acm.rx.data),
-            uart.sp(),
+            ADDI(w.counter, w.counter, 1),
+            STXA(w.counter, reg.acm.test),
+            LDXA(w.value, reg.acm.test),
             uart.writeHex(w.value),
             uart.cr(),
             J(ll.loop),

@@ -5,6 +5,7 @@ from nmigen._unused import MustUse
 
 from spork.cpu.boneless import BonelessSpork
 
+from spork.cores.periph.base import Peripheral
 from spork.peripheral.serial import AsyncSerialPeripheral
 from spork.peripheral.timer import TimerPeripheral
 from spork.peripheral.leds import LedPeripheral
@@ -33,6 +34,26 @@ log = logger("root")
 # this builds the to get the register map.
 # so ssh, please.
 MustUse._MustUse__silence = True
+
+
+class REG(Peripheral, Elaboratable):
+    def __init__(self, depth=16):
+        log.info("Test registers")
+        super().__init__()
+
+        bank = self.csr_bank()
+
+        self._test = bank.csr(16, "rw")
+        self.val = Signal(16)
+
+    def elaborate(self, platform):
+        m = Module()
+        m.submodules.bridge = self._bridge
+
+        m.d.comb += self._test.r_data.eq(self.val)
+        with m.If(self._test.w_stb):
+            m.d.sync += self.val.eq(self._test.w_data)
+        return m
 
 
 class TestSpork(Elaboratable):
@@ -67,6 +88,11 @@ class TestSpork(Elaboratable):
         # CRC engine, !! HAZARD, this needs a NOP to get a correct reading!!!
         crc = KermitCRC()
         cpu.add_peripheral(crc)
+
+        # Reg test
+
+        treg = REG()
+        cpu.add_peripheral(treg)
 
         if sim == False:
             # ice40 warmboot device
