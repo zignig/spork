@@ -11,6 +11,8 @@ from spork.peripheral.timer import TimerPeripheral
 from spork.peripheral.leds import LedPeripheral
 from spork.peripheral.kermit_crc import KermitCRC
 from spork.peripheral.warmboot import WarmBoot, FakeWarm
+from spork.peripheral.watchdog import Watchdog
+
 
 from spork.cores.ext_reset import ExternalReset
 from spork.cores.debounce import Debounce
@@ -91,8 +93,8 @@ class TestSpork(Elaboratable):
 
         # Reg test
 
-        treg = REG()
-        cpu.add_peripheral(treg)
+        watchdog = Watchdog(cpu.cpu)
+        cpu.add_peripheral(watchdog)
 
         if sim == False:
             # ice40 warmboot device
