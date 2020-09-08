@@ -13,3 +13,10 @@ TODO
 - [ ] Escape code parser
 - [ ] Triple check the bootload sequence
 - [ ] Fix the warmboot fail
+
+HEXLOADER
+
+- [ ] Timeout
+- [ ] : id starter
+- [ ] Checksum with blanking
+- [ ] as a SubR for multi boot
