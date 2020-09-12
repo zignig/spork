@@ -16,6 +16,7 @@ class Watchdog(Peripheral, Elaboratable):
 
         self._en = bank.csr(1, "rw")
         self._poke = bank.csr(1, "w")
+        self._interval = bank.csr(16, "rw")
 
         self.enable = Signal()
         self.counter = Signal(24, reset=2 ** 24 - 1)

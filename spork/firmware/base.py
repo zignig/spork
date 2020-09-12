@@ -464,6 +464,8 @@ class SubR(metaclass=MetaSub):
             data += [Rem(self.w._name)]
         data += [ADJW(-self._size)]  # window shift up
         data += [LDW(self.w.fp, 0)]  # save window
+        data += [Rem("--- ENTER ---")]
         data += self.instr()  # all it's instructions
+        data += [Rem("--- EXIT  ---")]
         data += [ADJW(self._size), JR(R7, 0)]  # shift window down
         return [data]

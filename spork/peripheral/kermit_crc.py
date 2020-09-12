@@ -11,6 +11,8 @@ from ..logger import logger
 
 log = logger(__name__)
 
+__all__ = ["KermitCRC"]
+
 
 @Enroll(provides="crc16")
 class KermitCRC(Peripheral, Elaboratable):
