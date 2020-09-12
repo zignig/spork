@@ -15,6 +15,12 @@ from spork.logger import logger
 
 log = logger(__name__)
 
+# TODO
+# print ID
+# timeout (if there is another program)
+# consume id
+# calculate checksum
+
 
 class HexLoader(Firmware):
     BOOTLOADER_ID = "BL_0"
@@ -33,7 +39,6 @@ class HexLoader(Firmware):
 
     def setup(self):
         # Define the registers used in this firmware "
-        # TODO register allocator
         self.w.req(["value", "counter", "checksum", "address", "status", "char"])
 
     def instr(self):
