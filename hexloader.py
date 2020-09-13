@@ -23,6 +23,8 @@ log = logger(__name__)
 
 
 class LoaderAsSub(SubR):
+    " have the bootloader as a subroutine so it can be added to other firmwares "
+
     locals = ["value", "counter", "checksum", "address", "status", "char"]
 
     def setup(self):
@@ -113,8 +115,6 @@ class HexLoader(Firmware):
 
     def instr(self):
         as_sub = LoaderAsSub()
-        print(dir(self))
-        print(dir(as_sub))
         return [as_sub()]
 
 
