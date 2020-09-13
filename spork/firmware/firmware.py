@@ -53,6 +53,7 @@ class Firmware:
         Inline.globals = gl
         Command.globals = gl
 
+        SubR.sw = start_window
         # code objects
         self.obj = []
         self._built = False

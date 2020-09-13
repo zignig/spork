@@ -22,24 +22,11 @@ log = logger(__name__)
 # calculate checksum
 
 
-class HexLoader(Firmware):
-    BOOTLOADER_ID = "BL_0"
-    """
-        This takes a CAPITAL hex string and loads it, and jumps to the first instruction
-        
-        Format is 16 bit 0000 - FFFF
-
-        Length
-        DATA
-        CheckSum
-
-    """
-
-    log.critical("search for bootloader ID")
+class LoaderAsSub(SubR):
+    locals = ["value", "counter", "checksum", "address", "status", "char"]
 
     def setup(self):
-        # Define the registers used in this firmware "
-        self.w.req(["value", "counter", "checksum", "address", "status", "char"])
+        pass
 
     def instr(self):
         " instr returns an array of boneless instructions, make python things first "
@@ -102,6 +89,33 @@ class HexLoader(Firmware):
             wc(w.char),
             Rem("any error will reset the bootloader"),
         ]
+
+
+class HexLoader(Firmware):
+    BOOTLOADER_ID = "BL_0"
+    """
+        This takes a CAPITAL hex string and loads it, and jumps to the first instruction
+        
+        Format is 16 bit 0000 - FFFF
+
+        Length
+        DATA
+        CheckSum
+
+    """
+
+    log.critical("search for bootloader ID")
+
+    def setup(self):
+        # Define the registers used in this firmware "
+        # self.w.req(["value", "counter", "checksum", "address", "status", "char"])
+        pass
+
+    def instr(self):
+        as_sub = LoaderAsSub()
+        print(dir(self))
+        print(dir(as_sub))
+        return [as_sub()]
 
 
 firmware = HexLoader
