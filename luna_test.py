@@ -43,7 +43,7 @@ from nmigen.build import Resource, Subsignal, Pins, Attrs, Clock, Connector, Pin
 from nmigen_boards.tinyfpga_bx import TinyFPGABXPlatform as _TinyFPGABXPlatform
 
 from nmigen_boards.resources.interface import UARTResource
-from nmigen_boards.resources.user import ButtonResources
+from nmigen_boards.resources.user import ButtonResources, LEDResources
 
 from nmigen.build import Resource, Subsignal, Pins, Attrs
 from nmigen.hdl import DomainRenamer
@@ -266,6 +266,9 @@ if __name__ == "__main__":
             ),
             Resource("reset_pin", 0, Pins("18", conn=("gpio", 0), dir="i")),
             # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
+            *LEDResources(
+                "blinky", pins="J1 H2 H9 D9", attrs=Attrs(IO_STANDARD="SB_LVCMOS")
+            ),
         ]
     )
     construct = UPPER(pl, HexLoader)

@@ -14,13 +14,14 @@ log = logger(__name__)
 
 
 class ExternalReset(Elaboratable):
-    def __init__(self, select, image, boot, pin):
+    def __init__(self, select, image, boot, pin, debug=True):
         log.debug("Create External Reset")
         self.select = select
         self.image = image
         self.boot = boot
         self.pin = pin
         self.timeout = int(8e6)
+        self.debug = debug
 
     def elaborate(self, platform):
         m = Module()
@@ -29,6 +30,22 @@ class ExternalReset(Elaboratable):
         enable = Signal()  # enable the counter
         current = Signal()  # get the current pin state
         toggle_count = Signal(5)  # count the pin toggles
+
+        # this module is being weird debug with leds
+        def get_all_resources(name):
+            resources = []
+            for number in itertools.count():
+                try:
+                    resources.append(platform.request(name, number))
+                except ResourceError:
+                    break
+            return resources
+
+        # IF debug is on grab all the blinky
+        if self.debug:
+            leds = [res.o for res in get_all_resources("blinky")]
+            self.leds = Cat(led for led in leds)
+            log.critical(leds)
 
         with m.If(enable == 1):
             m.d.sync += counter.eq(counter + 1)
@@ -42,6 +59,7 @@ class ExternalReset(Elaboratable):
                 m.d.sync += enable.eq(0)
                 m.d.sync += counter.eq(0)
                 m.d.sync += toggle_count.eq(0)
+                m.d.sync += self.leds.eq(16)
                 m.next = "START"
 
             with m.State("START"):
@@ -60,6 +78,8 @@ class ExternalReset(Elaboratable):
                 # count the toggles
                 with m.If(self.pin != current):
                     m.d.sync += toggle_count.eq(toggle_count + 1)
+                    if self.debug:
+                        m.d.sync += self.leds.eq(toggle_count)
                     m.next = "NEXT"
                 with m.If(counter == self.timeout):
                     m.d.sync += self.select.eq(1)
@@ -67,6 +87,8 @@ class ExternalReset(Elaboratable):
 
             with m.State("NEXT"):
                 m.d.sync += current.eq(self.pin)
+                if self.debug:
+                    m.d.sync += self.leds.eq(16)
                 m.next = "COUNT"
 
             with m.State("CHOOSE"):
