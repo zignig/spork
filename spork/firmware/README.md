@@ -1,4 +1,4 @@
-- [ ] stringer 
-- [ ] structured firmware
+- [X] stringer 
+- [X] structured firmware
 - [ ] event loops 
 - [ ] auto device builder

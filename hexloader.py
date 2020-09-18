@@ -76,15 +76,15 @@ class LoaderAsSub(SubR):
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
             Rem("Clear the working registers"),
+            MOVR(w.address, "end_of_data"),
+            MOVI(w.fp, self.sw - 8),
+            STW(w.fp),
             MOVI(R0, 0),
             MOVI(R1, 0),
             MOVI(R2, 0),
             MOVI(R3, 0),
             MOVI(R4, 0),
             MOVI(R5, 0),
-            MOVR(w.address, "end_of_data"),
-            MOVI(w.fp, self.sw - 8),
-            STW(w.fp),
             J("end_of_data"),
             ll("err"),
             MOVI(w.char, 33),  # ! for error

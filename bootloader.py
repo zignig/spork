@@ -135,7 +135,6 @@ class Bootloader(Firmware):
         action = Action()
 
         return [
-            self.globals.led(w.temp),
             Rem("Write the prelude strings"),
             self.stringer.banner(w.temp),
             uart.writestring(w.temp),

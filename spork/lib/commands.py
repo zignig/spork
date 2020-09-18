@@ -216,13 +216,14 @@ class MetaCommand(type):
                 ADDI(w.current, w.start, 1),
                 Rem("Write the string"),
                 uart.writestring(w.current),
-                uart.cr(),
+                uart.sp(),
                 Rem("Jump to the next command"),
                 LD(w.incr, w.start, 0),
                 ADD(w.start, w.start, w.incr),
                 Rem("Are we at the end"),
                 CMP(w.start, w.end),
                 BNE(ll.again),
+                uart.cr(),
             ]
 
 

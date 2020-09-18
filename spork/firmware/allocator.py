@@ -17,6 +17,8 @@ from rich import print
 
 from collections import namedtuple
 
+__working__ = False
+
 
 class Wrapper:
     """ Wrapping instructions for register allocation"""
