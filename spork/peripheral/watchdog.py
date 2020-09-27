@@ -9,17 +9,20 @@ log = logger(__name__)
 
 @Enroll(platform="ice40", provides="watchdog")
 class Watchdog(Peripheral, Elaboratable):
-    def __init__(self, cpu):
+    def __init__(self, cpu, bits=24):
         log.info("Create Watchdog Peripheral")
         super().__init__()
         bank = self.csr_bank()
+
+        self.bits = bits
+        self.reset_val = 2 ** bits - 1
 
         self._en = bank.csr(1, "rw")
         self._poke = bank.csr(1, "w")
         self._interval = bank.csr(16, "rw")
 
         self.enable = Signal()
-        self.counter = Signal(24, reset=2 ** 24 - 1)
+        self.counter = Signal(self.bits, reset=self.reset_val)
         self.reset = Signal()
 
     def elaborate(self, platform):
@@ -31,7 +34,7 @@ class Watchdog(Peripheral, Elaboratable):
 
         with m.If(self.enable):
             with m.If(self._poke.w_stb):
-                m.d.sync += self.counter.eq(2 ** 24 - 1)
+                m.d.sync += self.counter.eq(self.reset_val)
             with m.Else():
                 m.d.sync += self.counter.eq(self.counter - 1)
 

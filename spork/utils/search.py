@@ -6,6 +6,8 @@ log = logger(__name__)
 
 drivers = {}
 
+__all__ = ["catalog"]
+
 
 class Catalog:
     " A catalogue of registered things"
