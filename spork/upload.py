@@ -62,10 +62,12 @@ class Uploader:
                 self.toggle(4)
                 self.hex_blob = firmware.hex_blob
                 self.ser.readall()  # clear out the buffer
-                self.ser.write(4)
+                # self.ser.write(4)
+                # time.sleep(0.2)
                 counter = 0
                 for i in grouper(self.hex_blob, 4):
                     data = "".join(i).encode()
+                    # print(data)
                     # counter += 1
                     # if counter % 4 == 0:
                     #    print('.',end="")
