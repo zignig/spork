@@ -59,11 +59,13 @@ class Uploader:
             print(firmware.fw.code())
         else:
             if reset:
+                # warmboot
                 self.toggle(4)
                 self.hex_blob = firmware.hex_blob
                 self.ser.readall()  # clear out the buffer
                 # self.ser.write(4)
-                # time.sleep(0.2)
+                # wait for the pll to settle
+                time.sleep(0.2)
                 counter = 0
                 for i in grouper(self.hex_blob, 4):
                     data = "".join(i).encode()

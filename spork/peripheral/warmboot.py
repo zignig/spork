@@ -24,7 +24,11 @@ class WarmBoot(Peripheral, Elaboratable):
         m.submodules.bridge = self._bridge
         m.submodules.warm = warm = self.warm
         # bind the signals
-        m.d.sync += [warm.image.eq(self._image.w_data), warm.boot.eq(self._en.w_data)]
+        with m.If(self._en.w_stb):
+            m.d.sync += [
+                warm.image.eq(self._image.w_data),
+                warm.boot.eq(self._en.w_data),
+            ]
         return m
 
 

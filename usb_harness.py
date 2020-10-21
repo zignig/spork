@@ -48,11 +48,11 @@ class USBHarness(Firmware):
             BNE(ll.wait),
             LDXA(w.value, reg.acm.rx.data),
             uart.write(w.value),
-            # ll('wait_tx'),
-            # LDXA(w.status, reg.acm.tx.rdy),
-            # CMPI(w.status,1),
-            # BNE(ll.wait_tx),
-            # STXA(w.value,reg.acm.tx.data),
+            ll("wait_tx"),
+            LDXA(w.status, reg.acm.tx.rdy),
+            CMPI(w.status, 1),
+            BNE(ll.wait_tx),
+            STXA(w.value, reg.acm.tx.data),
             J(ll.loop),
         ]
 

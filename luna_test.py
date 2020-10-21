@@ -160,6 +160,7 @@ class ACMwrap(Peripheral, Elaboratable):
         self._tx_fifo = SyncFIFO(width=8, depth=depth)
 
     def elaborate(self, platform):
+        # see https://github.com/BracketMaster/nmigen-tinyfpgabx/blob/master/serial_fsm.py
         m = Module()
         # THIS WAS MISSING (20200905) FAIL
         m.submodules.bridge = self._bridge
@@ -177,16 +178,6 @@ class ACMwrap(Peripheral, Elaboratable):
         # m.d.sync  += [usb_serial.connect.eq(self._enable.w_data)]
         #    m.d.sync  += [usb_serial.connect.eq(1)]
 
-        # RX
-        # m.d.comb += [
-        #    usb_serial.rx.ready.eq(self.rx_ready.w_data),
-        #    self.rx_payload.r_data.eq(usb_serial.rx.payload),
-        #    self.rx_first.r_data.eq(usb_serial.rx.first),
-        #    self.rx_last.r_data.eq(usb_serial.rx.last),
-        #    self.rx_valid.r_data.eq(usb_serial.rx.valid),
-        # ]
-        # TX
-
         # fifod RX
         m.d.comb += [
             # hooks the csr to the inside of the rx fifo
@@ -199,29 +190,50 @@ class ACMwrap(Peripheral, Elaboratable):
             usb_serial.rx.ready.eq(self._rx_fifo.w_rdy),
         ]
         # fifod TX
-        # m.d.comb += [
-        # hooks the csr to the inside of the tx fifo
-        #    self._tx_fifo.w_data.eq(self._tx_data.w_data),
-        #    self._tx_fifo.w_en.eq(self._tx_data.w_stb),
+        # needs a state machine
+        # connect the csr to the inner fifo
+        m.d.comb += [
+            self._tx_fifo.w_data.eq(self._tx_data.w_data),
+            self._tx_fifo.w_en.eq(self._tx_data.w_stb),
+            self._tx_rdy.r_data.eq(self._tx_fifo.w_rdy),
+        ]
 
-        #    self._tx_rdy.r_data.eq(self._tx_fifo.w_rdy),
-        #
-        # usb to the outside of the fifo
-        #            usb_serial.tx.payload.eq(self._tx_fifo.r_data),
-        #            usb_serial.tx.valid.eq(self._tx_fifo.r_rdy),
-        #            self._rx_fifo.r_en.eq(usb_serial.tx.ready)
-        #        ]
-        # ORIGINAL LOOPBACK
-        # m.d.sync += [
-        #    # Place the streams into a loopback configuration...
-        #    usb_serial.tx.payload.eq(usb_serial.rx.payload),
-        #    usb_serial.tx.valid.eq(usb_serial.rx.valid),
-        #    usb_serial.tx.first.eq(usb_serial.rx.first),
-        #    usb_serial.tx.last.eq(usb_serial.rx.last),
-        #    usb_serial.rx.ready.eq(usb_serial.tx.ready),
-        #    # ... and always connect by default.
-        #    usb_serial.connect.eq(1),
-        # ]
+        tx_fifo = self._tx_fifo
+        tx_usb = usb_serial.tx
+
+        counter = Signal(8)
+        max_bytes = 8  # max number of bytes in a packet
+
+        with m.FSM(name="TX"):
+            with m.State("FIRST"):
+                # there is stuff to move
+                with m.If(tx_fifo.r_rdy & tx_usb.ready):
+                    m.d.sync += [
+                        tx_usb.valid.eq(1),
+                        counter.eq(0),
+                        tx_usb.first.eq(1),
+                        tx_usb.last.eq(0),
+                    ]
+                    m.next = "BODY"
+
+            with m.State("BODY"):
+                m.d.sync += [tx_usb.first.eq(0), tx_usb.last.eq(0)]
+                with m.If(tx_fifo.r_rdy & tx_usb.ready):
+                    m.d.sync += [
+                        counter.eq(counter + 1),
+                        tx_usb.payload.eq(tx_fifo.r_data),
+                        tx_fifo.r_en.eq(1),
+                    ]
+                    with m.If(counter == max_bytes):
+                        m.next = "LAST"
+                with m.If(tx_fifo.r_rdy == False):
+                    m.d.sync += [tx_usb.last.eq(1)]
+                    m.next = "LAST"
+
+            with m.State("LAST"):
+                m.d.sync += [tx_usb.valid.eq(0), tx_fifo.r_en.eq(0)]
+                m.next = "FIRST"
+
         return m
 
 

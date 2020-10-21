@@ -123,13 +123,14 @@ class Bootloader(Firmware):
         st.escape = "<ESC>"
         st.banner = banner.encode("utf-8")
         st.prompt = self.LOADER_ID + ">"
-        st.date = str(datetime.datetime.now()) + "\r\n"
+        st.date = str(datetime.datetime.today()) + "\r\n"
         st.backspace = "<BS>"
         AnsiStrings(st)
         term = Term()
 
         self.globals.led = 0
         self.globals.cursor = 0
+        self.globals.heap = 0
 
         console = Console()
         action = Action()

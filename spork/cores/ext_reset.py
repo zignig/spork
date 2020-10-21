@@ -14,7 +14,7 @@ log = logger(__name__)
 
 
 class ExternalReset(Elaboratable):
-    def __init__(self, select, image, boot, pin, debug=True):
+    def __init__(self, select, image, boot, pin, debug=False):
         log.debug("Create External Reset")
         self.select = select
         self.image = image
@@ -59,7 +59,8 @@ class ExternalReset(Elaboratable):
                 m.d.sync += enable.eq(0)
                 m.d.sync += counter.eq(0)
                 m.d.sync += toggle_count.eq(0)
-                m.d.sync += self.leds.eq(16)
+                if self.debug:
+                    m.d.sync += self.leds.eq(16)
                 m.next = "START"
 
             with m.State("START"):
