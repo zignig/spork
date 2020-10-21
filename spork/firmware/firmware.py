@@ -79,7 +79,7 @@ class Firmware:
         # Only build once, don't double allocate
         if not self._built:
             w = self.w = Window()
-            ll = LocalLabels()
+            self.labels = ll = LocalLabels()
             self.setup()
             fw = [
                 Rem("--- Firmware Object ---"),
