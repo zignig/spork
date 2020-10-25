@@ -2,6 +2,32 @@
 
 This is some nmigen infrastructure for the Boneless-v3 gateware CPU
 
+The 'spork' folder has the current sections
+
+##cores/
+
+    Elboratable Gateware
+
+##cpu/
+
+    A Boneless-v3 with a 16bit CSR bus
+
+##firmware/
+
+    Scaffolding and structure for building binaries
+
+#lib/
+
+    Some ASM lib.
+
+#peripheral/
+
+    Gateware that will name and connect to the CSR bus
+
+#utils/
+
+
+
 TODO
 
 - [ ] Use checksum on HexLoader
