@@ -51,7 +51,7 @@ class DeviceSetup(Inline):
             Rem("Load the timer"),
             MOVI(w.temp, 0xFFFF),
             STXA(w.temp, reg.timer.reload_0),
-            MOVI(w.temp, 0x00FF),
+            MOVI(w.temp, 0xFFFF),
             STXA(w.temp, reg.timer.reload_1),
             Rem("Enable timer and events"),
             MOVI(w.temp, 1),
