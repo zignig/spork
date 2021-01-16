@@ -104,6 +104,7 @@ if __name__ == "__main__":
     e = Encoder(banner)
     cl = e.breakdown
     e.build()
+    print(banner)
     print("Unecoded", len(banner.encode("utf-8")))
     print("Symbols", len(cl))
     print(cl)

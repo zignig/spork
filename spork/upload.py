@@ -33,7 +33,7 @@ class Uploader:
     def __init__(self, port="/dev/ttyUSB0", baud=115200):
         self.port = port
         self.baud = baud
-        self.ser = serial.Serial(port, baud, timeout=0.5)  # , dsrdtr=False)
+        # self.ser = serial.Serial(port, baud, timeout=0.5)  # , dsrdtr=False)
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
@@ -58,6 +58,7 @@ class Uploader:
             print(firmware.fw.reg.show())
             print(firmware.fw.code())
         else:
+            return
             if reset:
                 # warmboot
                 self.toggle(4)

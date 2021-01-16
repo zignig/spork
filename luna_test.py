@@ -123,7 +123,7 @@ class USBSerialDeviceExample(Elaboratable):
         # Create our USB-to-serial converter.
         ulpi = platform.request(platform.default_usb_connection)
         m.submodules.usb_serial = usb_serial = USBSerialDevice(
-            bus=ulpi, idVendor=0x16d0, idProduct=0x0f3b
+            bus=ulpi, idVendor=0x16D0, idProduct=0x0F3B
         )
 
         m.d.comb += [
@@ -166,7 +166,7 @@ class ACMwrap(Peripheral, Elaboratable):
         m.submodules.bridge = self._bridge
         # The usb device
         ulpi = platform.request(platform.default_usb_connection)
-        usb_serial = USBSerialDevice(bus=ulpi, idVendor=0x16d0, idProduct=0x0f3b)
+        usb_serial = USBSerialDevice(bus=ulpi, idVendor=0x16D0, idProduct=0x0F3B)
         m.submodules.usb_serial = usb_serial
 
         # use fifos for data

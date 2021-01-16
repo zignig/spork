@@ -12,6 +12,7 @@ from spork.peripheral.leds import LedPeripheral
 from spork.peripheral.kermit_crc import KermitCRC
 from spork.peripheral.warmboot import WarmBoot, FakeWarm
 from spork.peripheral.watchdog import Watchdog
+from spork.peripheral.profiler import Profiler
 
 
 from spork.cores.ext_reset import ExternalReset
@@ -95,6 +96,10 @@ class TestSpork(Elaboratable):
 
         watchdog = Watchdog(cpu.cpu)
         cpu.add_peripheral(watchdog)
+
+        # Profiler
+        pro = Profiler()
+        cpu.add_peripheral(pro)
 
         if sim == False:
             # ice40 warmboot device

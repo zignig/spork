@@ -30,6 +30,9 @@ class LoaderAsSub(SubR):
     def setup(self):
         pass
 
+    def prelude(self):
+        return [Rem("reset the CRC"), MOVI(w.temp, 1), STXA(w.temp, reg.crc.reset)]
+
     def instr(self):
         " instr returns an array of boneless instructions, make python things first "
         # the map of the IO registers
@@ -44,6 +47,7 @@ class LoaderAsSub(SubR):
         rh = serial.readHex
         # make some ASM labels that will not collide.
         ll = LocalLabels()
+        self.globals.counter = 0
 
         # return an array of instructions , this has a main loop wrapped around it
         return [
@@ -58,6 +62,9 @@ class LoaderAsSub(SubR):
             rh(ret=[w.counter, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
+            Rem("Stash the counter"),
+            self.globals.counter(w.address),
+            ST(w.counter, w.address, 0),
             Rem("Load the memory"),
             MOVR(w.address, "end_of_data"),
             ll("loop"),
@@ -69,12 +76,33 @@ class LoaderAsSub(SubR):
             SUBI(w.counter, w.counter, 1),
             CMPI(w.counter, 0),
             BNE(ll.loop),
-            Rem("And boot into your newly minted firmware"),
-            Rem("TODO, fix checksum"),
             Rem("Get the checksum"),
             rh(ret=[w.checksum, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
+            Rem("TODO, fix checksum"),
+            Rem("get the counter back"),
+            self.globals.counter(w.address),
+            LD(w.counter, w.address, 0),
+            Rem("load the start of code"),
+            MOVR(w.address, "end_of_data"),
+            ll("checksum_loop"),
+            Rem("get the value"),
+            LD(w.value, w.address, 0),
+            STXA(w.value, self.reg.crc.byte),
+            Rem("shift for high byte"),
+            SRLI(w.value, w.value, 8),
+            STXA(w.value, self.reg.crc.byte),
+            Rem("advance the counters"),
+            ADDI(w.address, w.address, 1),
+            SUBI(w.counter, w.counter, 1),
+            CMPI(w.counter, 0),
+            BNE(ll.checksum_loop),
+            Rem("load the checksum value"),
+            LDXA(w.value, self.reg.crc.crc),
+            Rem("write out the checksum for now"),
+            ho(w.value),
+            Rem("And boot into your newly minted firmware"),
             Rem("Clear the working registers"),
             MOVR(w.address, "end_of_data"),
             MOVI(w.fp, self.sw - 8),
