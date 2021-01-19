@@ -20,13 +20,13 @@ class ExternalReset(Elaboratable):
         self.image = image
         self.boot = boot
         self.pin = pin
-        self.timeout = int(12e6)
+        self.timeout = int(16e6)
         self.debug = debug
 
     def elaborate(self, platform):
         m = Module()
 
-        counter = Signal(32)
+        counter = Signal(48)
         enable = Signal()  # enable the counter
         current = Signal()  # get the current pin state
         toggle_count = Signal(5)  # count the pin toggles

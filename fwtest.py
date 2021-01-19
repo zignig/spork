@@ -30,6 +30,7 @@ from boneless.arch.opcode import *
 import struct
 
 from spork.logger import logger
+from spork.upload import _crc
 
 log = logger("root")
 
@@ -94,14 +95,15 @@ class TestSpork(Elaboratable):
 
         # Reg test
 
-        watchdog = Watchdog(cpu.cpu)
-        cpu.add_peripheral(watchdog)
+        # watchdog = Watchdog(cpu.cpu)
+        # cpu.add_peripheral(watchdog)
 
         # Profiler
-        pro = Profiler()
-        cpu.add_peripheral(pro)
+        # pro = Profiler()
+        # cpu.add_peripheral(pro)
 
         if sim == False:
+            log.critical("add warmboot")
             # ice40 warmboot device
             warm = WarmBoot()
             cpu.add_peripheral(warm)
@@ -163,7 +165,7 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
             UARTResource(
                 0, rx="A8", tx="B8", attrs=Attrs(IO_STANDARD="SB_LVCMOS", PULLUP=1)
             ),
-            Resource("reset_pin", 0, Pins("18", conn=("gpio", 0), dir="i")),
+            Resource("reset_pin", 0, Pins("A9", dir="i")),
             # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
             *LEDResources(
                 "blinky", pins="J1 H2 H9 D9", attrs=Attrs(IO_STANDARD="SB_LVCMOS")
@@ -209,18 +211,19 @@ if __name__ == "__main__":
 
     if args.simulate:
         spork = build(fw, mem_size=1024)
-        from nmigen.cli import pysim
+        from nmigen.sim import Simulator
         from sim_data import test_rx, str_data
 
         st = "sphinx of black quartz judge my vow"
-        print(hex(crc_16_kermit(st.encode("utf-8"))))
+        # print(hex(_crc(st.encode("utf-8"))))
         data = str_data(st)
         dut = spork.cpu.pc.devices[0]._phy
         dut.divisor_val = spork.divisor
-        with pysim.Simulator(spork, vcd_file=open("view_spork.vcd", "w")) as sim:
-            sim.add_clock(1e-3)
-            sim.add_sync_process(test_rx(data, dut))
-            sim.run_until(1000, run_passive=True)
+        sim = Simulator(spork)
+        sim.add_clock(1e-3)
+        sim.add_sync_process(test_rx(data, dut))
+        with sim.write_vcd("sim.vcd"):
+            sim.run()
 
     if args.list:
         spork = build(fw, detail=True)

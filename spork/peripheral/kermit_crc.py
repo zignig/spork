@@ -33,13 +33,13 @@ class KermitCRC(Peripheral, Elaboratable):
         # the crc value
         self.crc = bank.csr(16, "r")
         # finished
-        self.finished = bank.csr(1, "r")
+        # self.finished = bank.csr(1, "r")
 
     def elaborate(self, platform):
         m = Module()
         m.submodules.bridge = self._bridge
 
-        bit_counter = Signal(range(16))  # count from 7 to 0
+        bit_counter = Signal(range(17))  # count from 7 to 0
         crc = Signal(16)
 
         with m.If(self.reset.w_stb):
@@ -48,19 +48,19 @@ class KermitCRC(Peripheral, Elaboratable):
             m.d.sync += [
                 bit_counter.eq(8),
                 crc.eq(crc ^ self.byte.w_data),
-                self.finished.eq(0),
+                #        self.finished.eq(0),
             ]
-        with m.Elif(self.word.w_stb):
-            m.d.sync += [
-                bit_counter.eq(16),
-                crc.eq(crc ^ self.word.w_data),
-                self.finished.eq(0),
-            ]
-        with m.Elif(bit_counter > 0):
+        #        with m.Elif(self.word.w_stb):
+        #            m.d.sync += [
+        #                bit_counter.eq(16),
+        #                crc.eq(crc ^ self.word.w_data),
+        #        #        self.finished.eq(0),
+        #            ]
+        with m.If(bit_counter > 0):
             m.d.sync += [
                 bit_counter.eq(bit_counter - 1),
                 crc.eq((crc >> 1) ^ Mux(crc[0], 0x8408, 0)),
             ]
         with m.Elif(bit_counter == 0):
-            m.d.sync += [self.crc.r_data.eq(crc), self.finished.eq(1)]
+            m.d.sync += [self.crc.r_data.eq(crc)]  # , self.finished.eq(1)]
         return m

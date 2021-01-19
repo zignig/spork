@@ -2,7 +2,11 @@
 
 import serial, time
 
-bl = serial.Serial("/dev/ttyUSB0", 115200, timeout=0.5, dsrdtr=False)
+port = "/dev/ttyUSB0"
+baud = 115200
+bl = serial.serial_for_url(port, baud, timeout=0.5, dsrdtr=False, do_not_open=True)
+bl.dtr = 0
+bl.rts = 0
 
 
 def toggle(count):
@@ -15,6 +19,7 @@ def toggle(count):
     bl.dtr = 1
 
 
+bl.open()
 toggle(2)  # bootloader
 # toggle(4) # warm boot into image
 bl.close()

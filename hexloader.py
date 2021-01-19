@@ -81,6 +81,7 @@ class LoaderAsSub(SubR):
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
             Rem("TODO, fix checksum"),
+            STXA(w.address, self.reg.crc.reset),
             Rem("get the counter back"),
             self.globals.counter(w.address),
             LD(w.counter, w.address, 0),
@@ -91,6 +92,7 @@ class LoaderAsSub(SubR):
             LD(w.value, w.address, 0),
             STXA(w.value, self.reg.crc.byte),
             Rem("shift for high byte"),
+            NOP(0),
             SRLI(w.value, w.value, 8),
             STXA(w.value, self.reg.crc.byte),
             Rem("advance the counters"),

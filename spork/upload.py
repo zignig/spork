@@ -33,12 +33,17 @@ class Uploader:
     def __init__(self, port="/dev/ttyUSB0", baud=115200):
         self.port = port
         self.baud = baud
-        self.ser = serial.Serial(port, baud, timeout=0.5)  # , dsrdtr=False)
+        self.ser = serial.serial_for_url(
+            port, baud, timeout=0.5, dsrdtr=False, do_not_open=True
+        )
+        self.ser.dtr = 0
+        self.ser.rts = 0
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
+        print(self.ser.dtr)
         for i in range(count):
-            # print("toggle 0")
+            print("toggle")
             time.sleep(0.1)
             self.ser.dtr = 1
             # print("toggle 1")
@@ -57,12 +62,14 @@ class Uploader:
         if args.list:
             print(firmware.fw.reg.show())
             print(firmware.fw.code())
+            print(firmware.hex_blob)
         else:
             if reset:
+                self.ser.open()
                 # warmboot
                 self.toggle(4)
                 self.hex_blob = firmware.hex_blob
-                self.ser.readall()  # clear out the buffer
+                # self.ser.readall()  # clear out the buffer
                 # self.ser.write(4)
                 # wait for the pll to settle
                 time.sleep(0.2)
@@ -74,6 +81,8 @@ class Uploader:
                     # if counter % 4 == 0:
                     #    print('.',end="")
                     self.ser.write(data)
+                # a = self.ser.readall()
+                # print(a)
             if console:
                 term = Miniterm(self.ser)
                 term.set_rx_encoding("utf-8")
