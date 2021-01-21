@@ -36,8 +36,7 @@ class Uploader:
         self.ser = serial.serial_for_url(
             port, baud, timeout=0.5, dsrdtr=False, do_not_open=True
         )
-        self.ser.dtr = 0
-        self.ser.rts = 0
+        # self.ser.dtr = 0
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
@@ -48,7 +47,7 @@ class Uploader:
             self.ser.dtr = 1
             # print("toggle 1")
             self.ser.dtr = 0
-        self.ser.dtr = 1
+        # self.ser.dtr = 1
         time.sleep(0.8)
 
     def upload(self, firmware, console=True, reset=True):

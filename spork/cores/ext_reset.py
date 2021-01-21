@@ -20,7 +20,7 @@ class ExternalReset(Elaboratable):
         self.image = image
         self.boot = boot
         self.pin = pin
-        self.timeout = int(16e6)
+        self.timeout = int(12e6)
         self.debug = debug
 
     def elaborate(self, platform):
@@ -95,7 +95,7 @@ class ExternalReset(Elaboratable):
             with m.State("CHOOSE"):
                 # switch the warmboot to external
                 # select the image count based on toggles
-                m.d.sync += self.select.eq(1)
+                # m.d.sync += self.select.eq(1)
                 with m.Switch(toggle_count):
                     with m.Case(4):
                         m.next = "IMAGE1"

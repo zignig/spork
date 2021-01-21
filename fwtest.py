@@ -117,7 +117,9 @@ class TestSpork(Elaboratable):
             dtr = platform.request("reset_pin")
             # the warmboot instance
             wb = warm.warm
-            self.er = ExternalReset(wb.select, wb.ext_image, wb.ext_boot, dtr)
+            self.er = ExternalReset(
+                wb.select, wb.ext_image, wb.ext_boot, dtr, debug=True
+            )
         # else:
         #    warm = FakeWarm()
         #    cpu.add_peripheral(warm)
@@ -140,6 +142,7 @@ class TestSpork(Elaboratable):
         m.submodules.cpu = self.cpu
         # Attach the external reset
         if not self.sim:
+            log.critical("ADD ER")
             m.submodules.external_reset = self.er
         # Attache the debouncer
         return m
@@ -165,7 +168,9 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
             UARTResource(
                 0, rx="A8", tx="B8", attrs=Attrs(IO_STANDARD="SB_LVCMOS", PULLUP=1)
             ),
-            Resource("reset_pin", 0, Pins("A9", dir="i")),
+            Resource(
+                "reset_pin", 0, Pins("A9", dir="i"), Attrs(IO_STANDARD="SB_LVCMOS")
+            ),
             # *ButtonResources(pins="10", invert=True, attrs=Attrs(IO_STANDARD="SB_LVCMOS")),
             *LEDResources(
                 "blinky", pins="J1 H2 H9 D9", attrs=Attrs(IO_STANDARD="SB_LVCMOS")
