@@ -21,6 +21,36 @@ from rich import print
 term = Term()
 
 
+class dumpEsc(SubR):
+    " Dump the enumerated string list"
+
+    def setup(self):
+        self.locals = ["value", "counter", "address", "limit"]
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        u = UART()
+        ws = u.writestring
+        wh = u.writeHex
+        return [
+            MOVI(w.limit, len(EscKeys)),
+            MOVI(w.counter, 0),
+            ll("again"),
+            Rem("Grab the starting address of the table"),
+            MOVR(w.address, "EscKeys"),
+            ADD(w.address, w.address, w.counter),
+            LD(w.value, w.address, 0),
+            ADD(w.value, w.value, w.address),
+            ws(w.value),
+            u.cr(),
+            ADDI(w.counter, w.counter, 1),
+            CMP(w.counter, w.limit),
+            BNE(ll.again),
+            ll("end"),
+        ]
+
+
 class EscString(CodeObject):
     def __init__(self, enum):
         log.critical("build escape string")

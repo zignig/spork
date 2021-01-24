@@ -8,7 +8,7 @@ from spork.firmware.base import *
 
 from spork.lib.uartIO import UART
 from spork.lib.console import Console
-from spork.lib.action import Action
+from spork.lib.action import Action, dumpEsc
 from spork.lib.stringer import Stringer
 from spork.lib.ansi_codes import AnsiStrings, Term
 from spork.firmware.firmware import Firmware
@@ -16,7 +16,7 @@ from spork.firmware.firmware import Firmware
 from spork.lib.commands import MetaCommand, Command
 
 # these automatically get added to the firmware
-import spork.lib.base_command
+# import spork.lib.base_command
 
 # TODO compress the banner, it is phat.
 from spork.lib.banner import banner
@@ -54,6 +54,23 @@ def Init(w, reg):
         Rem("Move the start pointer into register for later jumpage"),
         MOVR(w.address, "end_of_data"),
     ]
+
+
+class show(Command):
+    class _show(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            # mark the SubR so it is included without
+            # being called
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            s = dumpEsc()
+            return [s()]
+
+    # Bind the subroutine to the code
+    call = _show()
 
 
 class ON(Command):
