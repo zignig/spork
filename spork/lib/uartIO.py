@@ -134,7 +134,7 @@ class Read(SubR):
             BEQ(ll.skip),  # skip if not ready
             # Load the char
             LDXA(w.value, reg.serial.rx.data),
-            # Set the status to zero
+            # Set the status to one
             MOVI(w.status, 1),
             ll("skip"),
         ]

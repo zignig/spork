@@ -40,26 +40,6 @@ log = logger("root")
 MustUse._MustUse__silence = True
 
 
-class REG(Peripheral, Elaboratable):
-    def __init__(self, depth=16):
-        log.info("Test registers")
-        super().__init__()
-
-        bank = self.csr_bank()
-
-        self._test = bank.csr(16, "rw")
-        self.val = Signal(16)
-
-    def elaborate(self, platform):
-        m = Module()
-        m.submodules.bridge = self._bridge
-
-        m.d.comb += self._test.r_data.eq(self.val)
-        with m.If(self._test.w_stb):
-            m.d.sync += self.val.eq(self._test.w_data)
-        return m
-
-
 class TestSpork(Elaboratable):
     def __init__(
         self, platform, uart_speed=9600, mem_size=1024, firmware=None, sim=False
@@ -103,7 +83,6 @@ class TestSpork(Elaboratable):
         # cpu.add_peripheral(pro)
 
         if sim == False:
-            log.critical("add warmboot")
             # ice40 warmboot device
             warm = WarmBoot()
             cpu.add_peripheral(warm)
@@ -127,11 +106,12 @@ class TestSpork(Elaboratable):
         # build the register map
 
     def build(self):
+        log.critical("BUILD")
         self.cpu.build()
         # Attach the firmware
         if self.firmware is not None:
-            f = self.firmware(self.cpu.map, start_window=self.mem_size)
-            self.fw = f
+            # f = self.firmware(self.cpu.map, start_window=self.mem_size)
+            # self.fw = f
             # Sporkify it !
             self.cpu.firmware(f.code())
             self.hex_blob = f.hex()
@@ -142,7 +122,6 @@ class TestSpork(Elaboratable):
         m.submodules.cpu = self.cpu
         # Attach the external reset
         if not self.sim:
-            log.critical("ADD ER")
             m.submodules.external_reset = self.er
         # Attache the debouncer
         return m

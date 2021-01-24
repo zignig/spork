@@ -19,7 +19,6 @@ class Switch:
         self.labels = LocalLabels()
         self.window = window
         self.select = select  # a register in window
-        window.req(["jumpval"])
 
     def add(self, item):
         if len(item) != 2:
@@ -44,13 +43,12 @@ class Switch:
         for i, j in enumerate(self.mapping):
             # log.debug("{:d} -> {:d} -> {:s}".format(i, j, str(self.mapping[j])))
             data += [
-                Rem("start-" + str(j)),
                 [
-                    MOVI(w.jumpval, j),
-                    CMP(w.jumpval, self.select),
+                    Rem("start-" + str(j)),
+                    CMPI(self.select, j),
                     BZ("{:04d}{:s}".format(i, ll._postfix)),
                     Rem("end-" + str(j)),
-                ],
+                ]
             ]
         data += [J(ll.table_end), Rem("end of jump table")]
         for i, j in enumerate(self.mapping):

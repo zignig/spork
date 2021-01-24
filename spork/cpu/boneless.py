@@ -48,7 +48,7 @@ class BonelessSpork(Elaboratable):
         if not self._built:
             # build the register map
             self.pc.build()
-            self._build = True
+            self._built = True
 
     def firmware(self, fw=None):
         log.info("Attach firmware")

@@ -8,7 +8,7 @@ from ..firmware.base import *
 from .stringer import Stringer
 from .switch import Switch
 from .uartIO import UART
-from .action_list import Actions
+from .action_list import Actions, EscKeys
 from .commands import MetaCommand
 from .ansi_codes import Term
 
@@ -19,6 +19,134 @@ log = logger(__name__)
 from rich import print
 
 term = Term()
+
+
+class EscString(CodeObject):
+    def __init__(self, enum):
+        log.critical("build escape string")
+        self._used = True
+        super().__init__()
+        self.enum = enum
+        # Create a stringer
+        self.st = Stringer()
+        # Add all the enum tags to it
+        for i in enum:
+            self.st.add(str(i.value), i.name)
+        # mark all the strings
+        self.st.all()
+        self._postfix = self.st._postfix
+
+    def ref(self, val):
+        " ref resolver for assembler"
+
+        def relocate(resolver):
+            return resolver(val)
+
+        return relocate
+
+    def code(self):
+        class WriteKey(SubR):
+            def setup(self):
+                self.params = ["value"]
+                self.local = ["reference"]
+
+            def instr(self):
+                [Rem("this should be good")]
+
+        wk = WriteKey()
+        wk.mark()
+        m = [L(self.enum.__qualname__), Rem(self.enum.__qualname__), Rem(self._postfix)]
+        for i in self.enum:
+            lref = str(i.value) + self._postfix
+            m.append(Rem(lref))
+            m.append(self.ref(lref))
+        return m
+
+
+class Escaper(SubR):
+    " Process the escape sequence"
+    e = EscString(EscKeys)
+
+    def setup(self):
+        self.locals = ["temp", "command", "char", "counter"]
+        self.ret = ["status"]
+
+    def build(self):
+        # Build the selectors
+        self.selector = Switch(self.w, self.w.char)
+        self.sel2 = Switch(self.w, self.w.char)
+        self.sel3 = Switch(self.w, self.w.char)
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        uart = UART()
+
+        # selectors for the char
+        sel = self.selector
+        sel2 = self.sel2
+        sel3 = self.sel3
+
+        self.stringer.has_next = "has another char"
+        self.stringer.nomore = "no more"
+        # Single char selector
+        sel.add(("A", MOVI(w.status, EscKeys.UP)))
+        sel.add(("B", MOVI(w.status, EscKeys.DOWN)))
+        sel.add(("C", MOVI(w.status, EscKeys.RIGHT)))
+        sel.add(("D", MOVI(w.status, EscKeys.LEFT)))
+        sel.add(("2", MOVI(w.status, EscKeys.INS)))
+        sel.add(("3", MOVI(w.status, EscKeys.DEL)))
+        sel.add(("4", MOVI(w.status, EscKeys.END)))
+        sel.add(("5", MOVI(w.status, EscKeys.PGUP)))
+        sel.add(("6", MOVI(w.status, EscKeys.PGDOWN)))
+        # second char @ 1
+        sel2.add(("1", MOVI(w.status, EscKeys.F1)))
+        sel2.add(("2", MOVI(w.status, EscKeys.F2)))
+        sel2.add(("3", MOVI(w.status, EscKeys.F3)))
+        sel2.add(("4", MOVI(w.status, EscKeys.F4)))
+        sel2.add(("5", MOVI(w.status, EscKeys.F5)))
+        sel2.add(("6", MOVI(w.status, EscKeys.F6)))
+        return [
+            Rem("Check if there are any more chars"),
+            Rem("have to wait for the next char to arrive"),
+            MOVI(w.counter, 0x1FF),
+            ll("wait"),
+            SUBI(w.counter, w.counter, 1),
+            CMPI(w.counter, 0),
+            BNE(ll.wait),
+            Rem("Now we can check for the char"),
+            uart.read(ret=[w.char, w.status]),
+            CMPI(w.status, 0),
+            BEQ(ll.nomore),
+            Rem("Consumes the ["),
+            self.stringer.has_next(w.temp),
+            uart.writestring(w.temp),
+            uart.cr(),
+            uart.read(ret=[w.char, w.status]),
+            uart.write(w.char),
+            CMPI(w.status, 0),
+            BEQ(ll.nomore),
+            Rem("directions"),
+            [CMPI(w.char, "1"), BEQ(ll.double1)],
+            [CMPI(w.char, "2"), BEQ(ll.double2)],
+            Rem("Single char escape code"),
+            Rem("select char and map to Enum"),
+            sel(),
+            J(ll.cont),
+            ll("double1"),
+            sel2(),
+            J(ll.cont),
+            ll("double2"),
+            sel3(),
+            J(ll.cont),
+            ll("nomore"),
+            MOVI(w.status, EscKeys.ESC),
+            self.stringer.nomore(w.temp),
+            uart.writestring(w.temp),
+            ll("cont"),
+            ll("end"),
+        ]
 
 
 class Action(SubR):
@@ -32,6 +160,7 @@ class Action(SubR):
     def build(self):
         # Bind the pad into the function
         self.selector = Switch(self.w, self.w.status)
+        self.esc = Escaper()
 
     def instr(self):
         w = self.w
@@ -82,9 +211,9 @@ class Action(SubR):
             (
                 Actions.ESCAPE,  # escape sequence
                 [
-                    Rem("write the escape sequence"),
-                    self.stringer.escape(w.temp),
-                    uart.writestring(w.temp),
+                    self.esc(ret=[w.status]),
+                    ADDI(w.status, w.status, 32),
+                    uart.write(w.status),
                 ],
             )
         )

@@ -136,8 +136,6 @@ class HexLoader(Firmware):
 
     """
 
-    log.critical("search for bootloader ID")
-
     def setup(self):
         # Define the registers used in this firmware "
         # self.w.req(["value", "counter", "checksum", "address", "status", "char"])

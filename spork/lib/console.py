@@ -100,8 +100,8 @@ class CharPad(CodeObject):
         self.length = length
         self.total_length = length + 1
         self.cursor = length + 2
-        self._used = False  # just make it anyway
         self.name = name
+        self._used = False
         # Some internal functions
         self.accept = self.Accept()
 
@@ -135,6 +135,7 @@ class Console(SubR):
 
     def build(self):
         # Bind the pad into the function
+        log.critical("Build Console")
         self.pad = CharPad()
 
         # self.char = self.Char(self.w)

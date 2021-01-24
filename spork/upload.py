@@ -40,9 +40,7 @@ class Uploader:
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
-        print(self.ser.dtr)
         for i in range(count):
-            print("toggle")
             time.sleep(0.1)
             self.ser.dtr = 1
             # print("toggle 1")

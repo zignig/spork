@@ -156,7 +156,9 @@ class CodeObject:
     @classmethod
     def get_code(cls):
         l = []
+        log.info("Data Objects")
         for i in cls._objects:
+            log.info("\t" + str(i))
             if i._used == True:
                 l.append(i.code())
         return l
@@ -390,7 +392,6 @@ class SubR(metaclass=MetaSub):
                 # return registers can be existing registers
                 if i not in self.w.__dict__:
                     self.w.req(i)
-
         self.build()
 
     @classmethod
@@ -400,6 +401,7 @@ class SubR(metaclass=MetaSub):
         cls._called = True
 
     def setup(self):
+        # Override me.
         raise FWError("Need to set up subroutine , params , locals and ret")
 
     def build(self):
@@ -421,7 +423,7 @@ class SubR(metaclass=MetaSub):
 
         instr += [JAL(self.w.ret, self.name)]
 
-        # This adds a code to copy registers down a window
+        # This adds a code to copy registers down into the previous frame
         # if requested with a ret=[return,register] in the call
         if "ret" in kwargs:
             if self._ret:
@@ -461,7 +463,8 @@ class SubR(metaclass=MetaSub):
         if self.__doc__ is not None:
             data.append(Rem(self.__doc__))
         if self.debug:
-            data += [Rem(self.w._name)]
+            data += [Rem(self.w._name[0:4])]
+            data += [Rem(self.w._name[4:8])]
         data += [ADJW(-self._size)]  # window shift up
         data += [LDW(self.w.fp, 0)]  # save window
         data += [Rem("--- ENTER ---")]

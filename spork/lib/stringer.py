@@ -19,7 +19,7 @@ __all__ = ["SingleString", "Stringer"]
 
 
 class SingleString:
-    """ A single string with prefix and 
+    """ A single string with postfix and 
         If it has been called , _used is true and it is added to the string data in the firmware
     """
 
@@ -108,6 +108,18 @@ class Stringer(CodeObject):
                 used = True
                 break
         return used
+
+    def all(self):
+        " mark all strings for use"
+        for i in self._strings:
+            single = self._strings[i]
+            single._used = True
+
+    def add(self, item, value):
+        # Add a named label
+        val = SingleString(item, value, self._postfix, self.compact)
+        self._strings[item] = val
+        object.__setattr__(self, item, val)
 
     def __setattr__(self, item, value):
         # If you assign a attr it will create a string
