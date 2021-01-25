@@ -21,6 +21,33 @@ from rich import print
 term = Term()
 
 
+class EscCode(SubR):
+    " Write the escape code string"
+
+    def setup(self):
+        self.params = ["number"]
+        self.locals = ["value", "address"]
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        u = UART()
+        ws = u.writestring
+        wh = u.writeHex
+        return [
+            SUBI(w.number, w.number, 1),
+            Rem("Grab the starting address of the table"),
+            MOVR(w.address, "EscKeys"),
+            ADD(w.address, w.address, w.number),
+            LD(w.value, w.address, 0),
+            Rem("offsets are relative"),
+            ADD(w.value, w.value, w.address),
+            ws(w.value),
+            u.cr(),
+            ll("end"),
+        ]
+
+
 class dumpEsc(SubR):
     " Dump the enumerated string list"
 
@@ -150,9 +177,6 @@ class Escaper(SubR):
             CMPI(w.status, 0),
             BEQ(ll.nomore),
             Rem("Consumes the ["),
-            self.stringer.has_next(w.temp),
-            uart.writestring(w.temp),
-            uart.cr(),
             uart.read(ret=[w.char, w.status]),
             uart.write(w.char),
             CMPI(w.status, 0),
@@ -200,6 +224,7 @@ class Action(SubR):
         List = MetaCommand.List()
         Search = MetaCommand.Search()
         Run = MetaCommand.Run()
+        esccode = EscCode()
         # make a CASE style selection
         sel = self.selector
         self.stringer.notfound = "Command not found :"
@@ -240,11 +265,7 @@ class Action(SubR):
         sel.add(
             (
                 Actions.ESCAPE,  # escape sequence
-                [
-                    self.esc(ret=[w.status]),
-                    ADDI(w.status, w.status, 32),
-                    uart.write(w.status),
-                ],
+                [self.esc(ret=[w.status]), esccode(w.status)],
             )
         )
         sel.add(
