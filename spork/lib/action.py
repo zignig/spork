@@ -145,25 +145,34 @@ class Escaper(SubR):
         sel2 = self.sel2
         sel3 = self.sel3
 
-        self.stringer.has_next = "has another char"
+        self.stringer.has_next = "2 char , start 1"
         self.stringer.nomore = "no more"
         # Single char selector
         sel.add(("A", MOVI(w.status, EscKeys.UP)))
         sel.add(("B", MOVI(w.status, EscKeys.DOWN)))
         sel.add(("C", MOVI(w.status, EscKeys.RIGHT)))
         sel.add(("D", MOVI(w.status, EscKeys.LEFT)))
-        sel.add(("2", MOVI(w.status, EscKeys.INS)))
         sel.add(("3", MOVI(w.status, EscKeys.DEL)))
         sel.add(("4", MOVI(w.status, EscKeys.END)))
         sel.add(("5", MOVI(w.status, EscKeys.PGUP)))
         sel.add(("6", MOVI(w.status, EscKeys.PGDOWN)))
         # second char @ 1
+        sel2.add(("~", MOVI(w.status, EscKeys.HOME)))
         sel2.add(("1", MOVI(w.status, EscKeys.F1)))
         sel2.add(("2", MOVI(w.status, EscKeys.F2)))
         sel2.add(("3", MOVI(w.status, EscKeys.F3)))
         sel2.add(("4", MOVI(w.status, EscKeys.F4)))
         sel2.add(("5", MOVI(w.status, EscKeys.F5)))
-        sel2.add(("6", MOVI(w.status, EscKeys.F6)))
+        # Weird Jump in keys ?
+        sel2.add(("7", MOVI(w.status, EscKeys.F6)))
+        sel2.add(("8", MOVI(w.status, EscKeys.F7)))
+        sel2.add(("9", MOVI(w.status, EscKeys.F8)))
+        # second char @ 2
+        sel3.add(("~", MOVI(w.status, EscKeys.INS)))
+        sel3.add(("0", MOVI(w.status, EscKeys.F9)))
+        sel3.add(("1", MOVI(w.status, EscKeys.F10)))
+        sel3.add(("3", MOVI(w.status, EscKeys.F11)))
+        sel3.add(("4", MOVI(w.status, EscKeys.F12)))
         return [
             Rem("Check if there are any more chars"),
             Rem("have to wait for the next char to arrive"),
@@ -178,26 +187,34 @@ class Escaper(SubR):
             BEQ(ll.nomore),
             Rem("Consumes the ["),
             uart.read(ret=[w.char, w.status]),
-            uart.write(w.char),
+            # uart.write(w.char),
             CMPI(w.status, 0),
             BEQ(ll.nomore),
             Rem("directions"),
-            [CMPI(w.char, "1"), BEQ(ll.double1)],
-            [CMPI(w.char, "2"), BEQ(ll.double2)],
+            Rem("check for double char entries"),
+            [CMPI(w.char, ord("1")), BEQ(ll.double1)],
+            [CMPI(w.char, ord("2")), BEQ(ll.double2)],
             Rem("Single char escape code"),
             Rem("select char and map to Enum"),
             sel(),
             J(ll.cont),
             ll("double1"),
+            Rem("Check for a third char"),
+            uart.read(ret=[w.char, w.status]),
+            # uart.write(w.char),
+            CMPI(w.status, 0),
+            BEQ(ll.cont),
             sel2(),
             J(ll.cont),
             ll("double2"),
+            uart.read(ret=[w.char, w.status]),
+            # uart.write(w.char),
+            CMPI(w.status, 0),
+            BEQ(ll.cont),
             sel3(),
             J(ll.cont),
             ll("nomore"),
             MOVI(w.status, EscKeys.ESC),
-            self.stringer.nomore(w.temp),
-            uart.writestring(w.temp),
             ll("cont"),
             ll("end"),
         ]
