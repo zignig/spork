@@ -42,8 +42,8 @@ class EscCode(SubR):
             LD(w.value, w.address, 0),
             Rem("offsets are relative"),
             ADD(w.value, w.value, w.address),
-            ws(w.value),
             u.cr(),
+            ws(w.value),
             ll("end"),
         ]
 

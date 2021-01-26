@@ -27,6 +27,8 @@ from rich import print
     [ ] echo
 """
 
+# TODO add a working cursor
+
 
 class CharPad(CodeObject):
     """

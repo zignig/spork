@@ -31,18 +31,18 @@ The 'spork' folder has the current sections
 TODO
 
 - [ ] Use checksum on HexLoader
-- [ ] ANSI terminal codes
-- [ ] Command search
+- [X] ANSI terminal codes
+- [X] Command search
 - [ ] RLE encode the banner
 - [ ] Debug Symbols
-- [ ] Tree menu on commands
-- [ ] Escape code parser
+- [ ] Tree menu on commands !! see radix tree
+- [X] Escape code parser
 - [ ] Triple check the bootload sequence
-- [ ] Fix the warmboot fail
+- [X] Fix the warmboot fail
 
 HEXLOADER
 
 - [ ] Timeout
 - [ ] : id starter
-- [ ] Checksum with blanking
-- [ ] as a SubR for multi boot
+- [ ] Checksum with blanking ! Kermit borked
+- [X] as a SubR for multi boot ! need to block and ROM
