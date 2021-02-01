@@ -124,6 +124,7 @@ class FWError(Exception):
 class PostFix:
     # TODO make this sequential
     _postfixes = []
+    _post_counter = 0
 
     def __init__(self):
         self.postfix = None
@@ -132,7 +133,9 @@ class PostFix:
         counter = 0
         while True:
             if not postfix:
-                postfix = "_{:04X}".format(random.randrange(2 ** bits))
+                # postfix = "_{:04X}".format(random.randrange(2 ** bits))
+                postfix = "_{:04X}".format(PostFix._post_counter)
+                PostFix._post_counter += 1
             if postfix not in PostFix._postfixes:
                 PostFix._postfixes += postfix
                 return postfix
