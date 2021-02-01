@@ -35,16 +35,18 @@ class EscCode(SubR):
         ws = u.writestring
         wh = u.writeHex
         return [
+            # Zero start
             SUBI(w.number, w.number, 1),
             Rem("Grab the starting address of the table"),
             MOVR(w.address, "EscKeys"),
+            Rem("Load the address"),
             ADD(w.address, w.address, w.number),
+            Rem("Get the value"),
             LD(w.value, w.address, 0),
-            Rem("offsets are relative"),
+            Rem("offsets are relative, add to offset"),
             ADD(w.value, w.value, w.address),
             u.cr(),
             ws(w.value),
-            ll("end"),
         ]
 
 
@@ -286,6 +288,7 @@ class Action(SubR):
             )
         )
         sel.add(
+            # make this an escape sequence, to process the same as the outers.
             (
                 Actions.BACKSPACE,  # escape sequence
                 [

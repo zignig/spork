@@ -51,8 +51,6 @@ def Init(w, reg):
         Rem("reset the crc"),
         MOVI(w.temp, 1),
         STXA(w.temp, reg.crc.reset),
-        Rem("Move the start pointer into register for later jumpage"),
-        MOVR(w.address, "end_of_data"),
     ]
 
 
@@ -62,10 +60,11 @@ class show(Command):
             self.locals = ["temp"]
             # mark the SubR so it is included without
             # being called
+            # IF you don't mark it , the code will not be included.
             self.mark()
 
         def instr(self):
-            w = self.w
+            # show the escape stings.
             s = dumpEsc()
             return [s()]
 
@@ -74,6 +73,8 @@ class show(Command):
 
 
 class ON(Command):
+    " switch on the led "
+
     class _ledon(SubR):
         def setup(self):
             self.locals = ["temp"]
@@ -90,6 +91,8 @@ class ON(Command):
 
 
 class OFF(Command):
+    " switch off the led "
+
     class _ledoff(SubR):
         def setup(self):
             self.locals = ["temp"]
@@ -142,16 +145,20 @@ class Bootloader(Firmware):
         st.prompt = self.LOADER_ID + ">"
         st.date = str(datetime.datetime.today()) + "\r\n"
         st.backspace = "<BS>"
+        " load the ansi codes that are used "
         AnsiStrings(st)
         term = Term()
 
+        " some global _fixed_ references "
         self.globals.led = 0
         self.globals.cursor = 0
         self.globals.heap = 0
 
+        " build some data and subroutines "
         console = Console()
         action = Action()
 
+        " list of instructions to run "
         return [
             Rem("Write the prelude strings"),
             self.stringer.banner(w.temp),
@@ -180,6 +187,7 @@ class Bootloader(Firmware):
         ]
 
 
+" load this "
 firmware = Bootloader
 
 if __name__ == "__main__":
