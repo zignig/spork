@@ -1,11 +1,15 @@
 #!/usr/bin/python
 # minimal shell for the boneless
 
+# the instruction set
+# TODO port to allocator IR
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
+# the firmare constructs
 from spork.firmware.base import *
 
+# the library code
 from spork.lib.uartIO import UART
 from spork.lib.console import Console
 from spork.lib.action import Action, dumpEsc
@@ -13,6 +17,7 @@ from spork.lib.stringer import Stringer
 from spork.lib.ansi_codes import AnsiStrings, Term
 from spork.firmware.firmware import Firmware
 
+# command infrastructure
 from spork.lib.commands import MetaCommand, Command
 
 # these automatically get added to the firmware
@@ -21,6 +26,7 @@ import spork.lib.base_command
 # TODO compress the banner, it is phat.
 from spork.lib.banner import banner
 
+# date stamp
 import datetime
 
 from spork.logger import logger
@@ -34,6 +40,8 @@ An interactive console shell for the Boneless-v3 cpu"
 
 
 def Init(w, reg):
+    " Run this code on reset , device init "
+    # TODO find best way to attach this to the peripherals.
     return [
         Rem("Set up the devices"),
         Rem("enable the led"),
@@ -54,7 +62,10 @@ def Init(w, reg):
     ]
 
 
+# A subclass of Command will add the name into the command line search list
 class show(Command):
+    " List the escape code Enumerator names"
+
     class _show(SubR):
         def setup(self):
             self.locals = ["temp"]
@@ -121,16 +132,18 @@ class Bootloader(Firmware):
         " code before the main loop "
         return Init(self.w, self.reg)
 
+    # this code is in spork/firmware/base.py
     def extra(self):
         "add in the commands"
         return MetaCommand.code()
 
+    # Code objects need to return a list of ASM instructions to do stuff.
     def instr(self):
         " Locals and the attached subroutine in the main loop "
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        # create the subroutine
+        # create the subroutines
         uart = UART()
         List = MetaCommand.List()
         # stringer global
@@ -147,6 +160,7 @@ class Bootloader(Firmware):
         st.backspace = "<BS>"
         " load the ansi codes that are used "
         AnsiStrings(st)
+        " make a terminal code object "
         term = Term()
 
         " some global _fixed_ references "
@@ -161,10 +175,13 @@ class Bootloader(Firmware):
         " list of instructions to run "
         return [
             Rem("Write the prelude strings"),
-            # self.stringer.banner(w.temp),
-            # uart.writestring(w.temp),
+            Rem("Banner"),
+            self.stringer.banner(w.temp),
+            uart.writestring(w.temp),
+            Rem("Time Stamp"),
             self.stringer.date(w.temp),
             uart.writestring(w.temp),
+            Rem("Hello"),
             self.stringer.greetings(w.temp),
             uart.writestring(w.temp),
             uart.cr(),
