@@ -292,8 +292,10 @@ class Action(SubR):
             (
                 Actions.BACKSPACE,  # escape sequence
                 [
-                    self.stringer.backspace(w.temp),
-                    uart.writestring(w.temp),
+                    # self.stringer.backspace(w.temp),
+                    # uart.writestring(w.temp),
+                    MOVI(w.status, EscKeys.BS),
+                    esccode(w.status)
                     # self.stringer.clearline(w.temp),
                     # term(w.temp),
                     # self.stringer.start(w.temp),

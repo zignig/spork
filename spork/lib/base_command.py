@@ -41,7 +41,7 @@ class ClearLine(Command):
 
 
 class ClearScreen(Command):
-    name = "cls"
+    name = "clear"
 
     class _cls(SubR):
         def setup(self):

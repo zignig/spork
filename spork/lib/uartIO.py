@@ -366,6 +366,7 @@ class CoreDump(SubR):
             # ho(w.value),
             # uart.sp(),
             ANDI(w.slice, w.counter, 0x1F),
+            # ANDI(w.slice, w.counter, 0x0F),
             # ho(w.slice),
             # uart.cr(),
             CMPI(w.slice, 0),

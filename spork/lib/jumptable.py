@@ -27,3 +27,8 @@ ref2:
 end:
 
 """
+
+
+class JumpTable:
+    def __init__(self):
+        self.commands = {}
