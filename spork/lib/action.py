@@ -71,6 +71,8 @@ class dumpEsc(SubR):
             ADD(w.address, w.address, w.counter),
             LD(w.value, w.address, 0),
             ADD(w.value, w.value, w.address),
+            wh(w.counter),
+            u.sp(),
             ws(w.value),
             u.cr(),
             ADDI(w.counter, w.counter, 1),

@@ -3,6 +3,7 @@ import pprint
 import math
 
 from ..logger import logger
+from ..upload import _crc
 
 log = logger(__name__)
 from boneless.arch.opcode import *
@@ -132,7 +133,7 @@ class Firmware:
         for i in asm:
             full_hex += hex_string(i)
         # will be the checksum
-        full_hex += hex_string(0xFFFF)
+        full_hex += hex_string(_crc(asm))
         return full_hex
 
     def disassemble(self):

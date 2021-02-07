@@ -4,23 +4,23 @@ This is some nmigen infrastructure for the Boneless-v3 gateware CPU
 
 The 'spork' folder has the current sections
 
-##cores/
+## cores/
 
     Elboratable Gateware
 
-##cpu/
+## cpu/
 
     A Boneless-v3 with a 16bit CSR bus
 
-##firmware/
+## firmware/
 
     Scaffolding and structure for building binaries
 
-#lib/
+# lib/
 
-    Some ASM lib.
+    Some function librariesies
 
-#peripheral/
+# peripheral/
 
     Gateware that will name and connect to the CSR bus
 
@@ -30,7 +30,7 @@ The 'spork' folder has the current sections
 
 TODO
 
-- [ ] Use checksum on HexLoader
+- [X] Use checksum on HexLoader
 - [X] ANSI terminal codes
 - [X] Command search
 - [ ] RLE encode the banner
@@ -44,5 +44,5 @@ HEXLOADER
 
 - [ ] Timeout
 - [ ] : id starter
-- [ ] Checksum with blanking ! Kermit borked
+- [X] Checksum with - no blanking 
 - [X] as a SubR for multi boot ! need to block and ROM

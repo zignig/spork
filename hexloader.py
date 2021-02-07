@@ -48,6 +48,7 @@ class LoaderAsSub(SubR):
         # make some ASM labels that will not collide.
         ll = LocalLabels()
         self.globals.counter = 0
+        self.globals.boot_target = 0
 
         # return an array of instructions , this has a main loop wrapped around it
         return [
@@ -90,11 +91,11 @@ class LoaderAsSub(SubR):
             ll("checksum_loop"),
             Rem("get the value"),
             LD(w.value, w.address, 0),
-            STXA(w.value, self.reg.crc.byte),
-            Rem("shift for high byte"),
-            NOP(0),
-            SRLI(w.value, w.value, 8),
-            STXA(w.value, self.reg.crc.byte),
+            STXA(w.value, self.reg.crc.word),
+            # STXA(w.value, self.reg.crc.byte),
+            # Rem("shift for high byte"),
+            # SRLI(w.value, w.value, 8),
+            # STXA(w.value, self.reg.crc.byte),
             Rem("advance the counters"),
             ADDI(w.address, w.address, 1),
             SUBI(w.counter, w.counter, 1),
@@ -102,8 +103,12 @@ class LoaderAsSub(SubR):
             BNE(ll.checksum_loop),
             Rem("load the checksum value"),
             LDXA(w.value, self.reg.crc.crc),
-            Rem("write out the checksum for now"),
-            ho(w.value),
+            # Rem("write out the checksum for now"),
+            # ho(w.value),
+            # ho(w.checksum),
+            Rem("Compare the calculated CS with the bootloader value"),
+            CMP(w.value, w.checksum),
+            BNE(ll.check_fail),
             Rem("And boot into your newly minted firmware"),
             Rem("Clear the working registers"),
             MOVR(w.address, "end_of_data"),
@@ -116,10 +121,15 @@ class LoaderAsSub(SubR):
             MOVI(R4, 0),
             MOVI(R5, 0),
             J("end_of_data"),
+            ll("check_fail"),
+            MOVI(w.char, 70),  # F for checksum fail
+            wc(w.char),
+            J(ll.end),
             ll("err"),
             MOVI(w.char, 33),  # ! for error
             wc(w.char),
             Rem("any error will reset the bootloader"),
+            ll("end"),
         ]
 
 
@@ -138,12 +148,22 @@ class HexLoader(Firmware):
 
     def setup(self):
         # Define the registers used in this firmware "
-        # self.w.req(["value", "counter", "checksum", "address", "status", "char"])
+        self.w.req(["value", "counter", "checksum", "address", "status", "char"])
         pass
 
     def instr(self):
+        # TODO , make the target
         as_sub = LoaderAsSub()
-        return [as_sub()]
+        self.globals.boot_target = 0
+        w = self.w
+        return [
+            Rem("stash the target address"),
+            Rem("so it can be used to load to other addresses"),
+            self.globals.boot_target(w.address),
+            MOVR(w.value, "end_of_data"),
+            ST(w.value, w.address, 0),
+            as_sub(),
+        ]
 
 
 firmware = HexLoader

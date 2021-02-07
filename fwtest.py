@@ -97,7 +97,7 @@ class TestSpork(Elaboratable):
             # the warmboot instance
             wb = warm.warm
             self.er = ExternalReset(
-                wb.select, wb.ext_image, wb.ext_boot, dtr, debug=True
+                wb.select, wb.ext_image, wb.ext_boot, dtr, debug=False
             )
         # else:
         #    warm = FakeWarm()
