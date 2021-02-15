@@ -99,6 +99,8 @@ class LoaderAsSub(SubR):
             Rem("advance the counters"),
             ADDI(w.address, w.address, 1),
             SUBI(w.counter, w.counter, 1),
+            # MOVI(w.char, 35),  # print hash
+            # wc(w.char),
             CMPI(w.counter, 0),
             BNE(ll.checksum_loop),
             Rem("load the checksum value"),

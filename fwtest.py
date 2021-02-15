@@ -64,6 +64,9 @@ class TestSpork(Elaboratable):
         timer = TimerPeripheral(32)
         cpu.add_peripheral(timer)
 
+        timer2 = TimerPeripheral(32)
+        cpu.add_peripheral(timer2)
+
         # A blinky thing
         led = platform.request("led")
         statusled = LedPeripheral(led)
