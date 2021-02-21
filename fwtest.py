@@ -136,6 +136,7 @@ from hexloader import HexLoader
 # from bootloader import Bootloader
 from nmigen.hdl.ir import UnusedElaboratable
 
+FIRM = HexLoader
 
 # TODO this needs to be moved into the spork
 def build(TheFirmware, mem_size=4096, sim=False, detail=False):
@@ -194,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument("-g", "--generate", action="store_true")
     args = parser.parse_args()
 
-    fw = HexLoader  # use this firmware
+    fw = FIRM  # use this firmware
 
     if args.simulate:
         spork = build(fw, mem_size=1024)
