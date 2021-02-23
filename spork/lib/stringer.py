@@ -71,7 +71,7 @@ class SingleString:
                 counter += 2
 
             # set the high bit for compact string
-            length = len(self.value) | (1 << 15)
+            length = length | (1 << 15)
             log.debug("length {0:016b}".format(length))
         else:
             for c in self.value:

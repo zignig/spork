@@ -51,15 +51,24 @@ class JumpTable:
     def __init__(self, enumer):
         self.commands = {}
         self.items = []
+        self.labels = LocalLabels()
+        self.labels("unbound")
         if type(enumer) is not type(IntEnum):
             raise ("Not an enumeration")
+        self.length = len(enumer)
         for i in enumer:
             log.critical(i)
-            self.items.append(i)
+            self.items.append((i, "action"))
+
+    def __repr__(self):
+        s = ""
+        s += str(self.items)
+        return s
 
     def __call__(self, reg):
         log.critical("Return code")
-        return []
+
+        return [Rem("Jump vector table"), self.labels.unbound]
 
 
 if __name__ == "__main__":

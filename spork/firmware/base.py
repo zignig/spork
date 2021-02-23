@@ -273,38 +273,6 @@ class Window:
     # TODO spill and reuse registers
 
 
-class VectorTable:
-
-    " Vector Table "
-
-    _size = 8
-
-    def __init__(self, name="no_name"):
-        self.labels = OrderedDict()
-        self.name = name
-
-    def __getattr__(self, key):
-        if key in self.labels:
-            print("get ", key)
-            return self.lables[key]
-
-    def __setattr__(self, key, value):
-        self.__dict__[key] = value
-        if key not in ["labels", "name"]:
-            print("set ", key, " to ", value)
-            self.labels[key] = value
-
-    def dump(self):
-        data = []
-        for i in self.labels.items():
-            data.append([L(i[0]), AR(i[1])])
-        l = len(data)
-        if l < self._size:
-            for i in range(self._size - l):
-                data.append([0])
-        return data
-
-
 class MetaSub(type):
     subroutines = []
     """
@@ -471,7 +439,7 @@ class SubR(metaclass=MetaSub):
         data += [ADJW(-self._size)]  # window shift up
         data += [LDW(self.w.fp, 0)]  # save window
         data += [Rem("--- ENTER ---")]
-        data += self.instr()  # all it's instructions
+        data += [self.instr()]  # all it's instructions
         data += [Rem("--- EXIT  ---")]
         data += [ADJW(self._size), JR(R7, 0)]  # shift window down
-        return [data]
+        return data

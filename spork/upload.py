@@ -7,6 +7,9 @@ import serial
 import time
 
 from rich import print
+from .logger import logger
+
+log = logger(__name__)
 
 
 # CRC
@@ -57,11 +60,13 @@ class Uploader:
 
         args = parser.parse_args()
         if args.list:
+            log.info("Listing information")
             print(firmware.fw.reg.show())
             print(firmware.fw.code())
             print(firmware.hex_blob)
         else:
             if reset:
+                log.info("Reset device")
                 self.ser.open()
                 # warmboot
                 self.toggle(4)
@@ -71,6 +76,7 @@ class Uploader:
                 # wait for the pll to settle
                 time.sleep(0.2)
                 counter = 0
+                log.info("Upload Firmware")
                 for i in grouper(self.hex_blob, 4):
                     data = "".join(i).encode()
                     # print(data)
@@ -81,9 +87,11 @@ class Uploader:
                 # a = self.ser.readall()
                 # print(a)
             if console:
+                log.info("Create Terminal")
                 term = Miniterm(self.ser)
                 term.set_rx_encoding("utf-8")
                 term.set_tx_encoding("utf-8")
                 term.exit_character = "\x1d"
+                log.info("Attach Terminal")
                 term.start()
                 term.join(True)

@@ -205,14 +205,12 @@ class Escaper(SubR):
             ll("double1"),
             Rem("Check for a third char"),
             uart.read(ret=[w.char, w.status]),
-            # uart.write(w.char),
             CMPI(w.status, 0),
             BEQ(ll.cont),
             sel2(),
             J(ll.cont),
             ll("double2"),
             uart.read(ret=[w.char, w.status]),
-            # uart.write(w.char),
             CMPI(w.status, 0),
             BEQ(ll.cont),
             sel3(),
@@ -293,16 +291,7 @@ class Action(SubR):
             # make this an escape sequence, to process the same as the outers.
             (
                 Actions.BACKSPACE,  # escape sequence
-                [
-                    # self.stringer.backspace(w.temp),
-                    # uart.writestring(w.temp),
-                    MOVI(w.status, EscKeys.BS),
-                    esccode(w.status)
-                    # self.stringer.clearline(w.temp),
-                    # term(w.temp),
-                    # self.stringer.start(w.temp),
-                    # term(w.temp),
-                ],
+                [MOVI(w.status, EscKeys.BS), esccode(w.status)],
             )
         )
         sel.add(
