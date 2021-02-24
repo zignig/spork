@@ -198,11 +198,13 @@ class Rem:
 
 
 class LocalLabels:
-    """ Local random labels for inside subr
+    """ Local sequential label for inside subr
         create a local labeler
         ll = LocalLabels()
         make a label - ll('test')
         reference the label - ll.test
+
+        local labels that don't collide
     """
 
     def __init__(self):
@@ -226,6 +228,7 @@ class LocalLabels:
 class Window:
     """ Allocatable register window 
     this needs to be converted for the register allocator
+    TODO : fix for the allocator
     """
 
     _REGS = [R0, R1, R2, R3, R4, R5, R6, R7]
@@ -347,6 +350,7 @@ class SubR(metaclass=MetaSub):
         self.setup()
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
+
         if hasattr(self, "params"):
             self.length = len(self.params)
             for i in self.params:
@@ -368,7 +372,6 @@ class SubR(metaclass=MetaSub):
     @classmethod
     def mark(cls):
         " include code if the subroutine has been called "
-        #        print("marked",cls)
         cls._called = True
 
     def setup(self):
@@ -377,6 +380,8 @@ class SubR(metaclass=MetaSub):
 
     def build(self):
         # build the objects and stuff
+        # log.critical(self)
+        # log.info("No Build me")
         pass
 
     def __call__(self, *args, **kwargs):

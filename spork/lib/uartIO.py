@@ -365,6 +365,7 @@ class CoreDump(SubR):
             LD(w.value, w.counter, 0),  # load the data from the address
             # ho(w.value),
             # uart.sp(),
+            Rem("every 32 words make a line break"),
             ANDI(w.slice, w.counter, 0x1F),
             # ANDI(w.slice, w.counter, 0x0F),
             # ho(w.slice),

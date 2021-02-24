@@ -4,27 +4,27 @@ This is some nmigen infrastructure for the Boneless-v3 gateware CPU
 
 The 'spork' folder has the current sections
 
-## cores/
+## cores
 
     Elboratable Gateware
 
-## cpu/
+## cpu
 
     A Boneless-v3 with a 16bit CSR bus
 
-## firmware/
+## firmware
 
     Scaffolding and structure for building binaries
 
-# lib/
+# lib
 
     Some function librariesies
 
-# peripheral/
+# peripheral
 
     Gateware that will name and connect to the CSR bus
 
-#utils/
+# utils
 
 
 

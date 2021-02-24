@@ -48,6 +48,13 @@ class TestEnum(IntEnum):
 
 
 class JumpTable:
+    """
+     The jump table takes a bounded integer and runs that code
+    
+    enumer : a list of integers to bind
+
+    """
+
     def __init__(self, enumer):
         self.commands = {}
         self.items = []
@@ -68,7 +75,11 @@ class JumpTable:
     def __call__(self, reg):
         log.critical("Return code")
 
-        return [Rem("Jump vector table"), self.labels.unbound]
+        return [
+            Rem("Jump vector table"),
+            self.labels("unbound"),
+            J(self.labels.unbound),
+        ]
 
 
 if __name__ == "__main__":

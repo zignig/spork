@@ -140,12 +140,20 @@ class Bootloader(Firmware):
     # Code objects need to return a list of ASM instructions to do stuff.
     def instr(self):
         " Locals and the attached subroutine in the main loop "
+        " my window "
         w = self.w
+        " my registers "
         reg = self.reg
+        " make some label that are local"
         ll = LocalLabels()
         # create the subroutines
+        """ 
+        by making the the SubR are available , if they are called 
+        if they are used they will be added to the firmware.
+        """
         uart = UART()
         List = MetaCommand.List()
+        " global strings, if tihey are used they are added"
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
@@ -158,6 +166,7 @@ class Bootloader(Firmware):
         st.prompt = self.LOADER_ID + ">"
         st.date = str(datetime.datetime.today()) + "\r\n"
         st.backspace = "<BS>"
+
         " load the ansi codes that are used "
         AnsiStrings(st)
         " make a terminal code object "
@@ -167,12 +176,14 @@ class Bootloader(Firmware):
         self.globals.led = 0
         self.globals.cursor = 0
         self.globals.heap = 0
+        # TODO make globals typesafe
 
         " build some data and subroutines "
         console = Console()
         action = Action()
 
         " list of instructions to run "
+        " main loop "
         return [
             Rem("Write the prelude strings"),
             Rem("Banner"),
