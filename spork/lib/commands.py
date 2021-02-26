@@ -252,14 +252,6 @@ class Command(metaclass=MetaCommand):
     def label(self):
         return self.name + self.post_fix
 
-    def ref(self, val):
-        " ref resolver for assembler"
-
-        def relocate(resolver):
-            return resolver(val)
-
-        return relocate
-
     def instr(self):
         if self.call == None:
             return []
@@ -270,7 +262,8 @@ class Command(metaclass=MetaCommand):
     def code(self):
         return [
             L(self.label),
-            self.ref(self.next),
+            #            self.ref(self.next),
+            Ref(self.next),
             self.commname.as_mem(),
             ADJW(-8),
             LDW(R6, 0),

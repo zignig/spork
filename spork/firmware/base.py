@@ -19,6 +19,7 @@ __all__ = [
     "CodeObject",
     "Inline",
     "FWError",
+    "Ref",
 ]
 
 __done__ = False
@@ -121,8 +122,25 @@ class FWError(Exception):
     pass
 
 
+class Ref:
+    """ Create a reference to another symbol
+        assembler will make this into a locate integer count to the label
+    """
+
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, name):
+        def relocate(resolver):
+            return resolver(self.name)
+
+        return relocate
+
+    def __repr__(self):
+        return 'Ref("' + self.name + '")'
+
+
 class PostFix:
-    # TODO make this sequential
     _postfixes = []
     _post_counter = 0
 

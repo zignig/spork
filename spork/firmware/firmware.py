@@ -124,6 +124,12 @@ class Firmware:
 
     def hex(self):
         def hex_string(i):
+            # encode negative numbers
+            if i < 0:
+                # negate
+                i = -i
+                # set the sign bit
+                i = i | (1 << 15)
             return "{:04X}".format(i)
 
         asm = self.assemble()

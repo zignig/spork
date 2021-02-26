@@ -97,30 +97,12 @@ class EscString(CodeObject):
         self.st.all()
         self._postfix = self.st._postfix
 
-    def ref(self, val):
-        " ref resolver for assembler"
-
-        def relocate(resolver):
-            return resolver(val)
-
-        return relocate
-
     def code(self):
-        class WriteKey(SubR):
-            def setup(self):
-                self.params = ["value"]
-                self.local = ["reference"]
-
-            def instr(self):
-                [Rem("this should be good")]
-
-        wk = WriteKey()
-        wk.mark()
         m = [L(self.enum.__qualname__), Rem(self.enum.__qualname__), Rem(self._postfix)]
         for i in self.enum:
             lref = str(i.value) + self._postfix
-            m.append(Rem(lref))
-            m.append(self.ref(lref))
+            # m.append(Rem(lref))
+            m.append(Ref(lref))
         return m
 
 
