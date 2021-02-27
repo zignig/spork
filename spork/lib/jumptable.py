@@ -85,8 +85,7 @@ class JumpTable:
 
     """
 
-    def __init__(self, enumer, register):
-        self.register = register
+    def __init__(self, enumer):
         self.items = []
         self.labels = LocalLabels()
         self.labels("unbound")
@@ -100,8 +99,6 @@ class JumpTable:
     def add(self, item):
         if isinstance(item, list):
             for i in item:
-                log.critical("many")
-                log.critical(i)
                 self.add(i)
         else:
             if len(item) != 2:
@@ -125,7 +122,7 @@ class JumpTable:
 
         return [
             Rem("Jump vector table"),
-            JVT(self.register, self.labels.vector_start),
+            JVT(reg, self.labels.vector_start),
             self.labels("vector_start"),
             jump_list,
             Rem("End vector table"),
@@ -140,6 +137,6 @@ if __name__ == "__main__":
     from .action_list import EscKeys
 
     log.critical("JUMP TABLE")
-    jt = JumpTable(EscKeys, R0)
+    jt = JumpTable(EscKeys)
     jt.add([(EscKeys.F1, [Rem("hello")]), (EscKeys.BS, [MOVI(R0, 0xFFFF)])])
-    pprint.pprint(jt(0))
+    pprint.pprint(jt(R0))
