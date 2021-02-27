@@ -137,7 +137,7 @@ class Ref:
         return relocate
 
     def __repr__(self):
-        return 'Ref("' + self.name + '")'
+        return 'Ref("' + str(self.name) + '")'
 
 
 class PostFix:
