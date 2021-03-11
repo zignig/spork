@@ -17,6 +17,8 @@ from spork.lib.stringer import Stringer
 from spork.lib.ansi_codes import AnsiStrings, Term
 from spork.firmware.firmware import Firmware
 
+from spork.lib.alloc import Alloc
+
 # command infrastructure
 from spork.lib.commands import MetaCommand, Command
 
@@ -38,31 +40,42 @@ log = logger(__name__)
 An interactive console shell for the Boneless-v3 cpu"
 """
 
-
-def Init(w, reg):
+# TODO convert to inline
+class Init(Inline):
     " Run this code on reset , device init "
     # TODO find best way to attach this to the peripherals.
-    return [
-        Rem("Set up the devices"),
-        Rem("enable the led"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.statusled.en),
-        Rem("load the timer"),
-        MOVI(w.temp, 0xFFFF),
-        STXA(w.temp, reg.timer.reload_0),
-        MOVI(w.temp, 0x00FF),
-        STXA(w.temp, reg.timer.reload_1),
-        Rem("enable timer and events"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.timer.en),
-        STXA(w.temp, reg.timer.ev.enable),
-        Rem("reset the crc"),
-        MOVI(w.temp, 1),
-        STXA(w.temp, reg.crc.reset),
-    ]
+    def instr(self):
+        al = Alloc()
+        w = self.w
+        reg = self.reg
+        self.globals.heap = 0
+        return [
+            Rem("Set up the devices"),
+            Rem("enable the led"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.statusled.en),
+            Rem("load the timer"),
+            MOVI(w.temp, 0xFFFF),
+            STXA(w.temp, reg.timer.reload_0),
+            MOVI(w.temp, 0x00FF),
+            STXA(w.temp, reg.timer.reload_1),
+            Rem("enable timer and events"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.timer.en),
+            STXA(w.temp, reg.timer.ev.enable),
+            Rem("reset the crc"),
+            MOVI(w.temp, 1),
+            STXA(w.temp, reg.crc.reset),
+            Rem("Reset the heap"),
+            # self.globals.heap(w.temp),
+            # ST(w.temp,w.temp,0),
+            # MOVI(w.temp,32),
+            # al(w.temp,ret=[w.pad_address]),
+        ]
 
 
 # A subclass of Command will add the name into the command line search list
+# TODO limit the auto insert.
 class show(Command):
     " List the escape code Enumerator names"
 
@@ -130,7 +143,8 @@ class Bootloader(Firmware):
 
     def prelude(self):
         " code before the main loop "
-        return Init(self.w, self.reg)
+        i = Init(self.w)
+        return i()
 
     # this code is in spork/firmware/base.py
     def extra(self):
@@ -153,7 +167,7 @@ class Bootloader(Firmware):
         """
         uart = UART()
         List = MetaCommand.List()
-        " global strings, if tihey are used they are added"
+        " global strings, if they are used they are added"
         # stringer global
         st = self.stringer
         st.loader_id = "\r\n" + self.LOADER_ID
@@ -175,7 +189,6 @@ class Bootloader(Firmware):
         " some global _fixed_ references "
         self.globals.led = 0
         self.globals.cursor = 0
-        self.globals.heap = 0
         # TODO make globals typesafe
 
         " build some data and subroutines "
