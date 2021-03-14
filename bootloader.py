@@ -67,10 +67,11 @@ class Init(Inline):
             MOVI(w.temp, 1),
             STXA(w.temp, reg.crc.reset),
             Rem("Reset the heap"),
-            # self.globals.heap(w.temp),
-            # ST(w.temp,w.temp,0),
-            # MOVI(w.temp,32),
-            # al(w.temp,ret=[w.pad_address]),
+            self.globals.heap(w.temp),
+            MOVR(w.pad_address, "end_of_data"),
+            ST(w.pad_address, w.temp, 0),
+            MOVI(w.temp, 1),
+            al(w.temp, ret=[w.temp]),
         ]
 
 
@@ -94,6 +95,33 @@ class show(Command):
 
     # Bind the subroutine to the code
     call = _show()
+
+
+class al(Command):
+    " allocation testing "
+
+    class _al_test(SubR):
+        def setup(self):
+            self.locals = ["temp"]
+            # mark the SubR so it is included without
+            # being called
+            self.mark()
+
+        def instr(self):
+            w = self.w
+            al = Alloc()
+            u = UART()
+            ho = u.writeHex
+            return [
+                MOVI(w.temp, 1024),
+                al(w.temp),
+                self.globals.heap(w.temp),
+                LD(w.temp, w.temp, 0),
+                ho(w.temp),
+            ]
+
+    # Bind the subroutine to the code
+    call = _al_test()
 
 
 class ON(Command):
@@ -200,8 +228,8 @@ class Bootloader(Firmware):
         return [
             Rem("Write the prelude strings"),
             Rem("Banner"),
-            self.stringer.banner(w.temp),
-            uart.writestring(w.temp),
+            # self.stringer.banner(w.temp),
+            ##uart.writestring(w.temp),
             Rem("Time Stamp"),
             self.stringer.date(w.temp),
             uart.writestring(w.temp),

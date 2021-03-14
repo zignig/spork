@@ -5,16 +5,20 @@ spork/peripheral/switch.py:3:# TODO , bind multiple switches
 spork/firmware/runtime.py:66:#TODO align 8
 spork/firmware/allocator.py:184:            # TODO add in window pointer and jump target
 spork/firmware/allocator.py:199:        # TODO move this into the allocator
-spork/firmware/base.py:125:    # TODO make this sequential
-spork/firmware/base.py:273:    # TODO spill and reuse registers
-spork/firmware/base.py:346:        self._size = 8  # for later ( stack frames ) TODO
-spork/firmware/base.py:383:        # TODO this will need to be rewritten for the allocator
-spork/firmware/base.py:432:        # TODO This needs to change for the allocator
-spork/lib/uartIO.py:362:            MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
+Binary file spork/firmware/__pycache__/base.cpython-37.pyc matches
+spork/firmware/base.py:249:    TODO : fix for the allocator
+spork/firmware/base.py:294:    # TODO spill and reuse registers
+spork/firmware/base.py:367:        self._size = 1  # for later ( stack frames ) TODO
+spork/firmware/base.py:406:        # TODO this will need to be rewritten for the allocator
+spork/firmware/base.py:455:        # TODO This needs to change for the allocator
+spork/lib/uartIO.py:363:            MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
 spork/lib/console.py:30:# TODO add a working cursor
 spork/lib/console.py:38:    # TODO hard fail on overflow
 spork/lib/console.py:188:                    # TODO make this a vector
 spork/lib/console.py:198:        # TODO if not handle other
+spork/lib/alloc.py:18:        # TODO track the heap pointer in a global
+spork/lib/alloc.py:19:        # TODO warn on low memory hard fail on OOM
+spork/lib/alloc.py:23:        # TODO check bounds and error out
 spork/lib/commands.py:24:# TODO , convert to radix tree ?
 spork/lib/commands.py:115:                # TODO , restructure the headers
 spork/lib/commands.py:234:    # TODO pass down chomped strings
@@ -22,10 +26,17 @@ spork/cores/periph/bus.py:14:    # TODO export in various formats
 spork/cores/periph/bus.py:70:            # TODO this makes a double decoder
 spork/cores/warmboot.py:27:        # TODO fix the internal selector
 bootloader.py:5:# TODO port to allocator IR
-bootloader.py:26:# TODO compress the banner, it is phat.
-bootloader.py:44:    # TODO find best way to attach this to the peripherals.
-bootloader.py:122:    # TODO check requirements
+bootloader.py:28:# TODO compress the banner, it is phat.
+bootloader.py:43:# TODO convert to inline
+bootloader.py:46:    # TODO find best way to attach this to the peripherals.
+bootloader.py:78:# TODO limit the auto insert.
+bootloader.py:135:    # TODO check requirements
+bootloader.py:192:        # TODO make globals typesafe
 Binary file __pycache__/hexloader.cpython-37.pyc matches
+README.md:31:TODO
+.git/logs/HEAD:135:f34fae485a3c3817ba0d553b4e1e4b4bc90911b6 b7626a9d00c8aa04f270659fb05db6b6c285124c Simon Kirkby <obeygiantrobot@gmail.com> 1597506210 +0800	commit: add TODO for string compare
+.git/logs/refs/heads/master:116:f34fae485a3c3817ba0d553b4e1e4b4bc90911b6 b7626a9d00c8aa04f270659fb05db6b6c285124c Simon Kirkby <obeygiantrobot@gmail.com> 1597506210 +0800	commit: add TODO for string compare
+Binary file .git/index matches
 hexloader.py:18:# TODO
 hexloader.py:84:            Rem("TODO, fix checksum"),
 hexloader.py:157:        # TODO , make the target

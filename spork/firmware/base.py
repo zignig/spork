@@ -364,7 +364,7 @@ class SubR(metaclass=MetaSub):
         # return registers to upper window
         self._ret = False
         self._ret_target = []
-        self._size = 8  # for later ( stack frames ) TODO
+        self._size = 1  # for later ( stack frames ) TODO
         self.setup()
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
@@ -413,7 +413,7 @@ class SubR(metaclass=MetaSub):
             target = self.w[self.params[i]].value
             if self.debug:
                 instr += [Rem("Load " + self.params[i])]
-            instr += [ST(source, self.w.fp, -self._size + target)]
+            instr += [ST(source, self.w.fp, -self._size * 8 + target)]
 
         instr += [JAL(self.w.ret, self.name)]
 
@@ -429,12 +429,12 @@ class SubR(metaclass=MetaSub):
                     for i, j in enumerate(vals):
                         source = self.w[self.ret[i]]
                         instr += [Rem("Return " + self.ret[i])]
-                        instr += [LD(j, self.w.fp, -self._size + source.value)]
+                        instr += [LD(j, self.w.fp, -self._size * 8 + source.value)]
                 else:
                     source = vals
                     target = self.w[self.ret[0]].value
                     instr += [Rem("Return " + self.ret[0])]
-                    instr += [LD(source, self.w.fp, -self._size + target)]
+                    instr += [LD(source, self.w.fp, -self._size * 8 + target)]
 
             else:
                 raise ValueError("No return registers exist")
@@ -459,10 +459,10 @@ class SubR(metaclass=MetaSub):
         if self.debug:
             data += [Rem(self.w._name[0:4])]
             data += [Rem(self.w._name[4:8])]
-        data += [ADJW(-self._size)]  # window shift up
+        data += [ADJW(-self._size * 8)]  # window shift up
         data += [LDW(self.w.fp, 0)]  # save window
         data += [Rem("--- ENTER ---")]
         data += [self.instr()]  # all it's instructions
         data += [Rem("--- EXIT  ---")]
-        data += [ADJW(self._size), JR(R7, 0)]  # shift window down
+        data += [ADJW(self._size * 8), JR(R7, 0)]  # shift window down
         return data

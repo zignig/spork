@@ -24,9 +24,11 @@ class Alloc(SubR):
         return [
             Rem("Load the current heap pointer"),
             self.globals.heap(w.heap_pointer),
+            LD(w.current, w.heap_pointer, 0),
             Rem("Copy into the return position"),
-            MOV(w.heap_pointer, w.pointer),
+            MOV(w.pointer, w.current),
             Rem("Move the pointer down size"),
-            ADD(w.current, w.heap_pointer, w.size),
-            ST(w.heap_pointer, w.current, 0),
+            ADD(w.current, w.current, w.size),
+            ADDI(w.current, w.current, 1),
+            ST(w.current, w.heap_pointer, 0),
         ]

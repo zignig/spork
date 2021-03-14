@@ -152,6 +152,7 @@ class Write(SubR):
         reg = self.reg
         ll = LocalLabels()
         return [
+            Rem("Make sure the uart is ready"),
             ll("again"),
             LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
@@ -359,7 +360,10 @@ class CoreDump(SubR):
         return [
             Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
-            MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
+            self.globals.heap(w.endpoint),
+            LD(w.endpoint, w.endpoint, 0),
+            ho(w.endpoint),
+            # MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
             ll("dumper"),
             Rem("current address"),
             LD(w.value, w.counter, 0),  # load the data from the address

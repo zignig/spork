@@ -139,7 +139,7 @@ from nmigen.hdl.ir import UnusedElaboratable
 FIRM = HexLoader
 
 # TODO this needs to be moved into the spork
-def build(TheFirmware, mem_size=4096, sim=False, detail=False):
+def build(TheFirmware, mem_size=8192, sim=False, detail=False):
     # for programming from a firmware file
     if detail:
         print("Testing Spork")

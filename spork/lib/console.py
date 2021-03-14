@@ -167,6 +167,7 @@ class Console(SubR):
                     Rem("^D reset"),
                     self.stringer.warmboot(self.w.temp),
                     self.uart.writestring(self.w.temp),
+                    Rem("Wait for a while"),
                     MOVI(self.w.temp, 0xFFFF),
                     ll("again"),
                     SUBI(self.w.temp, self.w.temp, 1),
