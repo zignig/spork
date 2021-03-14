@@ -124,7 +124,7 @@ class FWError(Exception):
 
 class Ref:
     """ Create a reference to another symbol
-        assembler will make this into a locate integer count to the label
+        assembler will make this into a local integer reference to the label
     """
 
     def __init__(self, name):
@@ -151,7 +151,6 @@ class PostFix:
         counter = 0
         while True:
             if not postfix:
-                # postfix = "_{:04X}".format(random.randrange(2 ** bits))
                 postfix = "_{:04X}".format(PostFix._post_counter)
                 PostFix._post_counter += 1
             if postfix not in PostFix._postfixes:
@@ -165,23 +164,32 @@ class PostFix:
 # a postfix generator
 Postfix = PostFix()
 
+import weakref
+
 
 class CodeObject:
     " For adding data objects to the firmware "
-    _objects = []
+    _objects = set()
 
     def __init__(self):
-        CodeObject._objects.append(self)
+        log.critical("build " + str(self))
+        CodeObject._objects.add(weakref.ref(self))
         object.__setattr__(self, "_postfix", Postfix())
 
     @classmethod
     def get_code(cls):
         l = []
         log.info("Data Objects")
-        for i in cls._objects:
-            log.info("\t" + str(i))
-            if i._used == True:
-                l.append(i.code())
+        dead = set()
+        for ref in cls._objects:
+            obj = ref()
+            if obj is not None:
+                log.info("\t" + str(obj))
+                if obj._used == True:
+                    l.append(obj.code())
+            else:
+                dead.add(ref)
+        cls._objects -= dead
         return l
 
 
@@ -366,6 +374,7 @@ class SubR(metaclass=MetaSub):
         self._ret_target = []
         self._size = 1  # for later ( stack frames ) TODO
         self.setup()
+        self._built = False
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
 
@@ -385,7 +394,9 @@ class SubR(metaclass=MetaSub):
                 # return registers can be existing registers
                 if i not in self.w.__dict__:
                     self.w.req(i)
-        self.build()
+        if not self._built:
+            self.build()
+            self._built = True
 
     @classmethod
     def mark(cls):

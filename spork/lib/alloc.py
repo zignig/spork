@@ -29,6 +29,6 @@ class Alloc(SubR):
             MOV(w.pointer, w.current),
             Rem("Move the pointer down size"),
             ADD(w.current, w.current, w.size),
-            ADDI(w.current, w.current, 1),
+            # ADDI(w.current, w.current, 1),
             ST(w.current, w.heap_pointer, 0),
         ]

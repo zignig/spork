@@ -70,8 +70,8 @@ class Init(Inline):
             self.globals.heap(w.temp),
             MOVR(w.pad_address, "end_of_data"),
             ST(w.pad_address, w.temp, 0),
-            MOVI(w.temp, 1),
-            al(w.temp, ret=[w.temp]),
+            MOVI(w.temp, 32),
+            al(w.temp, ret=[w.pad_address]),
         ]
 
 
@@ -113,7 +113,7 @@ class al(Command):
             u = UART()
             ho = u.writeHex
             return [
-                MOVI(w.temp, 1024),
+                MOVI(w.temp, 16),
                 al(w.temp),
                 self.globals.heap(w.temp),
                 LD(w.temp, w.temp, 0),
@@ -241,7 +241,7 @@ class Bootloader(Firmware):
             self.stringer.prompt(w.temp),
             uart.writestring(w.temp),
             Rem("load the pad address into the register"),
-            console.pad(w.pad_address),
+            # console.pad(w.pad_address),
             ll("loop"),
             Rem("get the uart status"),
             uart.read(ret=[w.incoming_word, w.status]),
