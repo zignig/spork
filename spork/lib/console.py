@@ -152,6 +152,10 @@ class Console(SubR):
         reg = self.reg
         ll = LocalLabels()
         List = MetaCommand.List()
+        # Add some globals for the console
+        self.globals.pad = 0
+        self.globals.cursor = 0
+
         # make a CASE style selection
         sel = self.selector
         sel.add((8, [MOVI(w.status, Actions.BACKSPACE)]))  # backspace

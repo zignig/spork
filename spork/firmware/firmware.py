@@ -40,7 +40,7 @@ class Firmware:
         # global variables
         self.globals = gl = Globals()
 
-        # attach the io_map to all the subroutines
+        # attach the io_map to all the subordinates
         SubR.reg = self.reg
         Inline.reg = self.reg
         Command.reg = self.reg
@@ -55,6 +55,7 @@ class Firmware:
         Command.globals = gl
 
         SubR.sw = start_window
+
         # code objects
         self.obj = []
         self._built = False
@@ -88,7 +89,10 @@ class Firmware:
                 L("init"),
                 MOVI(w.fp, self.sw - 8),
                 STW(w.fp),
+                Rem("Prelude functions"),
                 self.prelude(),
+                Rem("Code object setup sequence"),
+                CodeObject.setup(),
                 L("main"),
                 self.instr(),
                 J("main"),

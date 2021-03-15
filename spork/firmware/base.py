@@ -157,6 +157,7 @@ class PostFix:
                 PostFix._postfixes += postfix
                 return postfix
             counter += 1
+            # guard
             if counter > 100:
                 raise FWError("Too many prefixes %s", postfix)
 
@@ -175,6 +176,14 @@ class CodeObject:
         log.critical("build " + str(self))
         CodeObject._objects.add(weakref.ref(self))
         object.__setattr__(self, "_postfix", Postfix())
+
+    def build(self):
+        log.warning("No build for " + str(self))
+
+    @classmethod
+    def setup(cls):
+        log.critical("Setup the Code Objects")
+        return [Rem("Setup the Code Objects")]
 
     @classmethod
     def get_code(cls):
