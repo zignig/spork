@@ -45,7 +45,6 @@ class Init(Inline):
     " Run this code on reset , device init "
     # TODO find best way to attach this to the peripherals.
     def instr(self):
-        al = Alloc()
         w = self.w
         reg = self.reg
         self.globals.heap = 0
@@ -71,7 +70,6 @@ class Init(Inline):
             MOVR(w.pad_address, "end_of_data"),
             ST(w.pad_address, w.temp, 0),
             MOVI(w.temp, 32),
-            al(w.temp, ret=[w.pad_address]),
         ]
 
 

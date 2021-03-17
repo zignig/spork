@@ -180,10 +180,30 @@ class CodeObject:
     def build(self):
         log.warning("No build for " + str(self))
 
+    def setup(self):
+        return []
+
     @classmethod
-    def setup(cls):
+    def setup_list(cls):
         log.critical("Setup the Code Objects")
-        return [Rem("Setup the Code Objects")]
+        li = [Rem("Setup the Code Objects")]
+        for i in cls._scan():
+            log.critical(str(i))
+            li += [Rem(str(i)), i.setup()]
+        return li
+
+    @classmethod
+    def _scan(cls):
+        log.info("Scan")
+        dead = set()
+        for ref in cls._objects:
+            obj = ref()
+            if obj is not None:
+                log.info("\t" + str(obj))
+                yield obj
+            else:
+                dead.add(ref)
+        cls._objects -= dead
 
     @classmethod
     def get_code(cls):

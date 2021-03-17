@@ -92,7 +92,7 @@ class Firmware:
                 Rem("Prelude functions"),
                 self.prelude(),
                 Rem("Code object setup sequence"),
-                CodeObject.setup(),
+                CodeObject.setup_list(),
                 L("main"),
                 self.instr(),
                 J("main"),

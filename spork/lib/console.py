@@ -9,7 +9,7 @@ from .uartIO import UART
 from .warm import WarmBoot
 from .switch import Switch
 from .commands import MetaCommand
-
+from .alloc import Alloc
 
 from .action_list import Actions
 
@@ -34,6 +34,10 @@ class CharPad(CodeObject):
     """
         A character pad with console editing
     """
+
+    def setup(self):
+        al = Alloc()
+        return [Rem("setup the pad")]
 
     # TODO hard fail on overflow
     # Add functions for the Char pad here
@@ -134,11 +138,11 @@ class Console(SubR):
         self.params = ["char", "pad_address", "status"]
         self.locals = ["temp"]
         self.ret = ["status"]
+        self.pad = CharPad()
 
     def build(self):
         # Bind the pad into the function
         log.critical("Build Console")
-        self.pad = CharPad()
 
         # self.char = self.Char(self.w)
 
