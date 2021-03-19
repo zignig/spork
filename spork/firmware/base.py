@@ -189,7 +189,9 @@ class CodeObject:
         li = [Rem("Setup the Code Objects")]
         for i in cls._scan():
             log.critical(str(i))
-            li += [Rem(str(i)), i.setup()]
+            s = i.setup()
+            if len(s) > 0:
+                li += [Rem(str(i)), i.setup()]
         return li
 
     @classmethod
@@ -209,16 +211,8 @@ class CodeObject:
     def get_code(cls):
         l = []
         log.info("Data Objects")
-        dead = set()
-        for ref in cls._objects:
-            obj = ref()
-            if obj is not None:
-                log.info("\t" + str(obj))
-                if obj._used == True:
-                    l.append(obj.code())
-            else:
-                dead.add(ref)
-        cls._objects -= dead
+        for i in cls._scan():
+            l += [i.code()]
         return l
 
 
@@ -446,7 +440,7 @@ class SubR(metaclass=MetaSub):
         # TODO this will need to be rewritten for the allocator
         if len(args) != self.length:
             raise ValueError("Parameter count is should be '{}'".format(self.length))
-        # load the parameters into the next frame
+        # load the parameters into the next frame up
         instr = []
         for i, j in enumerate(args):
             source = j

@@ -215,6 +215,7 @@ class Bootloader(Firmware):
         " some global _fixed_ references "
         self.globals.led = 0
         self.globals.cursor = 0
+        self.globals.heap_end = self.sw - 8 * 16  # leave 16 windows free
         # TODO make globals typesafe
 
         " build some data and subroutines "
@@ -240,6 +241,7 @@ class Bootloader(Firmware):
             uart.writestring(w.temp),
             Rem("load the pad address into the register"),
             # console.pad(w.pad_address),
+            Rem("Primary Loop"),
             ll("loop"),
             Rem("get the uart status"),
             uart.read(ret=[w.incoming_word, w.status]),
@@ -250,6 +252,8 @@ class Bootloader(Firmware):
             console(w.incoming_word, w.pad_address, w.status, ret=[w.status]),
             action(w.pad_address, w.status, ret=[w.status]),
             ll("skip"),
+            Rem("Timer event"),
+            # TODO timer event
             J(ll.loop),
         ]
 

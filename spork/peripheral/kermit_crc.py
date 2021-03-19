@@ -50,12 +50,12 @@ class KermitCRC(Peripheral, Elaboratable):
                 crc.eq(crc ^ self.byte.w_data),
                 #        self.finished.eq(0),
             ]
-            with m.Elif(self.word.w_stb):
-                m.d.sync += [
-                    bit_counter.eq(16),
-                    crc.eq(crc ^ self.word.w_data),
-                    # self.finished.eq(0),
-                ]
+        with m.Elif(self.word.w_stb):
+            m.d.sync += [
+                bit_counter.eq(16),
+                crc.eq(crc ^ self.word.w_data),
+                # self.finished.eq(0),
+            ]
         with m.If(bit_counter > 0):
             m.d.sync += [
                 bit_counter.eq(bit_counter - 1),

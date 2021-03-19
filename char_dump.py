@@ -18,10 +18,10 @@ log = logger(__name__)
 class CharSplash(Firmware):
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["temp", "counter", "wait"])
+        self.w.req(["temp", "counter", "wait", "dur"])
 
     def prelude(self):
-        return []
+        return [MOVI(self.w.dur, 0xFFFF)]
 
     def instr(self):
         " Locals and the attached subroutine in the main loop "
@@ -49,7 +49,7 @@ class CharSplash(Firmware):
                 XORI(w.temp, w.temp, 0xFFFF),
                 STXA(w.temp, reg.statusled.led),
                 Rem("Delay loop"),
-                MOVI(w.wait, 0xFFFF),
+                MOV(w.wait, w.dur),
                 ll("wait"),
                 SUBI(w.wait, w.wait, 1),
                 CMPI(w.wait, 0),
@@ -60,6 +60,12 @@ class CharSplash(Firmware):
                 Rem("are at the end of the printable chars?"),
                 CMPI(w.counter, 125),
                 BNE(ll.loop),
+                SUBI(w.dur, w.dur, 0x02FF),
+                CMPI(w.dur, 0x0000),
+                BNE(ll.skip),
+                MOVI(w.dur, 0xFFFF),
+                ll("skip"),
+                uart.writeHex(w.dur),
             ],
             Rem("and around again, Firmware has builtin main loop"),
         ]

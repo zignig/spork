@@ -15,7 +15,7 @@ class LedPeripheral(Peripheral, Elaboratable):
     val : read/write
         Set the value of the Leds 
     en : read/write
-        Counter enable.
+        enable leds.
     """
 
     def __init__(self, leds):

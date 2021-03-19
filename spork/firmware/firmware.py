@@ -1,3 +1,5 @@
+" Firmware construct , builds the sections for a working firmware "
+
 from .base import *
 import pprint
 import math
