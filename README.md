@@ -18,14 +18,15 @@ The 'spork' folder has the current sections
 
 # lib
 
-    Some function librariesies
+    Some python constructs to make functional things.
 
 # peripheral
 
     Gateware that will name and connect to the CSR bus
 
 # utils
-
+    
+    Infrasturture to make my like easier.
 
 
 TODO
@@ -38,6 +39,8 @@ TODO
 - [ ] Tree menu on commands !! see radix tree
 - [X] Escape code parser
 - [ ] Triple check the bootload sequence
+    - timeout
+    - id reflection
 - [X] Fix the warmboot fail
 
 HEXLOADER

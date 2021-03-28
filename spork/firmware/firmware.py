@@ -96,7 +96,7 @@ class Firmware:
                 Rem("Code object setup sequence"),
                 CodeObject.setup_list(),
                 L("main"),
-                self.instr(),
+                [self.instr()],
                 J("main"),
                 ll("library_code"),
                 Rem("--- Library Code ---"),
