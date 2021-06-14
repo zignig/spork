@@ -315,6 +315,15 @@ class variable(Base):
         self.current.add(self.name.name, self)
 
 
+class enum(Base):
+    def __init__(self, name, values):
+        self.name = name
+        self.values = values
+
+    def process(self, instr):
+        print(self.name, "--", self.values)
+
+
 class assign(Base):
     def __init__(self, lhs, rhs):
         self.name = lhs
@@ -322,10 +331,8 @@ class assign(Base):
         self.rhs = rhs
 
     def process(self, instr):
-        print("assign -")
-        # self.rhs.walk(instr)
-        print("into --")
-        print("\t", self.lhs)
+        self.rhs.process(instr)
+        self.lhs.process(instr)
 
 
 class iffer(Base):

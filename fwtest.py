@@ -113,8 +113,8 @@ class TestSpork(Elaboratable):
         self.cpu.build()
         # Attach the firmware
         if self.firmware is not None:
-            # f = self.firmware(self.cpu.map, start_window=self.mem_size)
-            # self.fw = f
+            f = self.firmware(self.cpu.map, start_window=self.mem_size)
+            self.fw = f
             # Sporkify it !
             self.cpu.firmware(f.code())
             self.hex_blob = f.hex()

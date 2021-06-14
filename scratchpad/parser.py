@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/python3
 """
 Parser start
 """
@@ -8,7 +8,9 @@ from abstr import program
 
 gram = r"""
     start: ( _ent )*
-    _ent: ( task | func | proc | on | statement | comment | struct | return | use | _NL ) 
+    _ent: ( task | func | enum | proc | on | statement | comment | struct | return | use | _NL ) 
+    enum: "enum" ident eitems 
+    eitems: "{" [ ident ("," ident )*] "}"
     struct: "struct" ident _fields
     task: "task" ident body  -> task
     func: "func" ident param body -> func
@@ -84,6 +86,7 @@ class BoneTree(Transformer):
     from abstr import func, task, program, assign, proc
     from abstr import iffer, whiler, on_event
     from abstr import array, returner, use
+    from abstr import enum
 
     def start(self, *data):
         return program(data)
@@ -92,11 +95,15 @@ class BoneTree(Transformer):
         return body
 
 
+class Vi(Visitor):
+    pass
+
+
 bt = BoneTree()
 main_parser = Lark(gram, parser="lalr")
-# main_parser = Lark(gram,parser='lalr', transformer=bt)
 p = main_parser.parse
 data = None
+v = Vi()
 
 
 class Compiler:
