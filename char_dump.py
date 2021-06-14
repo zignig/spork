@@ -60,7 +60,7 @@ class CharSplash(Firmware):
                 Rem("are at the end of the printable chars?"),
                 CMPI(w.counter, 125),
                 BNE(ll.loop),
-                SUBI(w.dur, w.dur, 0x02FF),
+                SUBI(w.dur, w.dur, 0x0FFF),
                 CMPI(w.dur, 0x0000),
                 BNE(ll.skip),
                 MOVI(w.dur, 0xFFFF),

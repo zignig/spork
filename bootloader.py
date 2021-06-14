@@ -227,8 +227,8 @@ class Bootloader(Firmware):
         return [
             Rem("Write the prelude strings"),
             Rem("Banner"),
-            # self.stringer.banner(w.temp),
-            ##uart.writestring(w.temp),
+            self.stringer.banner(w.temp),
+            uart.writestring(w.temp),
             Rem("Time Stamp"),
             self.stringer.date(w.temp),
             uart.writestring(w.temp),
