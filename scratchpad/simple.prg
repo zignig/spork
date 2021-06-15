@@ -1,25 +1,29 @@
-enum state { init,start,run,stop,error }
-var int a
-var int b
-struct test{
-	var int a
-	var string name
-}
+//enum state { init,start,run,stop,error }
 
-func bigger(a,b){
-    if(a>b){
-        return a
-    } else {
-        return b
-    }
-    var int c
-    c = ( a + b ) /2
+//task bob{}
+
+var int test
+
+func add( int a , int b){
+    var int c 
+    c = a + b
     return c
 }
 
-func add(a,b){
-	var int result 
-        result = a + b
-        result = bigger(a,b)
-	return result 
+func loop(int counter){
+    var int count = 0 
+    while(counter != count){
+        count = count +1
+        print(count)
+    }
+}
+
+
+
+func setup(){}
+func main(){
+    var int value 
+    value = add(1,3)
+    loop(1000)
+    loop(50)
 }

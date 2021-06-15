@@ -32,30 +32,23 @@ var tensor bob2
 var vector v1
 var vector v2
 
-func asdf(a,b,c){
-	var int bob = 4
+func asdf(int a, int b,int c){
+	var int bob 
 	var int test
 	var menu m
 	func gorf(){}
 }
 
-func runner(start,tag,task,fail){
-	var int test =4
-	var int now
-	r = gr 
-	return r
-}
-
-func add(a,b){
+func add(int a,int b){
 	return a+b
 }
 
-func plus2(a){
+func plus2(int a){
 	return a+2 
 }
 
-func wait(count){
-	var int counter = 0 
+func wait(int count){
+	var int counter 
 	var bool exit = false
 	while(exit == false){
 		counter = counter + 1
@@ -80,17 +73,23 @@ task blink {
 task monitor {
 }
 
-task build {}
+task build {
+    func aa(){}
+    while(bob == true){}
+}
 
 func  norg(){
 	var int hello
 	var int counter
 	hello = 5
 	counter = counter + 1	
+        var int r 
+        var int j
 	if(counter==100){
 		asdf()
 		wait(100)
 	}
 	r = 2 * ( 4 + a * 0.5 ) 
+        j = ((a*a)+(b*b))*((a*a)+(b*b))
 }
 

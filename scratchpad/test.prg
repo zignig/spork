@@ -1,14 +1,20 @@
-var int a
-var int b 
 var string[10] other
-func add(a,b){
+
+func add(int a,int b){
+  var int c
   c = a+b
+    return c
 }
 
 
 struct vec { 
 	var int x
 	var int y
+}
+
+impl vec.add(vec v1){
+    vec.x = vec.x + v1.x
+    vec.y = vec.y + v1.y
 }
 
 struct robot {
@@ -18,7 +24,7 @@ struct robot {
 	var vec[10] path
 }
 
-func addvec(v1,v2){
+func addvec(vec v1,vec v2){
 	var vec v3
 	v3.x = v1.x + v2.x
 	v3.x = v1.y + v2.y

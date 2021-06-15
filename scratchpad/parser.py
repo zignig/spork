@@ -6,20 +6,25 @@ from lark import Lark, Transformer, v_args, Visitor
 import sys
 from abstr import program
 
+
 gram = r"""
     start: ( _ent )*
-    _ent: ( task | func | enum | proc | on | statement | comment | struct | return | use | _NL ) 
+    _ent: ( task | func | impl |  enum | proc | on | statement | comment | struct | return | use | _NL ) 
     enum: "enum" ident eitems 
     eitems: "{" [ ident ("," ident )*] "}"
     struct: "struct" ident _fields
     task: "task" ident body  -> task
-    func: "func" ident param body -> func
+    func: "func" ident declparam body -> func
+    impl: "impl" ident declparam body -> impl 
     proc: "proc" ident param body -> proc
     on: "on" ident body -> on_event
     return: "return" expr -> returner 
     use: "use" ident -> use
     
-    _fields: "{" (var | _NL)*  "}"
+    declparam: "(" [ dvar ("," dvar )*] ")"
+    dvar:  TYPE [ array ] ident [ set_var ] 
+
+    _fields: "{" ( var | _NL)*  "}"
     comment: /\/\/[^\n]*/ 
     ident: NAME ("." ident)*
     param: "(" [ _item ("," _item )*] ")"
@@ -44,7 +49,7 @@ gram = r"""
 
     ?atom: NUMBER           -> number
          | "-" atom         -> neg
-         | ident            -> var
+         | ident            -> var 
          | "(" expr ")"
          | call
          | ESCAPED_STRING
@@ -83,9 +88,10 @@ class BoneTree(Transformer):
     from abstr import add, var, variable, mul, div, sub
     from abstr import param, number, ident
     from abstr import call, struct, comment, fields
-    from abstr import func, task, program, assign, proc
+    from abstr import func, task, program, assign, proc, impl
     from abstr import iffer, whiler, on_event
     from abstr import array, returner, use
+    from abstr import dvar, declparam
     from abstr import enum
 
     def start(self, *data):
@@ -111,6 +117,8 @@ class Compiler:
         pass
 
 
+from pprint import pprint
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         f = sys.argv[1]
@@ -128,4 +136,4 @@ if __name__ == "__main__":
     print("---------symbols-----------")
     print(trans.symbols)
     print("---------instructions-----------")
-    print(instr)
+    pprint(instr)

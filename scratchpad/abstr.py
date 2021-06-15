@@ -14,13 +14,16 @@ class SymbolTable:
 
     def add(self, name, value):
         self._empty = False
+        print("adding -> ", name, value, " to ", self.name)
         if name in self.symbols:
+            print(self)
             raise BaseException("symbol already exists %s" % name)
         self.symbols[name] = value
 
     def get(self, name):
         print("searching for ", name, " in ", self.name)
         if name in self.symbols:
+            print("\tfound ", name, " in ", self.name)
             return self.symbols[name]
         # search up the scopes
         if self.parent is not None:
@@ -33,12 +36,14 @@ class SymbolTable:
 
     def __repr__(self):
         lines = []
-        lines.append("Symbol Table for %s" % (self.name))
+        # lines.append("Symbol Table for %s" % (self.name))
         if self.parent is not None:
-            lines.append("-- parent -> %s" % self.parent.name)
+            lines.append("%s >> %s" % (self.parent.name, self.name))
+        else:
+            lines.append(self.name)
         for key, value in self.symbols.items():
-            lines.append(">%7s<: %r" % (key, value))
-        lines.append("\n")
+            lines.append("|%7s|: %20r |" % (key, value))
+        # lines.append("\n")
         if len(self.children) > 0:
             for i in self.children:
                 if not i._empty:
@@ -47,38 +52,32 @@ class SymbolTable:
         return s
 
 
-def filter(filter_type):
-    def f(val):
-        if isinstance(val, filter_type):
-            return val
-
-    return f
-
-
 class Base:
     body = None
     name = "anon"
     symbols = SymbolTable(name="global")
     current = symbols
     functions = []
+    impl = []
     tasks = []
     variables = []
     include = []
 
     def __init__(self, tree):
-        print("key ", self)
         self.body = tree
 
     def __repr__(self):
         base = (
             # str(type(self))
             # + "-"
-            self.__class__.__qualname__
+            "("
+            + str(self.__class__.__qualname__)
             + " - "
             + str(self.name)
-            + ": "
+            + ")"
         )
         if hasattr(self, "params"):
+            base += " "
             base += str(self.params)
         return base
 
@@ -137,8 +136,7 @@ class Arith(Base):
     def process(self, instr):
         self.lhs.process(instr)
         self.rhs.process(instr)
-        self.action(instr)
-        print(self.__class__.__qualname__)
+        instr.append(self)
 
     def action(self, instr):
         instr.append("_" + self.__class__.__qualname__)
@@ -168,38 +166,60 @@ class Named(Base):
         self.name = name
 
 
+class dvar(Base):
+    def __init__(self, vtype, ident):
+        self.vtype = vtype
+        self.name = ident.name
+
+    def process(self, instr):
+        self.current.add(self.name, self)
+
+
+class declparam(Named):
+    def __init__(self, *tree):
+        # print(self,tree)
+        self.params = tree
+
+    def process(self, instr):
+        for i in self.params:
+            i.process(instr)
+
+
 class var(Named):
     def process(self, instr):
-        print("check and load the register", self.name)
-        # self.current.get(self.name)
+        instr.append(self)
 
 
 class ident(Named):
     def __init__(self, name, *dotted):
-        print(name, dotted)
         self.name = name
         self.dotted = dotted
+
+    def process(self, instr):
+        pass
 
 
 class number(Named):
     def process(self, instr):
-        instr.append("MOIV(" + self.name + ")")
+        instr.append(self)
 
 
-class param(Base):
+class param(Named):
     def __init__(self, *tree):
+        print(self, tree)
         self.params = tree
 
     def process(self, instr):
-        print(self.params)
+        self.current.parent.add(self.name.name, self)
+        pass
 
 
-class fields(Base):
+class fields(Named):
     def __init__(self, *tree):
         self.fields = tree
 
     def process(self, instr):
-        print(self.fields)
+        pass
 
 
 class call(Base):
@@ -209,7 +229,7 @@ class call(Base):
         self.body = None
 
     def process(self, instr):
-        print("calllmeee")
+        print("call : ", self.name)
         val = self.current.get(self.name)
         print(val)
 
@@ -237,7 +257,8 @@ class Defn(Base):
 
 
 class returner(Base):
-    pass
+    def process(self, instr):
+        instr.append(self)
 
 
 class program(Defn):
@@ -257,7 +278,8 @@ class program(Defn):
 
 class struct(Defn):
     def __init__(self, name, *body):
-        self.name = name.name
+        print(name)
+        self.name = name
         self.body = body
 
     def process(self, instr):
@@ -276,9 +298,18 @@ class task(Defn):
         self.current.parent.add(self.name.name, self)
 
 
+class impl(Defn):
+    def __init__(self, name, params, body):
+        self.name = name
+        self.params = params
+        self.body = body
+        self.impl.append(self)
+
+
 class func(Defn):
     def __init__(self, name, params, body):
         self.name = name
+        print(params)
         self.params = params
         self.body = body
         self.functions.append(self)
@@ -286,9 +317,14 @@ class func(Defn):
     def process(self, instr):
         # add the fuction to the table above
         self.current.parent.add(self.name.name, self)
+        self.params.process(instr)
         self.table = self.current.parent
         print(self.params)
         instr.append("function setup %s" % (self.name.name))
+        sub = []
+        for i in self.body:
+            sub.append(i)
+        instr.append(sub)
 
 
 class on_event(Defn):
@@ -313,6 +349,7 @@ class variable(Base):
         # check the type
         # t = self.current.get(self.vtype)
         self.current.add(self.name.name, self)
+        pass
 
 
 class enum(Base):
@@ -335,18 +372,15 @@ class assign(Base):
         self.lhs.process(instr)
 
 
-class iffer(Base):
-    def __init__(self, expr, code, elser=None):
+class iffer(Defn):
+    def __init__(self, expr, body, elser=None):
         self.name = "IF"
         self.expr = expr
-        self.code = code
+        self.body = body
         self.elser = elser
 
-    def __repr__(self):
-        return str(self.expr) + str(self.body)
 
-
-class whiler(Base):
+class whiler(Defn):
     def __init__(self, expr, body):
         self.name = "WHILE"
         self.expr = expr
