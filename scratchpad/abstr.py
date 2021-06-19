@@ -128,21 +128,41 @@ class comment(Base):
     pass
 
 
+class TempVar(Base):
+    count = 0
+
+    def __init__(self):
+        self.name = "__T" + str(TempVar.count)
+        TempVar.count += 1
+
+
 class Arith(Base):
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
+        self.target = None
 
     def process(self, instr):
         self.lhs.process(instr)
         self.rhs.process(instr)
+        self.target = TempVar()
+        self.current.add(self.target.name, self.target)
         instr.append(self)
+        # self.lhs = self.target
 
     def action(self, instr):
         instr.append("_" + self.__class__.__qualname__)
 
     def __repr__(self):
-        return str(self.lhs) + " " + self.__class__.__qualname__ + " " + str(self.rhs)
+        return (
+            str(self.target)
+            + "<- "
+            + str(self.lhs)
+            + " "
+            + self.__class__.__qualname__
+            + " "
+            + str(self.rhs)
+        )
 
 
 class add(Arith):
