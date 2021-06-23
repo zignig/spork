@@ -4,7 +4,7 @@ Parser start
 """
 from lark import Lark, Transformer, v_args, Visitor
 import sys
-from abstr import program
+from compiler import program
 
 
 gram = r"""
@@ -85,7 +85,7 @@ gram = r"""
 @v_args(inline=True)
 class BoneTree(Transformer):
     # arith
-    from abstr import add, var, variable, mul, div, sub
+    from compiler.eval import add, var, variable, mul, div, sub
     from abstr import param, number, ident
     from abstr import call, struct, comment, fields
     from abstr import func, task, program, assign, proc, impl
