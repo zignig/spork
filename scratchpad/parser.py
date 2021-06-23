@@ -86,7 +86,7 @@ gram = r"""
 class BoneTree(Transformer):
     # arith
     from compiler.eval import add, var, variable, mul, div, sub
-    from abstr import param, number, ident
+    from compiler.ident import param, number, ident
     from abstr import call, struct, comment, fields
     from abstr import func, task, program, assign, proc, impl
     from abstr import iffer, whiler, on_event
