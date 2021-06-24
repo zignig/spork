@@ -14,5 +14,12 @@ class Program(Defn):
         self.name = "program"
         self.body = program
 
+
+class task(Defn):
+    def __init__(self, name, body):
+        self.name = name
+        self.body = body
+        self.tasks.append(self)
+
     def process(self, instr):
-        instr.append("program setup")
+        self.current.parent.add(self.name.name, self)

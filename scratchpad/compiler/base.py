@@ -53,3 +53,6 @@ class Base:
         instr = []
         self.walk(instr)
         return instr
+
+    def process(self, instr):
+        print("fail , ", self)

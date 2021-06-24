@@ -8,6 +8,17 @@ from .base import Base
 from .named import Named
 
 
+class assign(Base):
+    def __init__(self, lhs, rhs):
+        self.name = lhs
+        self.lhs = lhs
+        self.rhs = rhs
+
+    def process(self, instr):
+        self.rhs.process(instr)
+        self.lhs.process(instr)
+
+
 class variable(Base):
     def __init__(self, vtype, name, setvar=None):
         self.name = name

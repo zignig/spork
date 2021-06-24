@@ -4,7 +4,7 @@ Parser start
 """
 from lark import Lark, Transformer, v_args, Visitor
 import sys
-from compiler import program
+from compiler.program import Program
 
 
 gram = r"""
@@ -60,7 +60,7 @@ gram = r"""
     
     while: "while" eval body -> whiler
     
-    eval: "(" (expr _comp expr | call | ident) ")"
+    eval: "(" (NUMBER | expr _comp expr | call | ident) ")"
 
     // comparisions 
     _comp: (gt | lt | lte | gte | eq | neq)
@@ -85,20 +85,16 @@ gram = r"""
 @v_args(inline=True)
 class BoneTree(Transformer):
     # arith
-    from compiler.eval import add, var, variable, mul, div, sub
-    from compiler.ident import param, number, ident
-    from abstr import call, struct, comment, fields
-    from abstr import func, task, program, assign, proc, impl
-    from abstr import iffer, whiler, on_event
-    from abstr import array, returner, use
-    from abstr import dvar, declparam
-    from abstr import enum
+    from compiler.eval import add, var, variable, mul, div, sub, assign
+    from compiler.ident import param, ident
+    from compiler.call import call, comment, fields, dvar
+    from compiler.structure import func, task, proc, impl, on_event, body
+    from compiler.control import iffer, whiler
+    from compiler.data import number, array, struct, enum
+    from compiler.program import Program
 
     def start(self, *data):
-        return program(data)
-
-    def body(self, *body):
-        return body
+        return Program(data)
 
 
 class Vi(Visitor):

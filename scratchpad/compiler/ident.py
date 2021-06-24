@@ -22,11 +22,6 @@ class ident(Named):
         pass
 
 
-class number(Named):
-    def process(self, instr):
-        instr.append(self)
-
-
 class param(Named):
     def __init__(self, *tree):
         print(self, tree)

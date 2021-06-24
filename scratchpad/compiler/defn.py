@@ -2,6 +2,7 @@
 # a program section that defines a block
 
 from .base import Base
+from .symbol import SymbolTable
 
 
 class Defn(Base):
