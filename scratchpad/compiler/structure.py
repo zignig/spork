@@ -9,10 +9,10 @@ class returner(Base):
         instr.append(self)
 
 
-class body(Defn):
-    def __init__(self, *body):
-        print(body)
-        self.body = body
+# `class body(Defn):
+# `   def __init__(self, *body):
+# `      print(body)
+# `     self.body = body
 
 
 class proc(Defn):

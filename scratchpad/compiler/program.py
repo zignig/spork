@@ -1,5 +1,6 @@
 # the basic program construct
 
+from .base import Base
 from .defn import Defn
 
 

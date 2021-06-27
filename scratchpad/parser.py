@@ -5,6 +5,7 @@ Parser start
 from lark import Lark, Transformer, v_args, Visitor
 import sys
 from compiler.program import Program
+from compiler.base import Base
 
 
 gram = r"""
@@ -86,15 +87,18 @@ gram = r"""
 class BoneTree(Transformer):
     # arith
     from compiler.eval import add, var, variable, mul, div, sub, assign
-    from compiler.ident import param, ident
+    from compiler.ident import param, ident, declparam
     from compiler.call import call, comment, fields, dvar
-    from compiler.structure import func, task, proc, impl, on_event, body
+    from compiler.structure import func, task, proc, impl, on_event
     from compiler.control import iffer, whiler
     from compiler.data import number, array, struct, enum
     from compiler.program import Program
 
     def start(self, *data):
         return Program(data)
+
+    def body(self, *body):
+        return body
 
 
 class Vi(Visitor):
@@ -132,4 +136,4 @@ if __name__ == "__main__":
     print("---------symbols-----------")
     print(trans.symbols)
     print("---------instructions-----------")
-    pprint(instr)
+    # pprint(instr)

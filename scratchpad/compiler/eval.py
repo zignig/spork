@@ -45,8 +45,8 @@ class Arith(Base):
     def process(self, instr):
         self.lhs.process(instr)
         self.rhs.process(instr)
-        self.target = TempVar()
-        self.current.add(self.target.name, self.target)
+        # self.target = TempVar()
+        # self.current.add(self.target.name, self.target)
         instr.append(self)
         # self.lhs = self.target
 
