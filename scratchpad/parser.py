@@ -89,7 +89,7 @@ class BoneTree(Transformer):
     from compiler.eval import add, var, variable, mul, div, sub, assign
     from compiler.ident import param, ident, declparam
     from compiler.call import call, comment, fields, dvar
-    from compiler.structure import func, task, proc, impl, on_event
+    from compiler.structure import func, task, proc, impl, on_event, use, returner
     from compiler.control import iffer, whiler
     from compiler.data import number, array, struct, enum
     from compiler.program import Program
@@ -126,6 +126,9 @@ if __name__ == "__main__":
     else:
         print("default file base.prg")
         d = open("base.prg").read()
+    print(" ----- original -----")
+    print(d)
+    print(" ----- paresd -----")
     data = p(d)
     print(data.pretty())
     trans = bt.transform(data)
@@ -136,4 +139,4 @@ if __name__ == "__main__":
     print("---------symbols-----------")
     print(trans.symbols)
     print("---------instructions-----------")
-    # pprint(instr)
+    pprint(instr)

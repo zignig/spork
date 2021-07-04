@@ -1,6 +1,6 @@
-//enum state { init,start,run,stop,error }
+enum state { init,start,run,stop,error }
 
-//task bob{}
+task bob{}
 
 var int test
 var int a

@@ -112,3 +112,4 @@ class Base:
 
     def process(self, instr):
         print("fail , ", self)
+        instr += [self]

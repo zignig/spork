@@ -15,6 +15,10 @@ class returner(Base):
 # `     self.body = body
 
 
+class use(Base):
+    pass
+
+
 class proc(Defn):
     def __init__(self, name, params, body):
         self.name = name
