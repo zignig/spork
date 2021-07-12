@@ -28,12 +28,13 @@ gram = r"""
     _fields: "{" ( var | _NL)*  "}"
     comment: /\/\/[^\n]*/ 
     ident: NAME ("." ident)*
+    index: ident "[" expr "]"
     param: "(" [ _item ("," _item )*] ")"
     body: "{" _ent* "}" 
     _item: expr 
 
     ?statement: ( var | assign | call | if | while | body ) _NL
-    assign: ident "=" expr 
+    assign: ( ident | index ) "=" expr 
     call: ident param
     var: "var" TYPE [ array ] ident [ set_var ] -> variable
     array: "[" [NUMBER] "]"
@@ -61,7 +62,7 @@ gram = r"""
     
     while: "while" eval body -> whiler
     
-    eval: "(" (NUMBER | expr _comp expr | call | ident) ")"
+    eval: "(" (NUMBER | expr _comp expr | call | ident) ")" -> evaler
 
     // comparisions 
     _comp: (gt | lt | lte | gte | eq | neq)
@@ -85,13 +86,17 @@ gram = r"""
 
 @v_args(inline=True)
 class BoneTree(Transformer):
-    # arith
-    from compiler.eval import add, var, variable, mul, div, sub, assign
+    """
+        This is the main trasnform tree, it takes the parse tree
+        and converts it into a collection of python objects as an ast.
+    """
+
+    from compiler.eval import add, var, variable, mul, div, sub, assign, evaler
     from compiler.ident import param, ident, declparam
     from compiler.call import call, comment, fields, dvar
     from compiler.structure import func, task, proc, impl, on_event, use, returner
     from compiler.control import iffer, whiler
-    from compiler.data import number, array, struct, enum
+    from compiler.data import number, array, struct, enum, index
     from compiler.program import Program
 
     def start(self, *data):
@@ -106,15 +111,15 @@ class Vi(Visitor):
 
 
 bt = BoneTree()
-main_parser = Lark(gram, parser="lalr")
+main_parser = Lark(gram, parser="lalr", propagate_positions=True)
 p = main_parser.parse
 data = None
 v = Vi()
 
 
 class Compiler:
-    def __init__(self):
-        pass
+    def __init__(self, data):
+        self.data = data
 
 
 from pprint import pprint
@@ -124,11 +129,11 @@ if __name__ == "__main__":
         f = sys.argv[1]
         d = open(f).read()
     else:
-        print("default file base.prg")
-        d = open("base.prg").read()
+        print("default file fib.prg")
+        d = open("fib.prg").read()
     print(" ----- original -----")
     print(d)
-    print(" ----- paresd -----")
+    print(" ----- parsed -----")
     data = p(d)
     print(data.pretty())
     trans = bt.transform(data)
@@ -140,3 +145,4 @@ if __name__ == "__main__":
     print(trans.symbols)
     print("---------instructions-----------")
     pprint(instr)
+    print(" ----- finished ----- ")

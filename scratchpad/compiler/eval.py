@@ -6,6 +6,15 @@
 
 from .base import Base
 from .named import Named
+from .defn import Defn
+
+
+class evaler(Defn):
+    def __init__(self, *body):
+        self.body = body
+
+    def process(self, instr):
+        self.proc_body(instr)
 
 
 class assign(Base):
@@ -16,6 +25,7 @@ class assign(Base):
 
     def process(self, instr):
         self.rhs.process(instr)
+        instr += ["ASSIGN"]
         self.lhs.process(instr)
 
 
@@ -32,8 +42,7 @@ class variable(Base):
 
 
 class var(Named):
-    def process(self, instr):
-        instr.append(self)
+    pass
 
 
 class Arith(Base):

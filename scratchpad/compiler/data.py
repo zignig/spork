@@ -14,13 +14,20 @@ class struct(Defn):
         self.current.parent.add(self.name, self)
 
 
+class index(Base):
+    def __init__(self, name, index):
+        self.name = name
+        self.index = index
+
+
 class array(Base):
     def __init__(self, val=0):
         self.val = val
 
 
 class number(Base):
-    pass
+    def process(self, instr):
+        instr += [self]
 
 
 class enum(Base):

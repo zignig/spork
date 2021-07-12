@@ -96,6 +96,15 @@ class Base:
                 j._indent(level, j)
                 level -= 1
 
+    def proc_body(self, instr):
+        body = []
+        try:
+            for i in self.body:
+                i.process(body)
+        except:
+            body.append(i)
+        instr += [body]
+
     def walk(self, instr):
         self.process(instr)
 

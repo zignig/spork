@@ -49,10 +49,8 @@ class func(Defn):
         self.table = self.current.parent
         print(self.params)
         instr.append("function setup %s" % (self.name.name))
-        sub = []
-        for i in self.body:
-            sub.append(i)
-        instr.append(sub)
+        self.proc_body(instr)
+        instr.append("return values")
 
 
 class on_event(Defn):

@@ -9,11 +9,6 @@ class Defn(Base):
         new_symbol_table = SymbolTable(parent=self.current, name=self.name)
         Base.current = new_symbol_table
         self.process(instr)
-        for i in self.body:
-            if isinstance(i, Base):
-                i.walk(instr)
-            else:
-                raise BaseException("no bound class", i)
         Base.current = Base.current.parent
 
     def scan(self, pre=None, post=None):
@@ -24,3 +19,11 @@ class Defn(Base):
             yield from s.scan(pre, post)
         if post is not None:
             yield post(self)
+
+    def process(self, instr):
+        inst = []
+        for i in self.body:
+            print("body>>", i)
+            instr += [i]
+            i.process(inst)
+        instr += inst
