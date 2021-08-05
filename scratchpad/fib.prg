@@ -1,6 +1,14 @@
 // fib program 
 
 
+func test(int a){
+    a = a +1
+    return a
+}
+
+func test2(int a , int b){
+}
+
 func main() { 
     var int x = 0 
     var int y = 1

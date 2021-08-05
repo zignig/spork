@@ -1,6 +1,6 @@
 # structural objects
 
-from .base import Base
+from .base import Base, SymbolTable
 from .defn import Defn
 
 
@@ -37,7 +37,6 @@ class impl(Defn):
 class func(Defn):
     def __init__(self, name, params, body):
         self.name = name
-        print(params)
         self.params = params
         self.body = body
         self.functions.append(self)
@@ -46,8 +45,6 @@ class func(Defn):
         # add the fuction to the table above
         self.current.parent.add(self.name.name, self)
         self.params.process(instr)
-        self.table = self.current.parent
-        print(self.params)
         instr.append("function setup %s" % (self.name.name))
         self.proc_body(instr)
         instr.append("return values")

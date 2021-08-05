@@ -17,6 +17,11 @@ class whiler(Defn):
         self.expr = expr
         self.body = body
 
+    def scan(self, instr, fn):
+        self.expr.scan(instr, fn)
+        for item in self.body:
+            item.scan(instr, fn)
+
     def process(self, instr):
         instr += ["WHILE"]
         instr += ["LABEL START"]

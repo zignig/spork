@@ -36,6 +36,7 @@ class BonelessSpork(Elaboratable):
         self.pc = PeripheralCollection()
         self.bus = self.pc.bus._bus
         self.map = self.pc.map
+        self.mod = []
         self._built = False
 
         # Firmware as ASM
@@ -43,6 +44,7 @@ class BonelessSpork(Elaboratable):
 
     def add_peripheral(self, periph):
         self.pc.add(periph)
+        self.mod.append(periph)
 
     def build(self):
         if not self._built:

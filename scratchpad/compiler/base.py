@@ -7,6 +7,7 @@
 
 class SymbolTable:
     def __init__(self, parent=None, name="anon"):
+        print("Create table %s" % name)
         self.symbols = {}
         # for nested tables
         self.children = []
@@ -106,13 +107,11 @@ class Base:
         instr += [body]
 
     def walk(self, instr):
+        print("base walk")
         self.process(instr)
 
-    def scan(self, pre=None, post=None):
-        if pre is not None:
-            yield pre(self)
-        if post is not None:
-            yield post(self)
+    def scan(self, instr, fn):
+        instr += [self]
 
     def start_walk(self):
         instr = []
@@ -121,4 +120,3 @@ class Base:
 
     def process(self, instr):
         print("fail , ", self)
-        instr += [self]

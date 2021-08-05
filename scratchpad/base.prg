@@ -2,7 +2,7 @@
 
 use uart
 
-var int a = 1
+//var int a = 1
 var int gr = 400
 var int r = 200
 var int test

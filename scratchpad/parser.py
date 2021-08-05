@@ -62,9 +62,10 @@ gram = r"""
     
     while: "while" eval body -> whiler
     
-    eval: "(" (NUMBER | expr _comp expr | call | ident) ")" -> evaler
+    eval: "(" (NUMBER | compare | expr | call | ident) ")" -> evaler
 
     // comparisions 
+    compare: expr _comp expr
     _comp: (gt | lt | lte | gte | eq | neq)
     gt: ">"
     lt: "<"
@@ -98,6 +99,7 @@ class BoneTree(Transformer):
     from compiler.control import iffer, whiler
     from compiler.data import number, array, struct, enum, index
     from compiler.program import Program
+    from compiler.compare import compare, lt, gt, lte, gte, eq, neq
 
     def start(self, *data):
         return Program(data)
@@ -140,7 +142,9 @@ if __name__ == "__main__":
     print("------ transformed -------")
     print()
     print(trans)
-    instr = trans.start_walk()
+    # instr = trans.start_walk()
+    instr = []
+    trans.scan(instr, print)
     print("---------symbols-----------")
     print(trans.symbols)
     print("---------instructions-----------")

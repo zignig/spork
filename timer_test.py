@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# minimal shell for the boneless
 
 # the instruction set
 # TODO port to allocator IR

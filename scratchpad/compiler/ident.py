@@ -28,5 +28,5 @@ class param(Named):
         self.params = tree
 
     def process(self, instr):
-        self.current.parent.add(self.name.name, self)
+        self.current.add(self.name.name, self)
         pass
