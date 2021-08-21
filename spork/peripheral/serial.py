@@ -87,6 +87,9 @@ class AsyncSerialPeripheral(Peripheral, Elaboratable):
         self._rx_err_ev = self.event(mode="rise")
         self._tx_mty_ev = self.event(mode="rise")
 
+    def ports(self):
+        return [self._phy.tx.o, self._phy.rx.i]
+
     def elaborate(self, platform):
         m = Module()
         m.submodules.bridge = self._bridge

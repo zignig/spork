@@ -627,16 +627,19 @@ endmodule
 (* \nmigen.hierarchy  = "boneless" *)
 (* top =  1  *)
 (* generator = "nMigen" *)
-module boneless(clk, rst, tx_pin);
+module boneless(rx_pin, clk, rst, tx_pin);
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input clk;
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input rst;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:190" *)
   output tx_pin;
   cpu cpu (
     .clk(clk),
     .rst(rst),
+    .rx_pin(rx_pin),
     .tx_pin(tx_pin)
   );
 endmodule
@@ -1058,7 +1061,7 @@ endmodule
 
 (* \nmigen.hierarchy  = "boneless.cpu" *)
 (* generator = "nMigen" *)
-module cpu(clk, tx_pin, rst);
+module cpu(clk, rx_pin, tx_pin, rst);
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input clk;
   (* src = "/opt/FPGA/Boneless-CPU/boneless/gateware/core.py:118" *)
@@ -1083,6 +1086,8 @@ module cpu(clk, tx_pin, rst);
   wire pc_csr__w_stb;
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input rst;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:190" *)
   output tx_pin;
   \cpu$1  cpu (
@@ -1102,6 +1107,7 @@ module cpu(clk, tx_pin, rst);
     .csr__w_data(pc_csr__w_data),
     .csr__w_stb(pc_csr__w_stb),
     .rst(rst),
+    .rx_pin(rx_pin),
     .tx_pin(tx_pin)
   );
   assign cpu_i_ext_data = pc_csr__r_data;
@@ -6095,7 +6101,7 @@ endmodule
 
 (* \nmigen.hierarchy  = "boneless.cpu.pc" *)
 (* generator = "nMigen" *)
-module \pc$2 (csr__r_stb, csr__w_stb, csr__w_data, csr__r_data, rst, clk, tx_pin, csr__addr);
+module \pc$2 (csr__r_stb, csr__w_stb, csr__w_data, csr__r_data, rst, clk, rx_pin, tx_pin, csr__addr);
   (* src = "/opt/FPGA/nmigen-soc/nmigen_soc/csr/bus.py:350" *)
   wire [3:0] bus_csr__addr;
   (* src = "/opt/FPGA/nmigen-soc/nmigen_soc/csr/bus.py:350" *)
@@ -6140,6 +6146,8 @@ module \pc$2 (csr__r_stb, csr__w_stb, csr__w_data, csr__r_data, rst, clk, tx_pin
   input csr__w_stb;
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input rst;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:190" *)
   output tx_pin;
   bus bus (
@@ -6181,6 +6189,7 @@ module \pc$2 (csr__r_stb, csr__w_stb, csr__w_data, csr__r_data, rst, clk, tx_pin
     .csr__w_data(bus_csr__w_data),
     .csr__w_stb(bus_csr__w_stb),
     .rst(rst),
+    .rx_pin(rx_pin),
     .tx_pin(tx_pin)
   );
   statusled statusled (
@@ -6196,7 +6205,7 @@ endmodule
 
 (* \nmigen.hierarchy  = "boneless.cpu.pc.serial.phy" *)
 (* generator = "nMigen" *)
-module phy(clk, divisor, data, rdy, ack, err__overflow, err__frame, err__parity, \data$1 , \ack$2 , \rdy$3 , tx_pin, rst);
+module phy(clk, divisor, data, rdy, ack, err__overflow, err__frame, err__parity, \data$1 , \ack$2 , \rdy$3 , rx_pin, tx_pin, rst);
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:96" *)
   input ack;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:188" *)
@@ -6223,6 +6232,8 @@ module phy(clk, divisor, data, rdy, ack, err__overflow, err__frame, err__parity,
   input rst;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:87" *)
   wire [7:0] rx_divisor;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:184" *)
   wire [7:0] tx_divisor;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:190" *)
@@ -6236,7 +6247,8 @@ module phy(clk, divisor, data, rdy, ack, err__overflow, err__frame, err__parity,
     .err__overflow(err__overflow),
     .err__parity(err__parity),
     .rdy(rdy),
-    .rst(rst)
+    .rst(rst),
+    .rx_pin(rx_pin)
   );
   tx tx (
     .ack(\ack$2 ),
@@ -6253,7 +6265,7 @@ endmodule
 
 (* \nmigen.hierarchy  = "boneless.cpu.pc.serial.phy.rx" *)
 (* generator = "nMigen" *)
-module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, rst);
+module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, rx_pin, rst);
   reg \initial  = 0;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *)
   wire \$1 ;
@@ -6301,8 +6313,6 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
   wire [4:0] \$6 ;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *)
   wire \$8 ;
-  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
-  wire \U$$0_rx_pin ;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:96" *)
   input ack;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:107" *)
@@ -6344,6 +6354,8 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
   reg \rdy$next ;
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/ir.py:524" *)
   input rst;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:106" *)
   reg [7:0] shreg__data = 8'h00;
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:106" *)
@@ -6364,8 +6376,8 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
   assign \$12  = timer != (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:122" *) 1'h0;
   assign \$15  = timer - (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:123" *) 1'h1;
   assign \$18  = divisor - (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:128" *) 1'h1;
-  assign \$1  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) \U$$0_rx_pin ;
-  assign \$20  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) \U$$0_rx_pin ;
+  assign \$1  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) rx_pin;
+  assign \$20  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) rx_pin;
   assign \$22  = timer != (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:122" *) 1'h0;
   assign \$24  = bitno == (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:130" *) 1'h0;
   assign \$26  = timer != (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:122" *) 1'h0;
@@ -6379,7 +6391,7 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
   assign \$40  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:141" *) ack;
   assign \$42  = fsm_state == (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:145" *) 2'h2;
   assign \$6  = bitno - (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:127" *) 1'h1;
-  assign \$8  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) \U$$0_rx_pin ;
+  assign \$8  = ~ (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:114" *) rx_pin;
   always @(posedge clk)
     rdy <= \rdy$next ;
   always @(posedge clk)
@@ -6405,7 +6417,7 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
   \U$$0  \U$$0  (
     .clk(clk),
     .rst(rst),
-    .rx_pin(\U$$0_rx_pin )
+    .rx_pin(rx_pin)
   );
   always @* begin
     if (\initial ) begin end
@@ -6567,7 +6579,7 @@ module rx(clk, data, rdy, ack, err__overflow, err__frame, err__parity, divisor, 
                 /* empty */;
             /* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:124" */
             default:
-                { \shreg__stop$next , \shreg__data$next , \shreg__start$next  } = { \U$$0_rx_pin , shreg__stop, shreg__data };
+                { \shreg__stop$next , \shreg__data$next , \shreg__start$next  } = { rx_pin, shreg__stop, shreg__data };
           endcase
     endcase
     (* src = "/opt/FPGA/nmigen/nmigen/hdl/xfrm.py:519" *)
@@ -6850,11 +6862,11 @@ endmodule
 
 (* \nmigen.hierarchy  = "boneless.cpu.pc.serial" *)
 (* generator = "nMigen" *)
-module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, tx_pin, rst);
+module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, rx_pin, tx_pin, rst);
   reg \initial  = 0;
   (* src = "/opt/FPGA/nmigen/nmigen/hdl/rec.py:258" *)
   wire \$4 ;
-  (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:118" *)
+  (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:125" *)
   wire \$6 ;
   (* src = "/opt/FPGA/spork/spork/cores/periph/event.py:51" *)
   wire bridge__rx_err_ev_stb;
@@ -6930,6 +6942,8 @@ module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, 
   wire rx_fifo_w_en;
   (* src = "/opt/FPGA/nmigen/nmigen/lib/fifo.py:79" *)
   wire rx_fifo_w_rdy;
+  (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:98" *)
+  output rx_pin;
   (* src = "/opt/FPGA/nmigen/nmigen/lib/fifo.py:83" *)
   wire [7:0] tx_fifo_r_data;
   (* src = "/opt/FPGA/nmigen/nmigen/lib/fifo.py:85" *)
@@ -6945,7 +6959,7 @@ module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, 
   (* src = "/opt/FPGA/nmigen-stdio/nmigen_stdio/serial.py:190" *)
   output tx_pin;
   assign \$4  = | (* src = "/opt/FPGA/nmigen/nmigen/hdl/rec.py:258" *) { phy_err__parity, phy_err__frame, phy_err__overflow };
-  assign \$6  = ~ (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:118" *) tx_fifo_r_rdy;
+  assign \$6  = ~ (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:125" *) tx_fifo_r_rdy;
   always @(posedge clk)
     phy_divisor <= \phy_divisor$next ;
   bridge bridge (
@@ -6983,6 +6997,7 @@ module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, 
     .rdy(phy_rdy),
     .\rdy$3 (\phy_rdy$3 ),
     .rst(rst),
+    .rx_pin(rx_pin),
     .tx_pin(tx_pin)
   );
   rx_fifo rx_fifo (
@@ -7008,9 +7023,9 @@ module serial(clk, csr__addr, csr__w_data, csr__r_stb, csr__w_stb, csr__r_data, 
   always @* begin
     if (\initial ) begin end
     \phy_divisor$next  = phy_divisor;
-    (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:99" *)
+    (* src = "/opt/FPGA/spork/spork/peripheral/serial.py:106" *)
     casez (bridge_serial_divisor__w_stb)
-      /* src = "/opt/FPGA/spork/spork/peripheral/serial.py:99" */
+      /* src = "/opt/FPGA/spork/spork/peripheral/serial.py:106" */
       1'h1:
           \phy_divisor$next  = bridge_serial_divisor__w_data;
     endcase

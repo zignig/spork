@@ -1,0 +1,29 @@
+Master window 
+
+- Task start
+- current task
+- next task
+- global heap pointer 
+- heap left
+- 
+-
+-
+
+Task window
+- Entry point ( program )
+- Window address
+- Data address ( heap ) 
+- Heap remaining
+- current time 
+- next run 
+- status ( running , error , etc  ) 
+- next task pointer
+
+need to code 
+aligned allocator ( align on window MOD 8 ) 
+context switch 
+task switcher 
+
+need to gateware 
+
+free running jiffy timer.

@@ -205,5 +205,9 @@ if __name__ == "__main__":
         print(dir(spork.cpu.pc.devices))
         with open("boneless.v", "w") as f:
             f.write(
-                verilog.convert(spork, name="boneless", ports=[spork.serial._phy.tx.o])
+                verilog.convert(
+                    spork,
+                    name="boneless",
+                    ports=[spork.serial._phy.tx.o, spork.serial._phy.rx.i],
+                )
             )
