@@ -111,7 +111,7 @@ class al(Command):
             u = UART()
             ho = u.writeHex
             return [
-                MOVI(w.temp, 512),
+                MOVI(w.temp, 64),
                 al(w.temp),
                 self.globals.heap(w.temp),
                 LD(w.temp, w.temp, 0),

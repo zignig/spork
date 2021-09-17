@@ -113,7 +113,7 @@ class LoaderAsSub(SubR):
             BNE(ll.check_fail),
             Rem("And boot into your newly minted firmware"),
             Rem("Clear the working registers"),
-            MOVR(w.address, "end_of_data"),
+            # MOVR(w.address, "end_of_data"),
             MOVI(w.fp, self.sw - 8),
             STW(w.fp),
             MOVI(R0, 0),
@@ -126,6 +126,8 @@ class LoaderAsSub(SubR):
             ll("check_fail"),
             MOVI(w.char, 70),  # F for checksum fail
             wc(w.char),
+            # ho(w.address),
+            # ho(w.value),
             J(ll.end),
             ll("err"),
             MOVI(w.char, 33),  # ! for error

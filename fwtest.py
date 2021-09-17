@@ -13,6 +13,7 @@ from spork.peripheral.kermit_crc import KermitCRC
 from spork.peripheral.warmboot import WarmBoot, FakeWarm
 from spork.peripheral.watchdog import Watchdog
 from spork.peripheral.profiler import Profiler
+from spork.peripheral.systick import SysTick
 
 
 from spork.cores.ext_reset import ExternalReset
@@ -76,6 +77,9 @@ class TestSpork(Elaboratable):
         crc = KermitCRC()
         cpu.add_peripheral(crc)
 
+        # System Ticker
+        systick = SysTick(16)
+        cpu.add_peripheral(systick)
         # Reg test
 
         # watchdog = Watchdog(cpu.cpu)

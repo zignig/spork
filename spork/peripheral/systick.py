@@ -7,30 +7,39 @@ from ..logger import logger
 
 log = logger(__name__)
 
-__all__ = ["TimerPeripheral"]
+__all__ = ["SysTick"]
 
 
 @Enroll(provides="systick")
 class SysTick(Peripheral, Elaboratable):
     """systick peripheral.
 
-    A general purpose counter, for system time.
+    A general purpose ticker , for system time.
 
     Uses the default clock to make a realtime increment
     """
 
     def __init__(self, interval):
-        super().__init__(name=name)
+        super().__init__()
 
-        self.width = width
+        self.interval = interval
 
         bank = self.csr_bank()
-        self.counter = bank.csr(16, "rw")
-        self._zero_ev = self.event(mode="rise")
+        self.value = bank.csr(16, "rw")
+        self.divider = Signal(16, reset=interval)
+        self.counter = Signal(16)
 
     def elaborate(self, platform):
         m = Module()
-        # Remeber to attach the bridge
+        # Remember to attach the bridge
         m.submodules.bridge = self._bridge
+        # the systick counter
+
+        # update the counter
+        with m.If(self.counter == self.divider):
+            m.d.sync += self.counter.eq(0)
+            m.d.sync += self.value.r_data.eq(self.value + 1)
+        with m.Else():
+            m.d.sync += self.counter.eq(self.counter + 1)
 
         return m
