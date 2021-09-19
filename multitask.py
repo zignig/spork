@@ -14,7 +14,7 @@ from spork.logger import logger
 
 log = logger(__name__)
 
-from spork.lib.alloc import ModAlloc
+from spork.lib.alloc import GAlloc
 
 
 class MultiTask(Firmware):
@@ -30,11 +30,12 @@ class MultiTask(Firmware):
         reg = self.reg
         ll = LocalLabels()
         uart = UART()
-        ma = ModAlloc()
+        ma = GAlloc()
         return [
-            MOVI(w.temp, 200),
             MOVI(w.size, 10),
-            ma(w.temp, w.size, ret=[w.temp, w.pointer]),
+            ma(w.size, ret=[w.pointer]),
+            uart.writeHex(w.pointer),
+            uart.cr(),
         ]
 
 

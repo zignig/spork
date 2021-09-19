@@ -85,7 +85,7 @@ class SingleString:
         if len(self.value) < 20:
             comment = Rem(self.value)
         else:
-            comment = Rem(self.value[:20])
+            comment = Rem(self.value[:20] + " ...")
         return [L(self.name + self._postfix), comment, length, chars]
 
 

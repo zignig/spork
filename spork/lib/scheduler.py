@@ -21,40 +21,60 @@ class Scheduler(CodeObject):
         super().__init__()
 
 
+class CreateTask(SubR):
+    """
+        Take an address to the task data
+        1. Allocate Memory
+        2. Save Heap pointer
+        3. Save Window reference
+    """
+
+    def setup(self):
+        self.param = ["pointer"]
+
+
+class CreateScheduler(SubR):
+    def setup(self):
+        self.locals = ["pointer", "count", "hpointer"]
+        self.param = ["count"]
+
+    def instr(self):
+        w = self.w
+        self.globals.sched = 0
+        self.globals.task_count = self.tasks
+        self.stringer.start = "Starting"
+        al = GAlloc()
+        task_build = []
+        for i in range(self.tasks):
+            task_build.append(Rem("task %s" % i))
+        return [
+            Rem("Alloc count + 1 and return pointer"),
+            Rem("Global alloc"),
+            MOVI(w.count, self.tasks + 1),
+            al(w.count, ret=[w.pointer]),
+            self.globals.sched(w.hpointer),
+            ST(w.pointer, w.hpointer, 0),
+            task_build,
+        ]
+
+
 class FCFS(Scheduler):
     "First come first served"
-
-    class CreateScheduler(SubR):
-        def setup(self):
-            self.locals = ["pointer", "count", "hpointer"]
-            self.param = ["count"]
-
-        def instr(self):
-            w = self.w
-            self.globals.sched = 0
-            al = GAlloc()
-            return [
-                Rem("Alloc count + 1 and return pointer"),
-                Rem("Global alloc"),
-                self.globals.heap_pointer(w.hpointer),
-                ADDI(w.count, w.count, 1),
-                al(w.count, ret=[w.pointer]),
-            ]
 
     def __init__(self):
         super().__init__()
         self.tasks = []
         self.names = Stringer()
-        self.names.all()
 
     def add_task(self, task):
         self.names.add(task.name, task.name)
         self.tasks.append(task)
 
     def setup(self):
-        cs = self.CreateScheduler()
-
-        return [Rem("Setup the Scheduler"), cs()]
+        self.cs = CreateScheduler()
+        # evil hack , attach to the class
+        CreateScheduler.tasks = len(self.tasks)
+        return [Rem("Setup the Scheduler"), self.cs()]
 
     def code(self):
         t = []
@@ -70,7 +90,7 @@ class Task(CodeObject):
         self.size = size
 
     def code(self):
-        return 8 * [0]
+        return [0, 0, self.interval, self.size, 0, 0, 0, 0]
 
 
 if __name__ == "__main__":

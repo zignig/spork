@@ -6,6 +6,29 @@ from boneless.arch.opcode import *
 from ..firmware.base import *
 
 
+class CopyMem(SubR):
+    " Copy a block of memory "
+
+    def setup(self):
+        self.params = ["source", "destination", "count"]
+        self.locals = ["counter", "holding"]
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        return [
+            MOVI(w.counter, 0),
+            ll("again"),
+            LD(w.holding, w.source, 0),
+            ST(w.holding, w.destination, 0),
+            ADDI(w.source, w.source, 1),
+            ADDI(w.destination, w.source, 1),
+            ADDI(w.counter, w.counter, 1),
+            CPM(w.count, w.counter),
+            BNE(ll.again),
+        ]
+
+
 class ModAlloc(SubR):
     " Move to MOD8 boundary and alloc some windows"
 
@@ -16,7 +39,6 @@ class ModAlloc(SubR):
 
     def instr(self):
         w = self.w
-        reg = self.reg
         ll = LocalLabels()
         return [
             Rem("Load the pointer"),

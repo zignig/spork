@@ -30,7 +30,11 @@ class tick(Firmware):
         )
         self.sc = FCFS()
         t1 = Task()
+        t2 = Task()
+        t3 = Task(size=32, interval=1043)
         self.sc.add_task(t1)
+        self.sc.add_task(t2)
+        self.sc.add_task(t3)
 
     def prelude(self):
         " code before the main loop "

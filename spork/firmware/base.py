@@ -173,7 +173,7 @@ class CodeObject:
     _objects = set()
 
     def __init__(self):
-        log.critical("build " + str(self))
+        # log.critical("build " + str(self))
         CodeObject._objects.add(weakref.ref(self))
         object.__setattr__(self, "_postfix", Postfix())
 
@@ -188,10 +188,10 @@ class CodeObject:
         log.critical("Setup the Code Objects")
         li = [Rem("Setup the Code Objects")]
         for i in cls._scan():
-            log.critical(str(i))
             s = i.setup()
             if len(s) > 0:
-                li += [Rem(str(i)), i.setup()]
+                li += [Rem(str(i)), s]
+        log.critical("End Setup Code")
         return li
 
     @classmethod
@@ -199,9 +199,11 @@ class CodeObject:
         log.info("Scan")
         dead = set()
         for ref in cls._objects:
+            log.debug(ref)
             obj = ref()
+            log.debug(obj)
             if obj is not None:
-                log.info("\t" + str(obj))
+                # log.info("\t" + str(obj))
                 yield obj
             else:
                 dead.add(ref)
@@ -391,7 +393,7 @@ class SubR(metaclass=MetaSub):
 
     _called = False
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.w = Window()
         # return registers to upper window
         self._ret = False

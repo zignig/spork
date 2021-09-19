@@ -97,9 +97,9 @@ class Firmware:
                 MOVR(R1, "end_of_data"),
                 self.globals.heap_pointer(R0),
                 ST(R1, R0, 0),
-                Rem("Prelude functions"),
+                Rem("--- Prelude functions ---"),
                 self.prelude(),
-                Rem("Code object setup sequence"),
+                Rem("--- Code object setup sequence ---"),
                 CodeObject.setup_list(),
                 L("main"),
                 [self.instr()],
@@ -127,11 +127,6 @@ class Firmware:
 
     def assemble(self):
         fw = Instr.assemble(self.code())
-        # l = len(fw)
-        # align = math.ceil(l / 8) * 8
-        # diff = align - l
-        # for i in range(diff):
-        #    fw.append(0)
         return fw
 
     def hex(self):
@@ -150,7 +145,7 @@ class Firmware:
         # append the code
         for i in asm:
             full_hex += hex_string(i)
-        # will be the checksum
+        # append the checksum
         full_hex += hex_string(_crc(asm))
         return full_hex
 
