@@ -85,12 +85,18 @@ class Firmware:
             w = self.w = Window()
             self.labels = ll = LocalLabels()
             self.setup()
+            self.globals.heap_pointer = 0
             fw = [
                 Rem("--- Firmware Object ---"),
                 Rem(self.w._name),
                 L("init"),
+                Rem("--- Set up the window ---"),
                 MOVI(w.fp, self.sw - 8),
                 STW(w.fp),
+                Rem("--- Setup the heap pointer ---"),
+                MOVR(R1, "end_of_data"),
+                self.globals.heap_pointer(R0),
+                ST(R1, R0, 0),
                 Rem("Prelude functions"),
                 self.prelude(),
                 Rem("Code object setup sequence"),

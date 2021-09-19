@@ -360,9 +360,8 @@ class CoreDump(SubR):
         return [
             Rem("DUMP the entire memory space"),
             MOVI(w.counter, 0),
-            self.globals.heap(w.endpoint),
+            self.globals.heap_pointer(w.endpoint),
             LD(w.endpoint, w.endpoint, 0),
-            ho(w.endpoint),
             # MOVR(w.endpoint, "end_of_data"),  # TODO share full mem size into SubR
             ll("dumper"),
             Rem("current address"),

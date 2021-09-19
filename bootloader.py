@@ -17,7 +17,7 @@ from spork.lib.stringer import Stringer
 from spork.lib.ansi_codes import AnsiStrings, Term
 from spork.firmware.firmware import Firmware
 
-from spork.lib.alloc import Alloc
+from spork.lib.alloc import Alloc, GAlloc
 
 # command infrastructure
 from spork.lib.commands import MetaCommand, Command
@@ -47,7 +47,6 @@ class Init(Inline):
     def instr(self):
         w = self.w
         reg = self.reg
-        self.globals.heap = 0
         return [
             Rem("Set up the devices"),
             Rem("enable the led"),
@@ -65,11 +64,6 @@ class Init(Inline):
             Rem("reset the crc"),
             MOVI(w.temp, 1),
             STXA(w.temp, reg.crc.reset),
-            Rem("Reset the heap"),
-            self.globals.heap(w.temp),
-            MOVR(w.pad_address, "end_of_data"),
-            ST(w.pad_address, w.temp, 0),
-            MOVI(w.temp, 32),
         ]
 
 
@@ -107,13 +101,13 @@ class al(Command):
 
         def instr(self):
             w = self.w
-            al = Alloc()
+            al = GAlloc()
             u = UART()
             ho = u.writeHex
             return [
-                MOVI(w.temp, 64),
+                MOVI(w.temp, 8),
                 al(w.temp),
-                self.globals.heap(w.temp),
+                self.globals.heap_pointer(w.temp),
                 LD(w.temp, w.temp, 0),
                 ho(w.temp),
             ]
@@ -215,7 +209,7 @@ class Bootloader(Firmware):
         " some global _fixed_ references "
         self.globals.led = 0
         self.globals.cursor = 0
-        self.globals.heap_end = self.sw - 8 * 16  # leave 16 windows free
+        self.globals.heap_end = self.sw - 8 * 32  # leave 16 windows free
         # TODO make globals typesafe
 
         " build some data and subroutines "

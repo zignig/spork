@@ -212,6 +212,7 @@ class CodeObject:
         l = []
         log.info("Data Objects")
         for i in cls._scan():
+            log.info(i)
             l += [i.code()]
         return l
 
