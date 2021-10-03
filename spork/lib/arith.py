@@ -1,4 +1,4 @@
-" Some Deciamal Math functions "
+" Some Decimal Math functions "
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

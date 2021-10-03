@@ -1,4 +1,4 @@
-"Serail to char and word reading and writing"
+"Serial to char and word reading and writing"
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
