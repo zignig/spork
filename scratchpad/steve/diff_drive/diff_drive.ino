@@ -23,7 +23,7 @@ void setup()
   enable();
   moveBot(true,15,900);
   stopMotors();
-  disable();
+  disable();mo
   pinMode(LED_BUILTIN,OUTPUT);
 }
 

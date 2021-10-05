@@ -1,0 +1,2 @@
+essid = "yourssid"
+password = "supersecretpassword"
