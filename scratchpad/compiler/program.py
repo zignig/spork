@@ -21,6 +21,3 @@ class task(Defn):
         self.name = name
         self.body = body
         self.tasks.append(self)
-
-    def process(self, instr):
-        self.current.parent.add(self.name.name, self)

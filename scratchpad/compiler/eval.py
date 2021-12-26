@@ -13,33 +13,16 @@ class evaler(Defn):
     def __init__(self, *body):
         self.body = body
 
-    def process(self, instr):
-        self.proc_body(instr)
-
-
 class assign(Base):
     def __init__(self, lhs, rhs):
         self.name = lhs
         self.lhs = lhs
         self.rhs = rhs
 
-    def process(self, instr):
-        self.rhs.process(instr)
-        instr += ["ASSIGN"]
-        self.lhs.process(instr)
-
-
 class variable(Base):
     def __init__(self, vtype, name, setvar=None):
         self.name = name
         self.vtype = vtype
-
-    def process(self, instr):
-        # check the type
-        # t = self.current.get(self.vtype)
-        self.current.add(self.name.name, self)
-        pass
-
 
 class var(Named):
     pass
@@ -50,17 +33,6 @@ class Arith(Base):
         self.lhs = lhs
         self.rhs = rhs
         self.target = None
-
-    def process(self, instr):
-        self.lhs.process(instr)
-        self.rhs.process(instr)
-        # self.target = TempVar()
-        # self.current.add(self.target.name, self.target)
-        instr.append(self)
-        # self.lhs = self.target
-
-    def action(self, instr):
-        instr.append("_" + self.__class__.__qualname__)
 
     def __repr__(self):
         return (

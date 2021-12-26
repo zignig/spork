@@ -1,12 +1,5 @@
-
-
-var int test = 1
-func hello(){
-
-while(1){
-    while(1){
-        while(1){
-        }
-    }
-}
+func main(){
+    var int i = 0 
+    i = i + 1
+    print(2)
 }

@@ -124,6 +124,9 @@ class Compiler:
         self.data = data
 
 
+from compiler.display import Display 
+from compiler.gensymbols import GenSymbols
+
 from pprint import pprint
 
 if __name__ == "__main__":
@@ -132,21 +135,19 @@ if __name__ == "__main__":
         d = open(f).read()
     else:
         print("default file fib.prg")
-        d = open("fib.prg").read()
-    print(" ----- original -----")
-    print(d)
-    print(" ----- parsed -----")
+        d = open("small.prg").read()
+    #print(" ----- original -----")
+    #print(d)
+    #print(" ----- parsed -----")
     data = p(d)
-    print(data.pretty())
+    #print(data.pretty())
     trans = bt.transform(data)
-    print("------ transformed -------")
-    print()
-    print(trans)
-    # instr = trans.start_walk()
-    instr = []
-    trans.scan(instr, print)
-    print("---------symbols-----------")
+    d = Display()
+    print(" ----- AST -----")
+    d.visit(trans)
+    print("--------- Scan Symbols -----------")
+    gs = GenSymbols()
+    gs.visit(trans)
+    print("----- Symbols ----")
     print(trans.symbols)
-    print("---------instructions-----------")
-    pprint(instr)
-    print(" ----- finished ----- ")
+    

@@ -4,10 +4,11 @@
 # An upwards searching symbol table
 # Used all the way through the compiler
 
-
+_DEBUG = False 
 class SymbolTable:
     def __init__(self, parent=None, name="anon"):
-        print("Create table %s" % name)
+        if _DEBUG:
+            print("Create table %s" % name)
         self.symbols = {}
         # for nested tables
         self.children = []
@@ -22,7 +23,8 @@ class SymbolTable:
 
     def add(self, name, value):
         self._empty = False
-        print("adding -> ", name, value, " to ", self.name)
+        if _DEBUG:
+            print("adding -> ", name, value, " to ", self.name)
         if name in self.symbols:
             print(self)
             raise BaseException("symbol already exists %s" % name)
@@ -56,6 +58,8 @@ class SymbolTable:
             for i in self.children:
                 if not i._empty:
                     lines.append(i.__repr__())
+                else:
+                    lines.append("Empty table "+i.name)
         s = "\n".join(lines)
         return s
 
@@ -65,14 +69,20 @@ class Base:
     name = "anon"
     symbols = SymbolTable(name="global")
     current = symbols
-    functions = []
-    impl = []
-    tasks = []
-    variables = []
-    include = []
 
     def __init__(self, tree):
         self.body = tree
+
+    @classmethod
+    def add_sym(self,name,value):
+        Base.current.add(name,value)
+
+    @classmethod
+    def add_namespace(self,name):
+        Base.current = SymbolTable(Base.current,name)
+    
+    def pop_namespace(self):
+        Base.current = Base.current.parent
 
     def __repr__(self):
         base = (
@@ -96,27 +106,3 @@ class Base:
                 level += 1
                 j._indent(level, j)
                 level -= 1
-
-    def proc_body(self, instr):
-        body = []
-        try:
-            for i in self.body:
-                i.process(body)
-        except:
-            body.append(i)
-        instr += [body]
-
-    def walk(self, instr):
-        print("base walk")
-        self.process(instr)
-
-    def scan(self, instr, fn):
-        instr += [self]
-
-    def start_walk(self):
-        instr = []
-        self.walk(instr)
-        return instr
-
-    def process(self, instr):
-        print("fail , ", self)

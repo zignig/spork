@@ -1,2 +1,2 @@
-essid = "yourssid"
-password = "supersecretpassword"
+essid = "wigglenew2.4"
+password = "wigglewiggle135"
