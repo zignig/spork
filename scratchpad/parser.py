@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.6
 """
 Parser start
 """
@@ -20,7 +20,7 @@ gram = r"""
     proc: "proc" ident param body -> proc
     on: "on" ident body -> on_event
     return: "return" expr -> returner 
-    use: "use" ident -> use
+    use: "use" [ ident ("," ident)* ] _NL  -> use
     
     declparam: "(" [ dvar ("," dvar )*] ")"
     dvar:  TYPE [ array ] ident [ set_var ] 
@@ -33,11 +33,12 @@ gram = r"""
     body: "{" _ent* "}" 
     _item: expr 
 
-    ?statement: ( var | assign | call | if | while | body ) _NL
+    ?statement: ( var | const | assign | call | if | while | body ) _NL
     assign: ( ident | index ) "=" expr 
     call: ident param
+    const: "const" TYPE [ array ] ident set_var -> const
     var: "var" TYPE [ array ] ident [ set_var ] -> variable
-    array: "[" [NUMBER] "]"
+    array: "[" [NUMBER|ident] "]"
     set_var: "=" expr 
 
     // expressions 
@@ -48,24 +49,27 @@ gram = r"""
     ?product: atom
         | product "*" atom  -> mul
         | product "/" atom  -> div
+        | product "**" atom  -> pow 
+        | product "%" atom  -> modulus 
 
     ?atom: NUMBER           -> number
          | "-" atom         -> neg
          | ident            -> var 
+         | index
          | "(" expr ")"
          | call
          | ESCAPED_STRING
 
     
-    if: "if" eval body [ else ] -> iffer
+    if: "if" evaluate body [ else ] -> iffer
     else: "else" body -> elser
     
-    while: "while" eval body -> whiler
+    while: "while" evaluate body -> whiler
     
-    eval: "(" (NUMBER | compare | expr | call | ident) ")" -> evaler
+    evaluate: "(" ( expr | call | ident | _compare ) ")" -> evaluate
 
     // comparisions 
-    compare: expr _comp expr
+    _compare: expr _comp expr 
     _comp: (gt | lt | lte | gte | eq | neq)
     gt: ">"
     lt: "<"
@@ -92,14 +96,14 @@ class BoneTree(Transformer):
         and converts it into a collection of python objects as an ast.
     """
 
-    from compiler.eval import add, var, variable, mul, div, sub, assign, evaler
+    from compiler.eval import add, var, variable, mul, div, sub, assign, const
     from compiler.ident import param, ident, declparam
     from compiler.call import call, comment, fields, dvar
-    from compiler.structure import func, task, proc, impl, on_event, use, returner
+    from compiler.structure import func, task, proc, impl, on_event, use, returner, evaluate
     from compiler.control import iffer, whiler
     from compiler.data import number, array, struct, enum, index
     from compiler.program import Program
-    from compiler.compare import compare, lt, gt, lte, gte, eq, neq
+    from compiler.comp import lt, gt, lte, gte, eq, neq,compare
 
     def start(self, *data):
         return Program(data)
@@ -108,24 +112,14 @@ class BoneTree(Transformer):
         return body
 
 
-class Vi(Visitor):
-    pass
-
-
 bt = BoneTree()
 main_parser = Lark(gram, parser="lalr", propagate_positions=True)
 p = main_parser.parse
 data = None
-v = Vi()
-
-
-class Compiler:
-    def __init__(self, data):
-        self.data = data
-
 
 from compiler.display import Display 
 from compiler.gensymbols import GenSymbols
+from compiler.preprocess import Preprocessor
 
 from pprint import pprint
 
@@ -134,13 +128,16 @@ if __name__ == "__main__":
         f = sys.argv[1]
         d = open(f).read()
     else:
-        print("default file fib.prg")
+        print("default file small.prg")
         d = open("small.prg").read()
+    pp = Preprocessor(d)
+    pp.start()
+    print(pp)
     #print(" ----- original -----")
     #print(d)
-    #print(" ----- parsed -----")
     data = p(d)
-    #print(data.pretty())
+    print(" ----- parsed -----")
+    print(data.pretty())
     trans = bt.transform(data)
     d = Display()
     print(" ----- AST -----")

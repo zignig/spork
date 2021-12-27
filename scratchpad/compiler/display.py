@@ -5,15 +5,19 @@
 from .visitor import NodeVisitor
 
 class Display(NodeVisitor):
+    def __init__(self):
+        self._data = ''
+
+    def _print(self,value):
+        self._data += value
+    
 
     def visit_Program(self,node):
-        print("Program")
         for i in node.body:
             self.visit(i)
 
     def visit_func(self,node):
-        print("Function")
-        print(node.name)
+        print("Function (",node.name.name,")")
         self.visit(node.params)
         for i in node.body:
             self.visit(i)
@@ -22,7 +26,29 @@ class Display(NodeVisitor):
         for i in node.params:
             self.visit(i)
 
+    def visit_returner(self,node):
+        print('return ',node)
+
+    def visit_whiler(self,node):
+        print("while")
+        self.visit(node.expr)
+        for i in node.body:
+            self.visit(i)
+
+    def visit_const(self,node):
+        print(node)
+
     def visit_assign(self,node):
+        self.visit(node.lhs)
+        self.visit(node.rhs)
+
+    def visit_evaluate(self,node):
+        pass
+
+    def visit_dvar(self,node):
+        print('dvar',node)
+
+    def _visit_assign(self,node):
         self.visit(node.lhs)
         self.visit(node.rhs)
 
@@ -35,7 +61,7 @@ class Display(NodeVisitor):
         self.visit(node.rhs)
 
     def visit_var(self,node):
-        print(node.name)
+        print(node.name.name)
 
     def visit_number(self,node):
         print(node.val)

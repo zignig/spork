@@ -5,8 +5,15 @@ from .defn import Defn
 
 
 class use(Base):
-    pass
+    def __init__(self,*includes):
+        self.includes = includes
 
+
+class evaluate(Base):
+    def __init__(self,lhs,op,rhs):
+        self.lhs = lhs
+        self.op = op
+        self.rhs = rhs
 
 class proc(Defn):
     def __init__(self, name, params, body):

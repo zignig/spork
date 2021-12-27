@@ -52,7 +52,7 @@ class SymbolTable:
         else:
             lines.append(self.name)
         for key, value in self.symbols.items():
-            lines.append("|%7s|: %20r |" % (key, value))
+            lines.append("|%12s|: %20r |" % (key, value))
         lines.append("\n")
         if len(self.children) > 0:
             for i in self.children:

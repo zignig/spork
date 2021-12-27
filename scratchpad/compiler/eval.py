@@ -9,16 +9,18 @@ from .named import Named
 from .defn import Defn
 
 
-class evaler(Defn):
-    def __init__(self, *body):
-        self.body = body
-
 class assign(Base):
     def __init__(self, lhs, rhs):
         self.name = lhs
         self.lhs = lhs
         self.rhs = rhs
 
+class const(Base):
+    def __init__(self,vtype, name,setvar):
+        self.name = name
+        self.vtype = vtype
+        self.setvar = setvar
+        
 class variable(Base):
     def __init__(self, vtype, name, setvar=None):
         self.name = name
