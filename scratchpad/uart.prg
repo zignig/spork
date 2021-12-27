@@ -1,5 +1,3 @@
-use hardware 
-
 var char[32] buffer
 var int pos = 0 
 

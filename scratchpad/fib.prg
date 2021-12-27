@@ -1,10 +1,10 @@
 // fib program 
 
-func main() { 
+func fib(int count) { 
     var int x = 0 
     var int y = 1
     var int z
-    while(x < 2**16){
+    while(x < count){
         x = y 
         y = z
         z = x + y
@@ -12,5 +12,9 @@ func main() {
     }
 }
 
-main()
-test(1,2,3)
+func main(){
+    print("Up to 10")
+    fib(10)
+    print("Up to 20")
+    fib(20)
+}

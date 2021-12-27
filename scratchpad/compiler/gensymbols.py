@@ -16,17 +16,17 @@ class GenSymbols(NodeVisitor):
         node.add_sym(node.name.name,node)
         node.add_namespace(node.name.name)
         self.visit(node.params)
-        node.local_symbols = Base.current
         for i in node.body:
             self.visit(i)
         node.pop_namespace()
 
     def visit_declparam(self,node):
+        node.local_symbols = Base.current
         for i in node.params:
             self.visit(i)
         
     def visit_const(self,node):
-        node.add_sym(node.name,node)
+        node.add_sym(node.name.name,node)
 
     def visit_dvar(self,node):
         node.add_sym(node.name,node)
@@ -49,3 +49,10 @@ class GenSymbols(NodeVisitor):
 
     def visit_variable(self,node):
         node.add_sym(node.name.name,node)
+
+    def visit_struct(self,node):
+        node.add_sym(node.name.name,node)
+        node.add_namespace(node.name.name)
+        for i in node.body:
+            self.visit(i)
+        node.pop_namespace()

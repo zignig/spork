@@ -76,6 +76,7 @@ class Base:
     @classmethod
     def add_sym(self,name,value):
         Base.current.add(name,value)
+        self.local_symbols = Base.current
 
     @classmethod
     def add_namespace(self,name):

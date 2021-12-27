@@ -59,7 +59,7 @@ func wait(int count){
 }
 
 func hello(){
-	print("hello")
+	print("this is a longer test")
 }
 
 task blink {

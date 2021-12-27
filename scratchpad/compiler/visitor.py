@@ -9,6 +9,7 @@ class NodeVisitor(object):
         return visitor(node)
 
     def generic_visit(self,node):
+        # Run this when defn does not exist
         print("No visit_{} method in {}".format(type(node).__name__,type(self).__name__))
         print(node,'-> [',end=" ")
         l = dir(node)

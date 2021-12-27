@@ -6,7 +6,7 @@ class Preprocessor:
     def __init__(self,file_data):
         self.file_stack = []
         self.name_stack = []
-        self.final_name_dict = {}
+        self.data_dict= {}
         self.complete_data = ""
         self.data = file_data
 
@@ -25,10 +25,11 @@ class Preprocessor:
         while(len(self.name_stack) > 0):
             name = self.name_stack.pop()
             data = self._get_file(name)
-            if name not in self.final_name_dict: 
+            if name not in self.data_dict: 
                 print('get file',name)
                 self.scan(data)
-            self.final_name_dict[name] = data
+                self.file_stack.insert(0,name+'.prg')
+                self.data_dict[name] = data
 
     def scan(self,data):
         line = data.split('\n') 
@@ -43,7 +44,7 @@ class Preprocessor:
         s = 'Preprocessor \n'
         for i in self.name_stack:
             s += '\t' + i +  '\n'
-        s += str(self.final_name_dict.keys())
+        s += str(self.file_stack)
         return s
         
         
