@@ -5,7 +5,7 @@
 from .visitor import NodeVisitor
 
 class Display(NodeVisitor):
-    _display = False 
+    _display = True
     def __init__(self):
         self._data = ''
         self._indent = 0 
@@ -14,9 +14,12 @@ class Display(NodeVisitor):
         print(self._data) 
 
     def _print(self,value):
-        item = '  '*self._indent + value
+        self._data += value
+        print(value,end='')
+
+    def _nl(self):
+        item = '\n'+' '*self._indent
         self._data += item
-        print(item,end='')
 
     def visit_Program(self,node):
         for i in node.body:
@@ -25,12 +28,14 @@ class Display(NodeVisitor):
     def visit_func(self,node):
         self._print('func '+node.name.name+'(')
         self.visit(node.params)
-        self._print('){\n')
+        self._print('){')
+        self._nl()
         for i in node.body:
             self._indent += 1
             self.visit(i)
             self._indent -= 1
-        self._print('}\n')
+        self._print('\n}')
+        self._nl()
 
     def visit_declparam(self,node):
         for i in node.params[:-1]:
@@ -38,18 +43,23 @@ class Display(NodeVisitor):
             self._print(',')
         if len(node.params) > 0:
             self.visit(node.params[-1])
+
     def visit_returner(self,node):
-        print('return ',node)
+        self._print('return ')
+        self.visit(node.expr)
 
     def visit_setvar(self,node):
-        self._print(' = ')
+        self._print('=')
         self.visit(node.expr)
 
     def visit_whiler(self,node):
-        print("while")
+        self._print("while(")
         self.visit(node.expr)
+        self._print("){\n")
         for i in node.body:
+            self._indent += 1
             self.visit(i)
+            self._indent -= 1
 
     def visit_const(self,node):
         self._print('const '+node.vtype+' '+node.name.name)
@@ -59,7 +69,7 @@ class Display(NodeVisitor):
 
     def visit_assign(self,node):
         self.visit(node.lhs)
-        self._print(' = ')
+        self._print('=')
         self.visit(node.rhs)
         self._print('\n')
 
@@ -87,7 +97,7 @@ class Display(NodeVisitor):
         self.visit(node.rhs)
 
     def visit_var(self,node):
-        print(node)
+        self.visit(node.name)
 
     def visit_number(self,node):
         self._print(node.val)

@@ -54,4 +54,6 @@ class task(Defn):
         self.body = body
 
 class returner(Base):
-    pass
+    def __init__(self,meta,expr):
+        self.meta = meta 
+        self.expr = expr

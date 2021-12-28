@@ -12,7 +12,7 @@ from compiler.syntaxcheck import SyntaxCheck
 
 from pprint import pprint
 _DEBUG = True 
-#_DEBUG = False 
+_DEBUG = False 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -21,6 +21,8 @@ if __name__ == "__main__":
     else:
         print("default file small.prg")
         program_file = open("small.prg").read()
+    print("---- original ----")
+    print(program_file)
     print("---- preprocess ----")
     pp = Preprocessor(program_file)
     pp.start()
@@ -33,15 +35,15 @@ if __name__ == "__main__":
         d = pa.parse(pp.data_dict[i])
         print(d.pretty())
     data = pa.parse(program_file)
-    print(" ----- parsed -----")
+    print("----- parsed -----")
     if _DEBUG:
         print(data.pretty())
     bt = BoneTree()
     trans = bt.transform(data)
     d = Display()
-    print(" ----- AST -----")
     d.visit(trans)
     d.show()
+    print("----- AST -----")
     if _DEBUG: 
         print("--------- Scan Symbols -----------")
         gs = GenSymbols(display=True)
