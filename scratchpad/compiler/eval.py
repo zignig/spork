@@ -29,12 +29,16 @@ class variable(Base):
         self.name = name
         self.vtype = vtype
 
+class setvar(Base):
+    def __init__(self,meta,expr):
+        self.meta = meta
+        self.expr = expr
+
 class var(Named):
     def __init__(self,meta,name):   
         self.meta = meta 
         self.name = name
         
-
 class Arith(Base):
     def __init__(self,meta,lhs, rhs):
         self.meta = meta

@@ -14,7 +14,7 @@ class Display(NodeVisitor):
         print(self._data) 
 
     def _print(self,value):
-        item = ' '*self._indent + value
+        item = '  '*self._indent + value
         self._data += item
         print(item,end='')
 
@@ -41,6 +41,10 @@ class Display(NodeVisitor):
     def visit_returner(self,node):
         print('return ',node)
 
+    def visit_setvar(self,node):
+        self._print(' = ')
+        self.visit(node.expr)
+
     def visit_whiler(self,node):
         print("while")
         self.visit(node.expr)
@@ -50,7 +54,6 @@ class Display(NodeVisitor):
     def visit_const(self,node):
         self._print('const '+node.vtype+' '+node.name.name)
         if node.setvar is not None:
-            self._print(' = ')
             self.visit(node.setvar)
         self._print('\n') 
 
@@ -87,7 +90,7 @@ class Display(NodeVisitor):
         print(node)
 
     def visit_number(self,node):
-        print(node.val)
+        self._print(node.val)
 
     def visit_comment(self,node):
         self._print(node.val+'\n') 

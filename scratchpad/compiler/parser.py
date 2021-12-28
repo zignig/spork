@@ -40,7 +40,7 @@ gram = r"""
     const: "const" TYPE [ array ] ident [ set_var ] -> const
     var: "var" TYPE [ array ] ident [ set_var ] -> variable
     array: "[" [NUMBER|ident] "]"
-    set_var: "=" expr 
+    set_var: "=" expr  -> setvar
 
     // expressions 
     ?expr: product
@@ -97,7 +97,7 @@ class BoneTree(Transformer):
         and converts it into a collection of python objects as an ast.
     """
 
-    from .eval import add, var, variable, mul, div, sub, assign, const
+    from .eval import add, var, variable, mul, div, sub, assign, const,setvar
     from .ident import param, ident, declparam,dotted
     from .call import call, comment, fields, dvar
     from .structure import func, task, proc, impl, on_event, use, returner, evaluate

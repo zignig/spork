@@ -11,8 +11,8 @@ from compiler.parser import Parser,BoneTree
 from compiler.syntaxcheck import SyntaxCheck 
 
 from pprint import pprint
-_DEBUG = False 
-#_DEBUG = True 
+_DEBUG = True 
+#_DEBUG = False 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
