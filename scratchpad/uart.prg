@@ -1,11 +1,6 @@
 var char[32] buffer
 var int pos = 0 
 
-struct string{
-    var int length 
-    var char[] data
-}
-
 func has_char(){
     if (hardware.uart.rx_ready == 1){
        char[pos] = hardware.uart.rx

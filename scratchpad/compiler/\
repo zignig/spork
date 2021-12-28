@@ -25,6 +25,5 @@ class call(Base):
 
 
 class comment(Base):
-    def __init__(self,meta,val):
+    def __init__(self,meta,*vals):
         self.meta = meta
-        self.val = val

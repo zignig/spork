@@ -8,11 +8,11 @@ from compiler.display import Display
 from compiler.gensymbols import GenSymbols
 from compiler.preprocess import Preprocessor
 from compiler.parser import Parser,BoneTree
-from compiler.codegen import CodeGen
+from compiler.syntaxcheck import SyntaxCheck 
 
 from pprint import pprint
-#_DEBUG = False 
-_DEBUG = True 
+_DEBUG = False 
+#_DEBUG = True 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -39,14 +39,15 @@ if __name__ == "__main__":
     bt = BoneTree()
     trans = bt.transform(data)
     d = Display()
-    if _DEBUG:
-        print(" ----- AST -----")
-        d.visit(trans)
-    print("--------- Scan Symbols -----------")
-    gs = GenSymbols()
-    gs.visit(trans)
-    print("----- Symbols ----")
-    print(trans.symbols)
-    print("---- Code Generation ----")
-    cg = CodeGen()
-    cg.visit(trans) 
+    print(" ----- AST -----")
+    d.visit(trans)
+    d.show()
+    if _DEBUG: 
+        print("--------- Scan Symbols -----------")
+        gs = GenSymbols(display=True)
+        gs.visit(trans)
+        print("----- Symbols ----")
+        print(trans.symbols)
+        print("---- Syntax Checker ----")
+        sc = SyntaxCheck()
+        sc.visit(trans) 

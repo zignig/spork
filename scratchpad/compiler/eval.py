@@ -10,28 +10,34 @@ from .defn import Defn
 
 
 class assign(Base):
-    def __init__(self, lhs, rhs):
+    def __init__(self,meta, lhs, rhs):
+        self.meta = meta
         self.name = lhs
         self.lhs = lhs
         self.rhs = rhs
 
 class const(Base):
-    def __init__(self,vtype, name,setvar):
+    def __init__(self,meta,vtype, name,setvar=None):
+        self.meta = meta
         self.name = name
         self.vtype = vtype
         self.setvar = setvar
         
 class variable(Base):
-    def __init__(self, vtype, name, setvar=None):
+    def __init__(self, meta , vtype, name, setvar=None):
+        self.meta = meta
         self.name = name
         self.vtype = vtype
 
 class var(Named):
-    pass
-
+    def __init__(self,meta,name):   
+        self.meta = meta 
+        self.name = name
+        
 
 class Arith(Base):
-    def __init__(self, lhs, rhs):
+    def __init__(self,meta,lhs, rhs):
+        self.meta = meta
         self.lhs = lhs
         self.rhs = rhs
         self.target = None

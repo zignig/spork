@@ -5,26 +5,29 @@ from .defn import Defn
 
 
 class struct(Defn):
-    def __init__(self, name, *body):
-        print(name)
+    def __init__(self, meta,name, *body):
+        self.meta = meta 
         self.name = name
         self.body = body
 
 class index(Base):
-    def __init__(self, name, index):
+    def __init__(self,meta, name, index):
+        self.meta = meta 
         self.name = name
         self.index = index
 
 class array(Base):
-    def __init__(self, val=0):
+    def __init__(self,meta, val=0):
+        self.meta = meta 
         self.val = val
 
 class number(Base):
-    def __init__(self, val=0):
+    def __init__(self,meta, val=0):
+        self.meta = meta
         self.val = val
 
-
 class enum(Base):
-    def __init__(self, name, values):
+    def __init__(self,meta, name, values):
+        self.meta = meta 
         self.name = name
         self.values = values

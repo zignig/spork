@@ -2,8 +2,8 @@ from .base import Base
 
 
 class compare(Base):
-    def __init__(self):
-        pass 
+    def __init__(self,meta):
+        self.meta = meta 
         
 
 class lt(compare):

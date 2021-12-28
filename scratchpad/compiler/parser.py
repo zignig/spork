@@ -7,6 +7,7 @@ from .base import Base
 gram = r"""
     start: ( _ent )*
     _ent: ( task | func | impl |  enum | proc | on | statement | comment | struct | return | use | _NL ) 
+
     enum: "enum" ident eitems 
     eitems: "{" [ ident ("," ident )*] "}"
     struct: "struct" ident _fields
@@ -23,7 +24,11 @@ gram = r"""
 
     _fields: "{" ( var | func | enum | _NL)*  "}"
     comment: /\/\/[^\n]*/ 
-    ident: NAME ("." ident)*
+
+    // dotted notation
+    ident: NAME ["." dotted] -> ident
+    dotted: NAME ["." dotted] -> dotted
+
     index: ident "[" expr "]"
     param: "(" [ _item ("," _item )*] ")"
     body: "{" _ent* "}" 
@@ -85,7 +90,7 @@ gram = r"""
 """
 
 
-@v_args(inline=True)
+@v_args(inline=True,meta=True)
 class BoneTree(Transformer):
     """
         This is the main trasnform tree, it takes the parse tree
@@ -93,7 +98,7 @@ class BoneTree(Transformer):
     """
 
     from .eval import add, var, variable, mul, div, sub, assign, const
-    from .ident import param, ident, declparam
+    from .ident import param, ident, declparam,dotted
     from .call import call, comment, fields, dvar
     from .structure import func, task, proc, impl, on_event, use, returner, evaluate
     from .control import iffer, whiler
@@ -101,10 +106,10 @@ class BoneTree(Transformer):
     from .program import Program
     from .comp import lt, gt, lte, gte, eq, neq,compare
 
-    def start(self, *data):
+    def start(self,meta,*data):
         return Program(data)
 
-    def body(self, *body):
+    def body(self,meta, *body):
         return body
 
 class Parser:

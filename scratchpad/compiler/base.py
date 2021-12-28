@@ -65,13 +65,14 @@ class SymbolTable:
 
 
 class Base:
-    body = None
     name = "anon"
     symbols = SymbolTable(name="global")
     current = symbols
 
-    def __init__(self, tree):
+    def __init__(self,meta, tree):
+        self.meta = meta
         self.body = tree
+
 
     @classmethod
     def add_sym(self,name,value):

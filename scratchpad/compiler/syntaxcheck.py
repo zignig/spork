@@ -1,8 +1,8 @@
-# Walk the ast and generate the tree value codes 
+# Walk the ast and do some syntax checking
 
 from .visitor import NodeVisitor
 
-class CodeGen(NodeVisitor):
+class SyntaxCheck(NodeVisitor):
 
     def visit_Program(self,node):
         for i in node.body:

@@ -2,10 +2,15 @@
 # super  class to walk the ast
 
 class NodeVisitor(object):
-    
+    _display = False 
+    def __init__(self,display=False):
+        self._display = display
+
     def visit(self, node):
         method_name = "visit_" + type(node).__name__
         visitor = getattr(self,method_name, self.generic_visit)
+        if self._display:
+            print('->',method_name,' -- ',node)
         return visitor(node)
 
     def generic_visit(self,node):

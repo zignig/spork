@@ -4,18 +4,26 @@ from .named import Named
 
 
 class declparam(Named):
-    def __init__(self, *tree):
-        # print(self,tree)
+    def __init__(self, meta ,*tree):
+        self.meta = meta
         self.params = tree
 
 
 class ident(Named):
-    def __init__(self, name, *dotted):
+    def __init__(self,meta, name, dotted=None):
+        self.meta = meta
         self.name = name
         self.dotted = dotted
 
 
+class dotted(Named):
+    def __init__(self,meta,name,dotted=None):   
+        self.meta=meta
+        self.name = name
+        self.dotted = dotted
+
 class param(Named):
-    def __init__(self, *tree):
-        print(self, tree)
+    def __init__(self,meta, *tree):
+        self.meta = meta 
         self.params = tree
+
