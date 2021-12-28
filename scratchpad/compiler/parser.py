@@ -59,7 +59,7 @@ gram = r"""
          | index
          | "(" expr ")"
          | call
-         | ESCAPED_STRING   -> str
+         | ESCAPED_STRING   -> stringer
 
     
     if: "if" evaluate body [ else ] -> iffer
@@ -97,7 +97,7 @@ class BoneTree(Transformer):
         and converts it into a collection of python objects as an ast.
     """
 
-    from .eval import add, var, variable, mul, div, sub, assign, const,setvar
+    from .eval import add, var, variable, mul, div, sub, assign, const,setvar,stringer
     from .ident import param, ident, declparam,dotted
     from .call import call, comment, fields, dvar
     from .structure import func, task, proc, impl, on_event, use, returner, evaluate

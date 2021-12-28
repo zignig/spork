@@ -28,6 +28,12 @@ class variable(Base):
         self.meta = meta
         self.name = name
         self.vtype = vtype
+        self.setvar = setvar
+
+class stringer(Base):
+    def __init__(self,meta,value):
+        self.meta = meta
+        self.value = value
 
 class setvar(Base):
     def __init__(self,meta,expr):
@@ -59,16 +65,13 @@ class Arith(Base):
 
 
 class add(Arith):
-    pass
-
+    sym = "+"
 
 class mul(Arith):
-    pass
-
+    sym = "*"
 
 class div(Arith):
-    pass
-
+    sym = "/" 
 
 class sub(Arith):
-    pass
+    sym = "-"

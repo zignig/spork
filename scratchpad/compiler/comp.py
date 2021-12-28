@@ -7,24 +7,24 @@ class compare(Base):
         
 
 class lt(compare):
-    pass
+    sym = "<"
 
 
 class gt(compare):
-    pass
+    sym = ">"
 
 
 class lte(compare):
-    pass
+    sym = "<="  
 
 
 class gte(compare):
-    pass
+    sym = ">="
 
 
 class eq(compare):
-    pass
+    sym = "=="
 
 
 class neq(compare):
-    pass
+    sym = "!="

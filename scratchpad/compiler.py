@@ -22,7 +22,7 @@ if __name__ == "__main__":
         print("default file small.prg")
         program_file = open("small.prg").read()
     print("---- original ----")
-    print(program_file)
+    #print(program_file)
     print("---- preprocess ----")
     pp = Preprocessor(program_file)
     pp.start()

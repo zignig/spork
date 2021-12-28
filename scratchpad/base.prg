@@ -1,6 +1,6 @@
 // test program 
 
-use uart
+//use uart
 
 //var int a = 1
 var int gr = 400
@@ -36,7 +36,9 @@ func asdf(int a, int b,int c){
 	var int bob 
 	var int test
 	var menu m
-	func gorf(){}
+	func gorf(){
+            print("hello")
+        }
 }
 
 func add(int a,int b){

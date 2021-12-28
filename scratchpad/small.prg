@@ -10,5 +10,5 @@ func main(){
     while ( counter < limit){
         counter = counter + 1
         print(counter)
-    }
+    } 
 }
