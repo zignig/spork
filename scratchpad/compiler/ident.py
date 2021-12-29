@@ -12,7 +12,7 @@ class declparam(Named):
 class ident(Named):
     def __init__(self,meta, name, dotted=None):
         self.meta = meta
-        self.name = name
+        self.name = name.value
         self.dotted = dotted
 
 

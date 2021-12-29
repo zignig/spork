@@ -11,11 +11,9 @@ class use(Base):
 
 
 class evaluate(Base):
-    def __init__(self,meta,lhs,op,rhs):
+    def __init__(self,meta,comp):
         self.meta = meta
-        self.lhs = lhs
-        self.op = op
-        self.rhs = rhs
+        self.comp = comp 
 
 class proc(Defn):
     def __init__(self,meta, name, params, body):

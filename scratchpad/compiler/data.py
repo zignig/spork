@@ -24,6 +24,7 @@ class array(Base):
 class number(Base):
     def __init__(self,meta, val=0):
         self.meta = meta
+        self.name = 'number'
         self.val = val
 
 class enum(Base):

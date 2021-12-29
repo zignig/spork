@@ -1,16 +1,10 @@
-enum state { init,start,run,stop,error }
-
-task bob{}
-
-var int test
-var int a
-var int b
-var int r
-
-func go(){
-	var int counter
-	counter = counter + 1
-	return counter
+func main(){
+    var int counter 
+    const int limit = 100
+    while( counter < limit){
+        counter = counter + 1
+        if(counter % 5 == 0){
+            test(4,a,b,c,d)
+        }
+    }
 }
-
-r = 1 + a + b

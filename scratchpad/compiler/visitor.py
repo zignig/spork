@@ -1,6 +1,8 @@
 # Node visitor
 # super  class to walk the ast
 
+from lark.tree import Tree
+
 class NodeVisitor(object):
     _display = False 
     def __init__(self,display=False):
@@ -17,11 +19,13 @@ class NodeVisitor(object):
         # Run this when defn does not exist
         print("No visit_{} method in {}".format(type(node).__name__,type(self).__name__))
         print(node,'-> [',end=" ")
+        if(isinstance(node,Tree)):
+            print("not parsing ",node)
         l = dir(node)
         for i in l:
             if not i.startswith("__"):
                 print(i,end=" ")
-        print(']')
+        print(']\n')
         #raise Exception("Node visit_{} method".format(type(node).__name__))
 
 

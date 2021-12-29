@@ -8,6 +8,7 @@ class Program(Defn):
     def __init__(self, program):
         # extract this into setup
         self.symbols.add("int", "")
+        self.symbols.add("uint", "")
         self.symbols.add("char", "")
         self.symbols.add("bool", "")
         self.symbols.add("string", "")

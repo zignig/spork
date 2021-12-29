@@ -13,8 +13,6 @@ func fib(int count) {
 }
 
 func main(){
-    print("Up to 10")
     fib(10)
-    print("Up to 20")
     fib(20)
 }

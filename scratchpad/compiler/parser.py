@@ -67,10 +67,10 @@ gram = r"""
     
     while: "while" evaluate body -> whiler
     
-    evaluate: "(" ( expr | call | ident | _compare ) ")" -> evaluate
+    evaluate: "(" ( compare | call | ident ) ")" -> evaluate
 
     // comparisions 
-    _compare: expr _comp expr 
+    compare: expr _comp expr -> compare
     _comp: (gt | lt | lte | gte | eq | neq)
     gt: ">"
     lt: "<"
@@ -97,7 +97,7 @@ class BoneTree(Transformer):
         and converts it into a collection of python objects as an ast.
     """
 
-    from .eval import add, var, variable, mul, div, sub, assign, const,setvar,stringer
+    from .eval import add, var, variable, mul, div, sub, assign, const,setvar,stringer,modulus
     from .ident import param, ident, declparam,dotted
     from .call import call, comment, fields, dvar
     from .structure import func, task, proc, impl, on_event, use, returner, evaluate

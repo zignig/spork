@@ -64,14 +64,22 @@ class Arith(Base):
         )
 
 
+class modulus(Arith):
+    sym = "%"
+    instr = "BORK"
+
 class add(Arith):
     sym = "+"
+    instr = 'ADD'
 
 class mul(Arith):
     sym = "*"
+    instr = 'MUL'
 
 class div(Arith):
     sym = "/" 
+    instr = "DIV"
 
 class sub(Arith):
     sym = "-"
+    instr = "SUB"

@@ -1,30 +1,39 @@
 from .base import Base
 
+class Compare(Base):
+    def __init__(self,meta):    
+        self.meta = meta 
 
 class compare(Base):
-    def __init__(self,meta):
+    def __init__(self,meta,lhs,op,rhs):
         self.meta = meta 
+        self.lhs = lhs
+        self.op = op
+        self.rhs = rhs
         
 
-class lt(compare):
+class lt(Compare):
     sym = "<"
+    instr = "BLTU"
 
 
-class gt(compare):
+class gt(Compare):
     sym = ">"
+    instr = "BLTU"
 
 
-class lte(compare):
+class lte(Compare):
     sym = "<="  
 
 
-class gte(compare):
+class gte(Compare):
     sym = ">="
 
 
-class eq(compare):
+class eq(Compare):
     sym = "=="
+    instr = "BEQ"
 
 
-class neq(compare):
+class neq(Compare):
     sym = "!="

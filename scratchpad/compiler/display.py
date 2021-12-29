@@ -66,6 +66,11 @@ class Display(NodeVisitor):
         self._body(node)
         self._nl()
         
+    def visit_iffer(self,node):
+        self._print("if( ")
+        self.visit(node.expr)
+        self._body(node)
+        self._nl()
 
     def visit_const(self,node):
         self._print('const '+node.vtype+' '+node.name.name)
@@ -80,9 +85,12 @@ class Display(NodeVisitor):
         self._print('\n')
 
     def visit_evaluate(self,node):
+        self.visit(node.comp) 
+    
+    def visit_compare(self,node):
         self.visit(node.lhs)
         self.visit(node.op)
-        self.visit(node.rhs) 
+        self.visit(node.rhs)
 
     def visit_dvar(self,node):
         self._print(node.vtype + ' ' + node.name)
@@ -143,3 +151,4 @@ class Display(NodeVisitor):
     def visit_lt(self,node): self.binop(node)
     def visit_mul(self,node): self.binop(node)
     def visit_eq(self,node): self.binop(node)
+    def visit_modulus(self,node): self.binop(node)

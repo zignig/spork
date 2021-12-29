@@ -74,14 +74,13 @@ class Base:
         self.body = tree
 
 
-    @classmethod
     def add_sym(self,name,value):
         Base.current.add(name,value)
         self.local_symbols = Base.current
 
-    @classmethod
     def add_namespace(self,name):
         Base.current = SymbolTable(Base.current,name)
+        self.local_symbols = Base.current
     
     def pop_namespace(self):
         Base.current = Base.current.parent

@@ -21,7 +21,6 @@ class GenSymbols(NodeVisitor):
         node.pop_namespace()
 
     def visit_declparam(self,node):
-        node.local_symbols = Base.current
         for i in node.params:
             self.visit(i)
         
@@ -38,12 +37,19 @@ class GenSymbols(NodeVisitor):
         for i in node.includes:
             node.add_sym(i.name,i)
         
-    def visit_call(self,node): pass
+    def visit_call(self,node): 
+        # so the call can look up labels
+        node.local_symbols = Base.current 
+
     def visit_comment(self,node): pass
 
     def visit_assign(self,node): pass
 
     def visit_whiler(self,node):
+        for i in node.body:
+            self.visit(i)
+
+    def visit_iffer(self,node):
         for i in node.body:
             self.visit(i)
 
