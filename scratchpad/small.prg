@@ -1,6 +1,14 @@
+func die(){}
+
 func looper(int value){
     while( value > 0){
         counter = counter -1
+    }
+    if ( value < 100){
+        die()
+    }
+    while(value > 100){
+        value = 1000
     }
 }
 

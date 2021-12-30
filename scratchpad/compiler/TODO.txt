@@ -1,0 +1,10 @@
+fix indexes 
+compulert 
+type selector 
+syntax checker 
+ - propagate types up the eval chain. 
+
+convert code gen to all returns. 
+
+incorporate instruction selector.
+
