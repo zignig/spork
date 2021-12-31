@@ -1,10 +1,11 @@
 # instruction selector
 
 from boneless.arch.opcode import * 
+from .vartypes import * 
 class InstructionSelector:
     def __init__(self):
         self.table = {
-            ('add','int','const') : ADDI,
+            ('add',Vint,'const') : ADDI,
         }
 
     def select(self,find):

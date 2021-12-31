@@ -4,7 +4,10 @@
 from .visitor import NodeVisitor
 from .base import SymbolTable
 from .base import Base 
+from .vartypes import *
 
+# Generates the symbol table 
+# and attaches local_symbols to the nodes that need it 
 class GenSymbols(NodeVisitor):
 
     def visit_Program(self,node):
@@ -29,9 +32,17 @@ class GenSymbols(NodeVisitor):
 
     def visit_dvar(self,node):
         node.add_sym(node.name,node)
+        node.local_symbols = Base.current 
 
-    def visit_returner(self,node):
+    def _visit_returner(self,node):
         pass
+
+    def visit_var(self,node):
+        self.visit(node.name)
+        node.local_symbols = Base.current 
+
+    def visit_ident(self,node):
+        node.local_symbols = Base.current 
 
     def visit_use(self,node):
         for i in node.includes:
@@ -41,13 +52,29 @@ class GenSymbols(NodeVisitor):
         # so the call can look up labels
         node.local_symbols = Base.current 
 
+    def visit_returner(self,node):
+        self.visit(node.expr)
+
+    def visit_number(self,node):
+        node.ctype = Vint
+
     def visit_comment(self,node): pass
 
-    def visit_assign(self,node): pass
+    def visit_assign(self,node):
+        self.visit(node.lhs)
+        self.visit(node.rhs)
 
     def visit_whiler(self,node):
+        self.visit(node.expr)
         for i in node.body:
             self.visit(i)
+
+    def visit_evaluate(self,node):
+        self.visit(node.comp)
+
+    def visit_compare(self,node):
+        self.visit(node.rhs)
+        self.visit(node.lhs)
 
     def visit_iffer(self,node):
         for i in node.body:
@@ -55,6 +82,12 @@ class GenSymbols(NodeVisitor):
 
     def visit_variable(self,node):
         node.add_sym(node.name.name,node)
+        node.local_symbols = Base.current 
+        if node.setvar is not None:
+            self.visit(node.setvar)
+        
+    def visit_setvar(self,node):
+        self.visit(node.expr)
 
     def visit_struct(self,node):
         node.add_sym(node.name.name,node)
@@ -62,3 +95,9 @@ class GenSymbols(NodeVisitor):
         for i in node.body:
             self.visit(i)
         node.pop_namespace()
+
+    def binop(self,node):
+        self.visit(node.rhs)
+        self.visit(node.lhs)
+
+    def visit_add(self,node): self.binop(node)

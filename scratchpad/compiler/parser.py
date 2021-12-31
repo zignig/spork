@@ -11,6 +11,7 @@ gram = r"""
     enum: "enum" ident eitems 
     eitems: "{" [ ident ("," ident )*] "}"
     struct: "struct" ident _fields
+
     task: "task" ident body  -> task
     func: "func" ident declparam body -> func
     impl: "impl" ident declparam body -> impl 
@@ -67,8 +68,8 @@ gram = r"""
     
     while: "while" evaluate body -> whiler
     
-    evaluate: "(" ( compare | call | ident ) ")" -> evaluate
-
+    evaluate: "(" ( compare | call | truthy ) ")" -> evaluate
+    truthy: ident -> truthy // must be boolean
     // comparisions 
     compare: expr _comp expr -> compare
     _comp: (gt | lt | lte | gte | eq | neq)

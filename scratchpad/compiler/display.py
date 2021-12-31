@@ -149,6 +149,10 @@ class Display(NodeVisitor):
         self._print(" "+node.sym+" ")
 
     def visit_lt(self,node): self.binop(node)
+    def visit_gt(self,node): self.binop(node)
     def visit_mul(self,node): self.binop(node)
     def visit_eq(self,node): self.binop(node)
     def visit_modulus(self,node): self.binop(node)
+
+    
+    def visit_sub(self,node): self.binop(node)

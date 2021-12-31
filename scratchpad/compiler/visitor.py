@@ -26,6 +26,6 @@ class NodeVisitor(object):
             if not i.startswith("__"):
                 print(i,end=" ")
         print(']\n')
-        #raise Exception("Node visit_{} method".format(type(node).__name__))
+        raise Exception("Node visit_{} method".format(type(node).__name__))
 
 

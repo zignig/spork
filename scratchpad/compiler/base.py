@@ -6,6 +6,7 @@
 
 _DEBUG = False 
 class SymbolTable:
+    debug = False
     def __init__(self, parent=None, name="anon"):
         if _DEBUG:
             print("Create table %s" % name)
@@ -31,13 +32,16 @@ class SymbolTable:
         self.symbols[name] = value
 
     def get(self, name):
-        print("searching for ", name, " in ", self.name)
+        if self.debug:
+            print("?", name, ">", self.name,end='')
         if name in self.symbols:
-            print("\tfound ", name, " in ", self.name)
+            if self.debug:
+                print("... found ", name, " in ", self.name)
             return self.symbols[name]
         # search up the scopes
         if self.parent is not None:
-            print("up ->", self.parent.name)
+            if self.debug:
+                print(" ->", self.parent.name,end='')
             return self.parent.get(name)
         # no symbol at this point
         print(">", name, "< not found in")

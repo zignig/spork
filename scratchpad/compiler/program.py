@@ -2,16 +2,12 @@
 
 from .base import Base
 from .defn import Defn
-
-
+from .vartypes import *
 class Program(Defn):
     def __init__(self, program):
         # extract this into setup
-        self.symbols.add("int", "")
-        self.symbols.add("uint", "")
-        self.symbols.add("char", "")
-        self.symbols.add("bool", "")
-        self.symbols.add("string", "")
+        for i in type_list:
+            self.symbols.add(i.name,i)
         self.symbols.add("print", "")
         self.name = "program"
         self.body = program

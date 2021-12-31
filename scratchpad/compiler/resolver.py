@@ -21,9 +21,10 @@ class Resolver:
             
         else:
             count = self.counts[name] 
-        new_name = name +'_'+ str(count)
+        #new_name = name +'_'+ str(count)
+        new_name = name
         new = Register(new_name,count,self)
-        self.counts[name] += 1
+        #self.counts[name] += 1
         self.registers[new_name] = name
         return new         
         

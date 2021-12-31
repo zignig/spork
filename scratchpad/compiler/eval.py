@@ -27,7 +27,10 @@ class variable(Base):
     def __init__(self, meta , vtype, name, setvar=None):
         self.meta = meta
         self.name = name
+        "string of type"
         self.vtype = vtype
+        "type as class"
+        self.ctype = None
         self.setvar = setvar
 
 class stringer(Base):

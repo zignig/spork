@@ -5,7 +5,8 @@ from .resolver import Resolver,Labels
 from .section import * 
 
 class GenCode(NodeVisitor):
-    def __init__(self):
+    def __init__(self,display=False):
+        self._display = display
         self._code = []
         self.resolver = Resolver()
         self.labels = Labels()
@@ -104,7 +105,7 @@ class GenCode(NodeVisitor):
         target = node.local_symbols.get(node.name)
         self._add("call "+node.name)
         self.visit(node.params)
-        self._add("JSR(R7,"+target.label+")")
+        #self._add("JSR(R7,"+target.label+")")
         self._add("copy return")
         
 
@@ -124,7 +125,10 @@ class GenCode(NodeVisitor):
 
     def visit_variable(self,node):
         if node.setvar is not None:
-            print("SET VAR")
+            self.visit(node.setvar)
+            
+    def visit_setvar(self,node):
+        self.visit(node.expr)
 
     def visit_add(self,node): return self.binop(node)
     def visit_sub(self,node): return self.binop(node)
