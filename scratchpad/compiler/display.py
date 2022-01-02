@@ -133,16 +133,16 @@ class Display(NodeVisitor):
         self._nl()
 
     def visit_param(self,node):
+        node.detail()
+        
+    def visit_call(self,node):
+        self._print(node.name)
+        self._print('(')
         for i in node.params[:-1]:
             self.visit(i)
             self._print(',')
         if len(node.params) > 0:
             self.visit(node.params[-1])
-        
-    def visit_call(self,node):
-        self._print(node.name)
-        self._print('(')
-        self.visit(node.params)
         self._print(')') 
     
     def binop(self,node):

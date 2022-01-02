@@ -15,19 +15,29 @@ class Resolver:
         self.counts = {}
         self.registers = {}
 
+    def name(self,name='temp'):
+        if name not in self.counts:
+            count = self.counts[name] = 1
+            
+        else:
+            count = self.counts[name] 
+        new_name = name
+        new = Register(new_name,count,self)
+        self.registers[new_name] = name
+        return new         
+        
     def new(self,name='temp'):
         if name not in self.counts:
             count = self.counts[name] = 1
             
         else:
             count = self.counts[name] 
-        #new_name = name +'_'+ str(count)
-        new_name = name
+        new_name = name +'_'+ str(count)
         new = Register(new_name,count,self)
-        #self.counts[name] += 1
+        self.counts[name] += 1
         self.registers[new_name] = name
         return new         
-        
+
 class Label:
     "Label for assembler"
     "need to retarget for boneless at some point " 

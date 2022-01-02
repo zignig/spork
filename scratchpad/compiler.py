@@ -22,30 +22,51 @@ class Build:
     " make some code"
     def __init__(self,code):
         self.code = code
+        # for error reports 
+        self.code_lines = code.splitlines()
         self.parse_tree = None
         self.ast = None
         self.assembly = []
+        
+        self.parser = Parser()
+
+        self.sequence = [
+            Display,
+            GenSymbols,
+            SyntaxCheck,
+            GenCode
+        ]
 
     def header(self,value):
-        print('---- '+value+' ----')
+        print('\n---- '+value+' ----')
 
     def run(self):
         self.header('parser')
         pa = Parser()
         self.parse_tree = pa.parse(self.code)
+        print(self.parse_tree.pretty())
         self.header('ast')
         bt = BoneTree()
         self.ast = bt.transform(self.parse_tree)
+        
+        for visitor in self.sequence:
+            print(visitor)
+            action = visitor()
+            action.visit(self.ast)
+            action.show()
+            
+        return
         self.header('display')
         d = Display()
         d.visit(self.ast)
-        #d.show()
+        d.show()
         self.header('generate symbols')
-        gs = GenSymbols()
+        gs = GenSymbols(display=True)
         gs.visit(self.ast)
+        print(self.ast._symbols)
 
         self.header('syntax check')
-        sc = SyntaxCheck()
+        sc = SyntaxCheck(self.code_lines,display=True)
         sc.visit(self.ast)
 
         self.header('generate code')

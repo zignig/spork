@@ -10,6 +10,9 @@ class GenCode(NodeVisitor):
         self._code = []
         self.resolver = Resolver()
         self.labels = Labels()
+        # defer generation of functions till the end
+        self.deferring = True
+        self.deferred = []
 
     def _add(self,value):
         # add an instruction the list 
@@ -27,9 +30,16 @@ class GenCode(NodeVisitor):
         self._add("PROGRAM PRELUDE")
         for i in node.body:
             self.visit(i)
+        self.deferring = False
+        for i in self.deferred:
+            self.visit(i)
         self._add("PROGRAM EPILOG")
 
     def visit_func(self,node):
+        if self.deferring:
+            print('DEFER'+node.name.name)
+            self.deferred.append(node)
+            return
         l = self.labels 
         node.label = l.set(node.name.name)
         self._add(l.set(node.name.name))
@@ -99,15 +109,21 @@ class GenCode(NodeVisitor):
         self._add('MOV('+str(lhs)+','+str(rhs)+')')
         
     def visit_ident(self,node):
-        return self.resolver.new(node.name)
+        return self.resolver.name(node.name)
 
     def visit_call(self,node):
         target = node.local_symbols.get(node.name)
         self._add("call "+node.name)
-        self.visit(node.params)
+        for i in node.params:
+            self.visit(i)
+        
         #self._add("JSR(R7,"+target.label+")")
         self._add("copy return")
         
+    def visit_stringer(self,node):
+        new_reg = self.resolver.new()
+        self._add("resolve "+str(node ))
+        return new_reg
 
     def visit_param(self,node):
         for i in node.params:
@@ -115,7 +131,7 @@ class GenCode(NodeVisitor):
             self.visit(i)
 
     def visit_var(self,node):
-        new_reg = self.resolver.new(node.name.name)
+        new_reg = self.resolver.name(node.name.name)
         self._add("resolve "+node.name.name+' -> '+str(new_reg))
         return new_reg
 

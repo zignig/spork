@@ -70,8 +70,8 @@ class SymbolTable:
 
 class Base:
     name = "anon"
-    symbols = SymbolTable(name="global")
-    current = symbols
+    _symbols = SymbolTable(name="global")
+    _current = _symbols
 
     def __init__(self,meta, tree):
         self.meta = meta
@@ -79,15 +79,31 @@ class Base:
 
 
     def add_sym(self,name,value):
-        Base.current.add(name,value)
-        self.local_symbols = Base.current
+        Base._current.add(name,value)
+        self.local_symbols = Base._current
 
     def add_namespace(self,name):
-        Base.current = SymbolTable(Base.current,name)
-        self.local_symbols = Base.current
+        Base._current = SymbolTable(Base._current,name)
+        self.local_symbols = Base._current
     
     def pop_namespace(self):
-        Base.current = Base.current.parent
+        Base._current = Base._current.parent
+
+    def detail(self):
+        " print detailed information " 
+        base = (
+            ""
+            + str(self.__class__.__qualname__) 
+            + '\n Name:'
+            + str(self.name)
+            + "\n"
+        )
+        for i in dir(self):
+            if i.startswith('_') == False:
+                base += (i+' : '+str(getattr(self,i))+'\n')
+        base += (str(self.meta.line)+','+str(self.meta.column)+'\n')
+        print(base)
+
 
     def __repr__(self):
         base = (
@@ -102,6 +118,9 @@ class Base:
         if hasattr(self, "params"):
             base += " "
             base += str(self.params)
+        if hasattr(self, "vtype"):
+            base += " |> "
+            base += str(self.vtype)
         return base
 
     def _indent(self, level, val):

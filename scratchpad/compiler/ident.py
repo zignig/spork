@@ -23,7 +23,8 @@ class dotted(Named):
         self.dotted = dotted
 
 class param(Named):
-    def __init__(self,meta, *tree):
+    def __init__(self,meta,*param):
         self.meta = meta 
-        self.params = tree
+        print("PARAM"+str(param))
+        self.param = param 
 

@@ -15,7 +15,7 @@ gram = r"""
     task: "task" ident body  -> task
     func: "func" ident declparam body -> func
     impl: "impl" ident declparam body -> impl 
-    proc: "proc" ident param body -> proc
+    proc: "proc" ident _param body -> proc
     on: "on" ident body -> on_event
     return: "return" expr -> returner 
     use: "use" [ ident ("," ident)* ] _NL  -> use
@@ -31,13 +31,13 @@ gram = r"""
     dotted: NAME ["." dotted] -> dotted
 
     index: ident "[" expr "]"
-    param: "(" [ _item ("," _item )*] ")"
+    _param: "(" [ _item ("," _item )*] ")"
     body: "{" _ent* "}" 
     _item: expr 
 
     ?statement: ( var | const | assign | call | if | while | body ) _NL
     assign: ( ident | index ) "=" expr 
-    call: ident param
+    call: ident _param
     const: "const" TYPE [ array ] ident [ set_var ] -> const
     var: "var" TYPE [ array ] ident [ set_var ] -> variable
     array: "[" [NUMBER|ident] "]"

@@ -17,12 +17,10 @@ class dvar(Base):
         self.name = ident.name
 
 class call(Base):
-    def __init__(self,meta, name, params):
+    def __init__(self,meta, name, *params):
         self.meta = meta
         self.name = name.name
         self.params = params
-        self.body = None
-
 
 class comment(Base):
     def __init__(self,meta,val):

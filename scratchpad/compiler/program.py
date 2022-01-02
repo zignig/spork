@@ -7,8 +7,8 @@ class Program(Defn):
     def __init__(self, program):
         # extract this into setup
         for i in type_list:
-            self.symbols.add(i.name,i)
-        self.symbols.add("print", "")
+            self._symbols.add(i.name,i)
+        self._symbols.add("print", "")
         self.name = "program"
         self.body = program
 

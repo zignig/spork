@@ -2,7 +2,7 @@
 
 from .base import Base
 from .defn import Defn
-
+from .vartypes import *
 
 class struct(Defn):
     def __init__(self, meta,name, *body):
@@ -26,6 +26,8 @@ class number(Base):
         self.meta = meta
         self.name = 'number'
         self.val = val
+        self.vtype = Vint.name
+        self.ctype = Vint
 
 class enum(Base):
     def __init__(self,meta, name, values):
