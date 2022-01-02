@@ -1,16 +1,18 @@
 from .base import Base
 
+
 class Compare(Base):
-    def __init__(self,meta):    
-        self.meta = meta 
+    def __init__(self, meta):
+        self.meta = meta
+
 
 class compare(Base):
-    def __init__(self,meta,lhs,op,rhs):
-        self.meta = meta 
+    def __init__(self, meta, lhs, op, rhs):
+        self.meta = meta
         self.lhs = lhs
         self.op = op
         self.rhs = rhs
-        
+
 
 class lt(Compare):
     sym = "<"
@@ -23,7 +25,7 @@ class gt(Compare):
 
 
 class lte(Compare):
-    sym = "<="  
+    sym = "<="
 
 
 class gte(Compare):

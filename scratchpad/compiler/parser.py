@@ -91,33 +91,46 @@ gram = r"""
 """
 
 
-@v_args(inline=True,meta=True)
+@v_args(inline=True, meta=True)
 class BoneTree(Transformer):
     """
         This is the main trasnform tree, it takes the parse tree
         and converts it into a collection of python objects as an ast.
     """
 
-    from .eval import add, var, variable, mul, div, sub, assign, const,setvar,stringer,modulus
-    from .ident import param, ident, declparam,dotted
+    from .eval import (
+        add,
+        var,
+        variable,
+        mul,
+        div,
+        sub,
+        assign,
+        const,
+        setvar,
+        stringer,
+        modulus,
+    )
+    from .ident import param, ident, declparam, dotted
     from .call import call, comment, fields, dvar
     from .structure import func, task, proc, impl, on_event, use, returner, evaluate
     from .control import iffer, whiler
     from .data import number, array, struct, enum, index
     from .program import Program
-    from .comp import lt, gt, lte, gte, eq, neq,compare
+    from .comp import lt, gt, lte, gte, eq, neq, compare
 
-    def start(self,meta,*data):
+    def start(self, meta, *data):
         return Program(data)
 
-    def body(self,meta, *body):
+    def body(self, meta, *body):
         return body
+
 
 class Parser:
     def __init__(self):
         self._parser = Lark(gram, parser="lalr", propagate_positions=True)
 
-    def parse(self,program_data):
+    def parse(self, program_data):
         p = self._parser.parse
         tree = p(program_data)
         return tree

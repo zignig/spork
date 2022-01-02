@@ -4,102 +4,100 @@ Compiler front end
 """
 import sys
 
-from compiler.display import Display 
+from compiler.display import Display
 from compiler.gensymbols import GenSymbols
 from compiler.preprocess import Preprocessor
-from compiler.parser import Parser,BoneTree
-from compiler.syntaxcheck import SyntaxCheck 
+from compiler.parser import Parser, BoneTree
+from compiler.syntaxcheck import SyntaxCheck
 from compiler.gencode import GenCode
 
 from pprint import pprint
-_DEBUG = True 
-#_DEBUG = False 
 
-# transfer this contruct down into class once it 
-# is listening to instructions 
+_DEBUG = True
+# _DEBUG = False
+
+# transfer this contruct down into class once it
+# is listening to instructions
+
 
 class Build:
     " make some code"
-    def __init__(self,code):
+
+    def __init__(self, code):
         self.code = code
-        # for error reports 
+        # for error reports
         self.code_lines = code.splitlines()
         self.parse_tree = None
         self.ast = None
         self.assembly = []
-        
+
         self.parser = Parser()
 
-        self.sequence = [
-            Display,
-            GenSymbols,
-            SyntaxCheck,
-            GenCode
-        ]
+        self.sequence = [Display, GenSymbols, SyntaxCheck, GenCode]
 
-    def header(self,value):
-        print('\n---- '+value+' ----')
+    def header(self, value):
+        print("\n---- " + value + " ----")
 
     def run(self):
-        self.header('parser')
+        self.header("parser")
         pa = Parser()
         self.parse_tree = pa.parse(self.code)
         print(self.parse_tree.pretty())
-        self.header('ast')
+        self.header("ast")
         bt = BoneTree()
         self.ast = bt.transform(self.parse_tree)
-        
+
         for visitor in self.sequence:
             print(visitor)
             action = visitor()
             action.visit(self.ast)
             action.show()
-            
+
         return
-        self.header('display')
+        self.header("display")
         d = Display()
         d.visit(self.ast)
         d.show()
-        self.header('generate symbols')
+        self.header("generate symbols")
         gs = GenSymbols(display=True)
         gs.visit(self.ast)
         print(self.ast._symbols)
 
-        self.header('syntax check')
-        sc = SyntaxCheck(self.code_lines,display=True)
+        self.header("syntax check")
+        sc = SyntaxCheck(self.code_lines, display=True)
         sc.visit(self.ast)
 
-        self.header('generate code')
+        self.header("generate code")
         gc = GenCode(display=True)
         gc.visit(self.ast)
         gc.show()
-        
-        
-import yaml         
+
+
+import yaml
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         f = sys.argv[1]
-        program_file  = open(f).read()
+        program_file = open(f).read()
     else:
         print("default file small.prg")
         program_file = open("small.prg").read()
     print("---- original ----")
-    #print(program_file)
+    # print(program_file)
     print("---- preprocess ----")
     pp = Preprocessor(program_file)
     pp.start()
-    if _DEBUG: 
+    if _DEBUG:
         print(pp)
     pa = Parser()
     for i in pp.data_dict:
-        print('build '+i)
+        print("build " + i)
         d = pa.parse(pp.data_dict[i])
         print(d.pretty())
-    builder =Build(program_file)
+    builder = Build(program_file)
     builder.run()
     yaml.dump(builder.ast)
-    
+
 """
     data = pa.parse(program_file)
     print("----- parsed -----")

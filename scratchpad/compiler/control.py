@@ -4,7 +4,7 @@ from .defn import Defn
 
 
 class iffer(Defn):
-    def __init__(self,meta, expr, body, elser=None):
+    def __init__(self, meta, expr, body, elser=None):
         self.meta = meta
         self.expr = expr
         self.body = body
@@ -12,7 +12,7 @@ class iffer(Defn):
 
 
 class whiler(Defn):
-    def __init__(self,meta, expr, body):
+    def __init__(self, meta, expr, body):
         self.meta = meta
         self.expr = expr
         self.body = body

@@ -77,7 +77,7 @@ class Encoder:
         sd = self.slide_dict
         for i in sd:
             if sd[i] <= l:
-                del (c[i])
+                del c[i]
         self.slide_dict = c
 
     def symbols(self):

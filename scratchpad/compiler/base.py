@@ -4,9 +4,12 @@
 # An upwards searching symbol table
 # Used all the way through the compiler
 
-_DEBUG = False 
+_DEBUG = False
+
+
 class SymbolTable:
     debug = False
+
     def __init__(self, parent=None, name="anon"):
         if _DEBUG:
             print("Create table %s" % name)
@@ -33,7 +36,7 @@ class SymbolTable:
 
     def get(self, name):
         if self.debug:
-            print("?", name, ">", self.name,end='')
+            print("?", name, ">", self.name, end="")
         if name in self.symbols:
             if self.debug:
                 print("... found ", name, " in ", self.name)
@@ -41,7 +44,7 @@ class SymbolTable:
         # search up the scopes
         if self.parent is not None:
             if self.debug:
-                print(" ->", self.parent.name,end='')
+                print(" ->", self.parent.name, end="")
             return self.parent.get(name)
         # no symbol at this point
         print(">", name, "< not found in")
@@ -63,7 +66,7 @@ class SymbolTable:
                 if not i._empty:
                     lines.append(i.__repr__())
                 else:
-                    lines.append("Empty table "+i.name)
+                    lines.append("Empty table " + i.name)
         s = "\n".join(lines)
         return s
 
@@ -73,37 +76,31 @@ class Base:
     _symbols = SymbolTable(name="global")
     _current = _symbols
 
-    def __init__(self,meta, tree):
+    def __init__(self, meta, tree):
         self.meta = meta
         self.body = tree
 
-
-    def add_sym(self,name,value):
-        Base._current.add(name,value)
+    def add_sym(self, name, value):
+        Base._current.add(name, value)
         self.local_symbols = Base._current
 
-    def add_namespace(self,name):
-        Base._current = SymbolTable(Base._current,name)
+    def add_namespace(self, name):
+        Base._current = SymbolTable(Base._current, name)
         self.local_symbols = Base._current
-    
+
     def pop_namespace(self):
         Base._current = Base._current.parent
 
     def detail(self):
-        " print detailed information " 
+        " print detailed information "
         base = (
-            ""
-            + str(self.__class__.__qualname__) 
-            + '\n Name:'
-            + str(self.name)
-            + "\n"
+            "" + str(self.__class__.__qualname__) + "\n Name:" + str(self.name) + "\n"
         )
         for i in dir(self):
-            if i.startswith('_') == False:
-                base += (i+' : '+str(getattr(self,i))+'\n')
-        base += (str(self.meta.line)+','+str(self.meta.column)+'\n')
+            if i.startswith("_") == False:
+                base += i + " : " + str(getattr(self, i)) + "\n"
+        base += str(self.meta.line) + "," + str(self.meta.column) + "\n"
         print(base)
-
 
     def __repr__(self):
         base = (
