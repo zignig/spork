@@ -2,7 +2,10 @@
 
 from .visitor import NodeVisitor
 from .resolver import Resolver, Labels
+from .instrselect import InstructionSelector
 from .section import *
+from .allocator import *
+import pprint
 
 
 class GenCode(NodeVisitor):
@@ -11,6 +14,7 @@ class GenCode(NodeVisitor):
         self._code = []
         self.resolver = Resolver()
         self.labels = Labels()
+        self.selector = InstructionSelector()
         # defer generation of functions till the end
         self.deferring = True
         self.deferred = []
@@ -24,17 +28,20 @@ class GenCode(NodeVisitor):
 
     def show(self):
         print("THE PROGRAM")
-        for i, j in enumerate(self._code):
-            print("{:04X}".format(i), ":", j)
+        pprint.pprint(self._code, width=1, indent=2)
 
     def visit_Program(self, node):
-        self._add("PROGRAM PRELUDE")
+        returnlist = [program_prelude()]
+        print(node.body)
         for i in node.body:
-            self.visit(i)
+            returnlist.append(self.visit(i))
         self.deferring = False
         for i in self.deferred:
-            self.visit(i)
-        self._add("PROGRAM EPILOG")
+            returnlist.append(self.visit(i))
+        returnlist.append(program_epilog())
+        self._code = returnlist
+        pprint.pprint(returnlist)
+        return returnlist
 
     def visit_func(self, node):
         if self.deferring:
@@ -43,43 +50,40 @@ class GenCode(NodeVisitor):
             return
         l = self.labels
         node.label = l.set(node.name.name)
-        self._add(l.set(node.name.name))
-        self._add("FUNCTION PRELUDE " + node.name.name)
-        # self._add(str(node.local_symbols))
-        self.visit(node.params)
+        instr = [l.set(node.name.name), function_prelude(), self.visit(node.params)]
         for i in node.body:
-            self.visit(i)
-        self._add("FUNCTION EPILOG " + node.name.name + "\n")
+            instr.append(self.visit(i))
+        instr.append(function_epilog())
+        return [instr]
 
     def visit_iffer(self, node):
         l = Labels()
-        self._add("START IF")
-        self.visit(node.expr)
-        self._add("jump " + l.after)
-        self._add(l.run)
+        node.expr.target = l.run
+        instr = [
+            Rem("Start if"),
+            self.visit(node.expr),
+            Rem(J(l.after)),
+            self._add(l.run),
+        ]
+        instr.append(Rem("If body"))
         for i in node.body:
-            self.visit(i)
-        self._add(l.after)
-        self._add("END IF")
+            instr.append(self.visit(i))
+        instr.append([l.after, Rem("end if")])
+        return instr
 
     def visit_whiler(self, node):
         l = Labels()
-        self._add("WHILE START")
-        self._add("J(" + l.expr + ")")
-        self._add("L(" + l.again + ")")
+        instr = [Rem("while start"), J(l.expr), L(l.again)]
         for i in node.body:
-            self.visit(i)
-        self._add("L(" + l.expr + ")")
+            instr.append(self.visit(i))
+        instr.append(L(l.expr))
         # target the branch
         node.expr.target = l.again
-        self.visit(node.expr)
-        self._add("WHILE END")
+        instr.append(self.visit(node.expr))
+        return instr
 
     def visit_returner(self, node):
-        self.visit(node.expr)
-
-    def visit_assign(self, node):
-        self.visit(node.rhs)
+        return self.visit(node.expr)
 
     def binop(self, node):
         " binary operation "
@@ -96,30 +100,40 @@ class GenCode(NodeVisitor):
         return new_reg
 
     def visit_evaluate(self, node):
+        # push the target down
+        node.comp.target = node.target
         return self.visit(node.comp)
 
     def visit_compare(self, node):
         rhs = self.visit(node.rhs)
         lhs = self.visit(node.lhs)
-        self._add("CMP(" + str(lhs) + "," + str(rhs) + ")")
-        self.visit(node.op)
+        instr = []
+        instr.append(CMP(lhs, rhs))
+        # push the target down
+        node.op.target = node.target
+        instr.append(self.visit(node.op))
+        return instr
 
     def visit_assign(self, node):
         rhs = self.visit(node.rhs)
         lhs = self.visit(node.lhs)
+        instr = []
+        instr.append(Rem("assign"))
         self._add("MOV(" + str(lhs) + "," + str(rhs) + ")")
+        return instr
 
     def visit_ident(self, node):
         return self.resolver.name(node.name)
 
     def visit_call(self, node):
         target = node.local_symbols.get(node.name)
-        self._add("call " + node.name)
+        instr = []
         for i in node.params:
-            self.visit(i)
-
+            instr.append(self.visit(i))
+        instr.append(Rem("call" + node.name))
         # self._add("JSR(R7,"+target.label+")")
-        self._add("copy return")
+        instr.append(Rem("return" + node.name))
+        return instr
 
     def visit_stringer(self, node):
         new_reg = self.resolver.new()
@@ -127,9 +141,10 @@ class GenCode(NodeVisitor):
         return new_reg
 
     def visit_param(self, node):
+        instr = []
         for i in node.params:
-            self._add(i)
-            self.visit(i)
+            instr.append(self.visit(i))
+        return instr
 
     def visit_var(self, node):
         new_reg = self.resolver.name(node.name.name)
@@ -137,8 +152,8 @@ class GenCode(NodeVisitor):
         return new_reg
 
     def condbr(self, node):
-        self._add(node.instr)
-        return node.instr
+        instr = self.selector.select(type(node))
+        return instr(node.target)
 
     def visit_variable(self, node):
         if node.setvar is not None:
@@ -147,29 +162,38 @@ class GenCode(NodeVisitor):
     def visit_setvar(self, node):
         self.visit(node.expr)
 
-    def visit_add(self, node):
-        return self.binop(node)
-
-    def visit_sub(self, node):
-        return self.binop(node)
-
     def visit_div(self, node):
-        return self.binop(node)
-
-    def visit_mul(self, node):
-        return self.binop(node)
-
-    def visit_modulus(self, node):
         return self.binop(node)
 
     def visit_lt(self, node):
         return self.condbr(node)
 
+    def visit_gt(self, node):
+        return self.condbr(node)
+
+    def visit_gte(self, node):
+        return self.condbr(node)
+
+    def visit_lte(self, node):
+        return self.condbr(node)
+
+    def visit_neq(self, node):
+        return self.condbr(node)
+
+    def visit_mul(self, node):
+        return self.condbr(node)
+
     def visit_eq(self, node):
         return self.condbr(node)
 
-    def visit_gt(self, node):
-        return self.condbr(node)
+    def visit_modulus(self, node):
+        return self.binop(node)
+
+    def visit_sub(self, node):
+        return self.binop(node)
+
+    def visit_add(self, node):
+        return self.binop(node)
 
     def visit_comment(self, node):
         pass

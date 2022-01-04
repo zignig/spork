@@ -1,6 +1,9 @@
 # TODO list for the compiler 
 
 [ ] fix indexes on arrays 
+[ ] functions
+ - [ ]create call graph and assign register
+ - [ ]set up return variabls in function object
 [ ]type selector 
 [ ] syntax checker 
  - [ ] propagate types up the eval chain. 

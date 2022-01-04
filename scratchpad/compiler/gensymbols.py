@@ -116,5 +116,8 @@ class GenSymbols(NodeVisitor):
     def visit_add(self, node):
         self.binop(node)
 
+    def visit_sub(self, node):
+        self.binop(node)
+
     def visit_modulus(self, node):
         self.binop(node)

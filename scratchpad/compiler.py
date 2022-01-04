@@ -39,38 +39,23 @@ class Build:
         print("\n---- " + value + " ----")
 
     def run(self):
+        display = True
         self.header("parser")
         pa = Parser()
         self.parse_tree = pa.parse(self.code)
-        print(self.parse_tree.pretty())
+        if display:
+            print(self.parse_tree.pretty())
         self.header("ast")
         bt = BoneTree()
         self.ast = bt.transform(self.parse_tree)
 
+        # scan through the visitor sequence
         for visitor in self.sequence:
-            print(visitor)
-            action = visitor()
+            action = visitor(display=display)
+            self.header(str(type(action)))  # .__name__)
             action.visit(self.ast)
-            action.show()
-
-        return
-        self.header("display")
-        d = Display()
-        d.visit(self.ast)
-        d.show()
-        self.header("generate symbols")
-        gs = GenSymbols(display=True)
-        gs.visit(self.ast)
-        print(self.ast._symbols)
-
-        self.header("syntax check")
-        sc = SyntaxCheck(self.code_lines, display=True)
-        sc.visit(self.ast)
-
-        self.header("generate code")
-        gc = GenCode(display=True)
-        gc.visit(self.ast)
-        gc.show()
+            if display:
+                action.show()
 
 
 import yaml

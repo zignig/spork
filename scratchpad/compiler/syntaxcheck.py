@@ -130,4 +130,7 @@ class SyntaxCheck(NodeVisitor):
     def visit_add(self, node):
         return self.binop(node)
 
+    def visit_sub(self, node):
+        return self.binop(node)
+
     # and the rest

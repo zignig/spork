@@ -8,7 +8,8 @@ from .visitor import NodeVisitor
 class Display(NodeVisitor):
     _display = False
 
-    def __init__(self):
+    def __init__(self, display=False):
+        self._display = display
         self._data = ""
         self._indent = 0
 
@@ -154,6 +155,15 @@ class Display(NodeVisitor):
         self.binop(node)
 
     def visit_gt(self, node):
+        self.binop(node)
+
+    def visit_gte(self, node):
+        self.binop(node)
+
+    def visit_lte(self, node):
+        self.binop(node)
+
+    def visit_neq(self, node):
         self.binop(node)
 
     def visit_mul(self, node):
