@@ -119,6 +119,7 @@ class GenCode(NodeVisitor):
         lhs = self.visit(node.lhs)
         instr = []
         instr.append(Rem("assign"))
+        instr.append(str(node))
         self._add("MOV(" + str(lhs) + "," + str(rhs) + ")")
         return instr
 

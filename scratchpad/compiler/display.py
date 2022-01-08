@@ -148,6 +148,20 @@ class Display(NodeVisitor):
             self.visit(node.params[-1])
         self._print(")")
 
+    def visit_array(self, node):
+        self._print("[")
+        self.visit(node.val)
+        self._print("]")
+        self._print("[")
+        self.visit(node.val)
+
+    def visit_index(self, node):
+        node.detail()
+        self._print(node.name.name)
+        self._print("[")
+        self.visit(node.index)
+        self._print("]")
+
     def binop(self, node):
         self._print(" " + node.sym + " ")
 

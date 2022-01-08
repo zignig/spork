@@ -21,7 +21,7 @@ gram = r"""
     use: "use" [ ident ("," ident)* ] _NL  -> use
     
     declparam: "(" [ dvar ("," dvar )*] ")"
-    dvar:  TYPE [ array ] ident [ set_var ] 
+    dvar:  TYPE ident [ array ] [ set_var ] 
 
     _fields: "{" ( var | func | enum | _NL)*  "}"
     comment: /\/\/[^\n]*/ 
@@ -38,9 +38,9 @@ gram = r"""
     ?statement: ( var | const | assign | call | if | while | body ) _NL
     assign: ( ident | index ) "=" expr 
     call: ident _param
-    const: "const" TYPE [ array ] ident [ set_var ] -> const
-    var: "var" TYPE [ array ] ident [ set_var ] -> variable
-    array: "[" [NUMBER|ident] "]"
+    const: "const" TYPE ident [ array ] [ set_var ] -> const
+    var: "var" TYPE ident [ array ] [ set_var ] -> variable
+    array: "[" [expr] "]"
     set_var: "=" expr  -> setvar
 
     // expressions 
@@ -53,11 +53,13 @@ gram = r"""
         | product "/" atom  -> div
         | product "**" atom  -> pow 
         | product "%" atom  -> modulus 
+        | product "<<" atom  -> shl
+        | product ">>" atom  -> shr
 
     ?atom: NUMBER           -> number
          | "-" atom         -> neg
          | ident            -> var 
-         | index
+         | index            -> index
          | "(" expr ")"
          | call
          | ESCAPED_STRING   -> stringer

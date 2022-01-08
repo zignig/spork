@@ -109,6 +109,12 @@ class GenSymbols(NodeVisitor):
             self.visit(i)
         node.pop_namespace()
 
+    def visit_array(self, node):
+        pass
+
+    def visit_index(self, node):
+        node.detail()
+
     def binop(self, node):
         self.visit(node.rhs)
         self.visit(node.lhs)

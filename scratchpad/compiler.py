@@ -12,12 +12,14 @@ from compiler.syntaxcheck import SyntaxCheck
 from compiler.gencode import GenCode
 
 from pprint import pprint
+from lark import UnexpectedToken
 
 _DEBUG = True
 # _DEBUG = False
 
 # transfer this contruct down into class once it
 # is listening to instructions
+e = None
 
 
 class Build:
@@ -29,6 +31,7 @@ class Build:
         self.code_lines = code.splitlines()
         self.parse_tree = None
         self.ast = None
+        self.error = None
         self.assembly = []
 
         self.parser = Parser()
@@ -42,9 +45,15 @@ class Build:
         display = True
         self.header("parser")
         pa = Parser()
-        self.parse_tree = pa.parse(self.code)
-        if display:
-            print(self.parse_tree.pretty())
+        try:
+            self.parse_tree = pa.parse(self.code)
+            if display:
+                print(self.parse_tree.pretty())
+        except UnexpectedToken as ut:
+            self.error = ut
+            print(dir(ut))
+            return
+
         self.header("ast")
         bt = BoneTree()
         self.ast = bt.transform(self.parse_tree)
