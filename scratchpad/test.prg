@@ -1,3 +1,6 @@
+use stack
+
+
 var string[10] other
 
 func add(int a,int b){

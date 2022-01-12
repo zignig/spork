@@ -91,30 +91,3 @@ if __name__ == "__main__":
     builder = Build(program_file)
     builder.run()
     yaml.dump(builder.ast)
-
-"""
-    data = pa.parse(program_file)
-    print("----- parsed -----")
-    if _DEBUG:
-        print(data.pretty())
-    bt = BoneTree()
-    trans = bt.transform(data)
-    if _DEBUG:
-        d = Display()
-        d.visit(trans)
-        d.show()
-    print("----- AST -----")
-    if _DEBUG: 
-        print("--------- Scan Symbols -----------")
-        gs = GenSymbols()
-        gs.visit(trans)
-        print("----- Symbols ----")
-        print(trans.symbols)
-        print("---- Syntax Checker ----")
-        sc = SyntaxCheck(display=True)
-        sc.visit(trans) 
-        print("---- Generate Code ----")
-    gc = GenCode()
-    gc.visit(trans)
-    gc.show()
-"""

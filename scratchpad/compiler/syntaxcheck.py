@@ -118,6 +118,12 @@ class SyntaxCheck(NodeVisitor):
         ref = node.local_symbols.get(node.name)
         node.ctype = ref.ctype
 
+    def visit_array(self, node):
+        node.detail()
+
+    def visit_index(self, node):
+        node.detail()
+
     def binop(self, node):
         self.visit(node.rhs)
         self.visit(node.lhs)
