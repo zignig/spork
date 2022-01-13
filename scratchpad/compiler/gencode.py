@@ -59,13 +59,8 @@ class GenCode(NodeVisitor):
     def visit_iffer(self, node):
         l = Labels()
         node.expr.target = l.run
-        instr = [
-            Rem("Start if"),
-            self.visit(node.expr),
-            Rem(J(l.after)),
-            self._add(l.run),
-        ]
-        instr.append(Rem("If body"))
+        instr = [Rem("Start if"), self.visit(node.expr), J(l.after)]
+        instr.append([Rem("If body"), L(l.run)])
         for i in node.body:
             instr.append(self.visit(i))
         instr.append([l.after, Rem("end if")])

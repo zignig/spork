@@ -5,6 +5,9 @@ func wait(int limit){
     while(counter < limit ){
         counter = counter + 1
         }
+    if(counter == 5){
+        print("woot")
+    }
     }
 
 func main(){
