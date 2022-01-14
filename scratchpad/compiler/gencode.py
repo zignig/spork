@@ -32,7 +32,6 @@ class GenCode(NodeVisitor):
 
     def visit_Program(self, node):
         returnlist = [program_prelude()]
-        print(node.body)
         for i in node.body:
             returnlist.append(self.visit(i))
         self.deferring = False
