@@ -10,6 +10,7 @@ from compiler.preprocess import Preprocessor
 from compiler.parser import Parser, BoneTree
 from compiler.syntaxcheck import SyntaxCheck
 from compiler.gencode import GenCode
+from compiler.callgraph import CallGraph
 
 from pprint import pprint
 from lark import UnexpectedToken
@@ -36,7 +37,8 @@ class Build:
 
         self.parser = Parser()
 
-        self.sequence = [Display, GenSymbols, SyntaxCheck, GenCode]
+        self.sequence = [Display, GenSymbols, SyntaxCheck, CallGraph]  # ,GenCode]
+        self.actions = []
 
     def header(self, value):
         print("\n---- " + value + " ----")
@@ -65,6 +67,7 @@ class Build:
             action.visit(self.ast)
             if display:
                 action.show()
+            self.actions.append(action)
 
 
 import yaml
@@ -75,7 +78,7 @@ if __name__ == "__main__":
         program_file = open(f).read()
     else:
         print("default file small.prg")
-        program_file = open("small.prg").read()
+        program_file = open("test_prg/small.prg").read()
     print("---- original ----")
     # print(program_file)
     print("---- preprocess ----")

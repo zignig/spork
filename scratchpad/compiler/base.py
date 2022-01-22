@@ -100,6 +100,7 @@ class Base:
             if i.startswith("_") == False:
                 base += i + " : " + str(getattr(self, i)) + "\n"
         base += str(self.meta.line) + "," + str(self.meta.column) + "\n"
+        print(dir(self))
         print(base)
 
     def __repr__(self):
