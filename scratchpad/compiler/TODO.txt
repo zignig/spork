@@ -4,7 +4,8 @@
 [ ] functions
  - [ ]create call graph and assign register
  - [ ]set up return variabls in function object
-[ ]type selector 
+[ ] type selector 
+ - [ ] symbol table just for types
 [ ] syntax checker 
  - [ ] propagate types up the eval chain. 
  - [ ] check call against functions 
@@ -13,4 +14,9 @@
 [ ] code generator
  - [ ] convert code gen to all returns. 
  - [ ] incorporate instruction selector.
-
+[ ] Runtime
+ - [ ] linear allocator for initial memory allocation
+ - [ ] tasking
+ - [ ] context switch
+ - [ ] bulk data copy (src,dst,len)
+ - [ ] 
