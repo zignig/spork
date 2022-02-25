@@ -4,7 +4,7 @@
 from .visitor import NodeVisitor
 from ..ast.base import SymbolTable
 from ..ast.base import Base
-from ..parser.vartypes import *
+from ..ast.vartypes import *
 
 # Generates the symbol table
 # and attaches local_symbols to the nodes that need it

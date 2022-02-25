@@ -2,7 +2,7 @@
 
 from .base import Base
 from .defn import Defn
-from ..parser.vartypes import *
+from .vartypes import *
 
 
 class Program(Defn):

@@ -1,7 +1,7 @@
 # instruction selector
 
 from .allocator import *
-from ..parser.vartypes import *
+from ..ast.vartypes import *
 from ..ast.eval import add
 
 # include compiler intrisics in this  table
