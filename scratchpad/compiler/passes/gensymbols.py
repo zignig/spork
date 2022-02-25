@@ -2,9 +2,9 @@
 
 
 from .visitor import NodeVisitor
-from .base import SymbolTable
-from .base import Base
-from .vartypes import *
+from ..ast.base import SymbolTable
+from ..ast.base import Base
+from ..parser.vartypes import *
 
 # Generates the symbol table
 # and attaches local_symbols to the nodes that need it

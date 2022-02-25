@@ -3,8 +3,8 @@
 # can be calculated
 
 from .visitor import NodeVisitor
-from .base import SymbolTable
-from .base import Base
+from ..ast.base import SymbolTable
+from ..ast.base import Base
 
 
 class GraphNode:

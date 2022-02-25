@@ -1,13 +1,13 @@
 # instruction selector
 
 from .allocator import *
-from .vartypes import *
-from .eval import add
+from ..parser.vartypes import *
+from ..ast.eval import add
 
 # include compiler intrisics in this  table
 
 # select comparison instructions
-from .comp import lt, gt, lte, gte, eq, neq
+from ..ast.comp import lt, gt, lte, gte, eq, neq
 
 
 class InstructionSelector:

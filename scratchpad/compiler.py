@@ -4,13 +4,13 @@ Compiler front end
 """
 import sys
 
-from compiler.display import Display
-from compiler.gensymbols import GenSymbols
-from compiler.preprocess import Preprocessor
-from compiler.parser import Parser, BoneTree
-from compiler.syntaxcheck import SyntaxCheck
-from compiler.gencode import GenCode
-from compiler.callgraph import CallGraph
+from compiler.passes.display import Display
+from compiler.passes.gensymbols import GenSymbols
+from compiler.passes.preprocess import Preprocessor
+from compiler.parser.parser import Parser, BoneTree
+from compiler.passes.syntaxcheck import SyntaxCheck
+from compiler.codegen.gencode import GenCode
+from compiler.passes.callgraph import CallGraph
 
 from pprint import pprint
 from lark import UnexpectedToken

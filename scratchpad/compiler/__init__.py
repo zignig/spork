@@ -1,3 +1,2 @@
-# all the bits for the compiler
-
-from .program import Program
+# structured compiler set
+# TODO needs includes here

@@ -2,7 +2,7 @@
 
 from .base import Base
 from .defn import Defn
-from .vartypes import *
+from ..parser.vartypes import *
 
 
 class struct(Defn):
@@ -20,9 +20,11 @@ class index(Base):
 
 
 class array(Base):
-    def __init__(self, meta, name, size):
+    def __init__(self, meta, ctype, size):
         print("ERROR")
-        print(meta, name, size)
+        self.ctype = ctype
+        self.size = size
+        print(meta, ctype, size)
 
 
 class number(Base):

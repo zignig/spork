@@ -1,7 +1,7 @@
 from lark import Lark, Transformer, v_args, Visitor
 import sys
-from .program import Program
-from .base import Base
+from ..ast.program import Program
+from ..ast.base import Base
 
 
 gram = r"""
@@ -96,11 +96,11 @@ gram = r"""
 @v_args(inline=True, meta=True)
 class BoneTree(Transformer):
     """
-        This is the main trasnform tree, it takes the parse tree
+        This is the main transform tree, it takes the parse tree
         and converts it into a collection of python objects as an ast.
     """
 
-    from .eval import (
+    from ..ast.eval import (
         add,
         var,
         variable,
@@ -113,13 +113,22 @@ class BoneTree(Transformer):
         stringer,
         modulus,
     )
-    from .ident import param, ident, declparam, dotted
-    from .call import call, comment, fields, dvar
-    from .structure import func, task, proc, impl, on_event, use, returner, evaluate
-    from .control import iffer, whiler
-    from .data import number, array, struct, enum, index
-    from .program import Program
-    from .comp import lt, gt, lte, gte, eq, neq, compare
+    from ..ast.ident import param, ident, declparam, dotted
+    from ..ast.call import call, comment, fields, dvar
+    from ..ast.structure import (
+        func,
+        task,
+        proc,
+        impl,
+        on_event,
+        use,
+        returner,
+        evaluate,
+    )
+    from ..ast.control import iffer, whiler
+    from ..ast.data import number, array, struct, enum, index
+    from ..ast.program import Program
+    from ..ast.comp import lt, gt, lte, gte, eq, neq, compare
 
     def start(self, meta, *data):
         return Program(data)

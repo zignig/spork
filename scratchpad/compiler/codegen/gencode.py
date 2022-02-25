@@ -1,6 +1,6 @@
 # Walk the tree and generate three value tuples
 
-from .visitor import NodeVisitor
+from ..passes.visitor import NodeVisitor
 from .resolver import Resolver, Labels
 from .instrselect import InstructionSelector
 from .section import *
