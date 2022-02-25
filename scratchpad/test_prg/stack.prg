@@ -4,7 +4,7 @@ var int[20] stack
 var int pos = 0 
 
 func pop(){
-    value = stack[pos]
+    var int value = stack[pos]
     pos = pos -1 
     return value
 }

@@ -11,6 +11,7 @@ from .vartypes import *
 class GenSymbols(NodeVisitor):
     def visit_Program(self, node):
         for i in node.body:
+            i.parent = node
             self.visit(i)
 
     def show(self):
@@ -22,11 +23,13 @@ class GenSymbols(NodeVisitor):
         node.add_namespace(node.name.name)
         self.visit(node.params)
         for i in node.body:
+            i.parent = node
             self.visit(i)
         node.pop_namespace()
 
     def visit_declparam(self, node):
         for i in node.params:
+            i.parent = node
             self.visit(i)
 
     def visit_const(self, node):
@@ -48,12 +51,14 @@ class GenSymbols(NodeVisitor):
 
     def visit_use(self, node):
         for i in node.includes:
+            i.parent = node
             node.add_sym(i.name, i)
 
     def visit_call(self, node):
         # so the call can look up labels
         node.local_symbols = Base._current
         for i in node.params:
+            i.parent = node
             self.visit(i)
 
     def visit_stringer(self, node):
@@ -79,6 +84,7 @@ class GenSymbols(NodeVisitor):
     def visit_whiler(self, node):
         self.visit(node.expr)
         for i in node.body:
+            i.parent = node
             self.visit(i)
 
     def visit_evaluate(self, node):
@@ -91,11 +97,14 @@ class GenSymbols(NodeVisitor):
     def visit_iffer(self, node):
         self.visit(node.expr)
         for i in node.body:
+            i.parent = node
             self.visit(i)
 
     def visit_variable(self, node):
         node.add_sym(node.name.name, node)
         node.local_symbols = Base._current
+        print("variable")
+        print(dir(node))
         if node.setvar is not None:
             self.visit(node.setvar)
 
@@ -106,6 +115,7 @@ class GenSymbols(NodeVisitor):
         node.add_sym(node.name.name, node)
         node.add_namespace(node.name.name)
         for i in node.body:
+            i.parent = node
             self.visit(i)
         node.pop_namespace()
 

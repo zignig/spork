@@ -49,6 +49,9 @@ class CallGraph(NodeVisitor):
             self.visit(i)
         self.current = temp
 
+    def visit_number(self, node):
+        pass
+
     def visit_variable(self, node):
         node.detail()
 

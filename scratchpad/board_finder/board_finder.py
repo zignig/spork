@@ -3,20 +3,14 @@
 import os, importlib
 
 
-from ..logger import logger
+# from ..logger import logger
 
-log = logger(__name__)
+# log = logger(__name__)
 
 
 # Board listings
 def extract_boards():
     "get a list of all the nmigen_boards"
-
-    global _boards_built, _boards
-
-    if _boards_built:
-        return _boards
-
     import nmigen_boards
 
     path = nmigen_boards.__path__[0]
@@ -27,7 +21,7 @@ def extract_boards():
         if name.endswith(".py"):
             short_name = name.split(".")[0]
             if short_name != "__init__":
-                log.debug("Found board %s", name)
+                #               log.debug("Found board %s", name)
                 board_files.append(short_name)
 
     name_dict = {}
@@ -101,3 +95,7 @@ def check_board(name):
         print("\nBoard does not exist\n")
 
     return info
+
+
+if __name__ == "__main__":
+    show_list()

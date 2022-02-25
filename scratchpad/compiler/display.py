@@ -17,7 +17,7 @@ class Display(NodeVisitor):
         print(self._data)
 
     def _print(self, value):
-        self._data += value
+        self._data += str(value)
 
     def _ind(self):
         value = "   " * self._indent
@@ -159,8 +159,11 @@ class Display(NodeVisitor):
         node.detail()
         self._print(node.name.name)
         self._print("[")
-        self.visit(node.index)
+        self.visit(node.value)
         self._print("]")
+
+    def visit_int(self, node):
+        self._print(node)
 
     def binop(self, node):
         self._print(" " + node.sym + " ")

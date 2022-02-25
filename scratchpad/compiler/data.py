@@ -13,16 +13,16 @@ class struct(Defn):
 
 
 class index(Base):
-    def __init__(self, meta, name, index):
+    def __init__(self, meta, name, value=0):
         self.meta = meta
         self.name = name
-        self.index = index
+        self.value = value
 
 
 class array(Base):
-    def __init__(self, meta, val=0):
-        self.meta = meta
-        self.val = val
+    def __init__(self, meta, name, size):
+        print("ERROR")
+        print(meta, name, size)
 
 
 class number(Base):

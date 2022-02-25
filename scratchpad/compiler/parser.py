@@ -38,9 +38,9 @@ gram = r"""
     ?statement: ( var | const | assign | call | if | while | body ) _NL
     assign: ( ident | index ) "=" expr 
     call: ident _param
-    const: "const" TYPE ident [ array ] [ set_var ] -> const
-    var: "var" TYPE ident [ array ] [ set_var ] -> variable
-    array: "[" [expr] "]"
+    const: "const" TYPE[ array ] ident  [ set_var ] -> const
+    var: "var" ( array | TYPE ) ident  [ set_var ] -> variable
+    array: TYPE "[" [expr] "]"
     set_var: "=" expr  -> setvar
 
     // expressions 

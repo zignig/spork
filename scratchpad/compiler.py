@@ -37,7 +37,7 @@ class Build:
 
         self.parser = Parser()
 
-        self.sequence = [Display, GenSymbols, SyntaxCheck, CallGraph]  # ,GenCode]
+        self.sequence = [Display, GenSymbols, SyntaxCheck, GenCode]
         self.actions = []
 
     def header(self, value):
@@ -54,6 +54,8 @@ class Build:
         except UnexpectedToken as ut:
             self.error = ut
             print(dir(ut))
+            print(ut.args)
+            print(ut.get_context(self.code))
             return
 
         self.header("ast")
