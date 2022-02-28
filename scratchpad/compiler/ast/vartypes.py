@@ -37,6 +37,10 @@ class Vpointer(BaseVType):
     pass
 
 
-type_list = [Vint, Vuint, Vchar, Vbool, Vstring, Vpointer]
+class Varray(BaseVType):
+    name = "array"
+
+
+type_list = [Vint, Vuint, Vchar, Vbool, Vstring, Vpointer, Varray]
 
 __all__ = [i.__name__ for i in type_list] + ["type_list"]

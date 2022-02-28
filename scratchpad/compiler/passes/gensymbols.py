@@ -103,8 +103,7 @@ class GenSymbols(NodeVisitor):
     def visit_variable(self, node):
         node.add_sym(node.name.name, node)
         node.local_symbols = Base._current
-        print("variable")
-        print(dir(node))
+        # self.visit(node.vtype)
         if node.setvar is not None:
             self.visit(node.setvar)
 
@@ -120,10 +119,12 @@ class GenSymbols(NodeVisitor):
         node.pop_namespace()
 
     def visit_array(self, node):
-        pass
+        print("ARRAY")
+
+        node.detail()
 
     def visit_index(self, node):
-        node.detail()
+        pass
 
     def binop(self, node):
         self.visit(node.rhs)

@@ -4,6 +4,10 @@ Compiler front end
 """
 import sys
 
+from rich.traceback import install
+
+install()
+
 from compiler.passes.display import Display
 from compiler.passes.gensymbols import GenSymbols
 from compiler.passes.preprocess import Preprocessor

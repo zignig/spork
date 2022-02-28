@@ -6,6 +6,11 @@
 
 _DEBUG = False
 
+from rich.table import Table
+from rich.console import Console
+
+c = Console()
+
 
 class SymbolTable:
     debug = False
@@ -33,6 +38,17 @@ class SymbolTable:
             print(self)
             raise BaseException("symbol already exists %s" % name)
         self.symbols[name] = value
+
+    def show(self):
+        t = Table(title=self.name)
+        t.add_column("name")
+        t.add_column("value")
+        for key, value in self.symbols.items():
+            t.add_row(str(key), str(value))
+        c.print(t)
+        if len(self.children) > 0:
+            for i in self.children:
+                i.show()
 
     def get(self, name):
         if self.debug:
@@ -94,7 +110,11 @@ class Base:
     def detail(self):
         " print detailed information "
         base = (
-            "" + str(self.__class__.__qualname__) + "\n Name:" + str(self.name) + "\n"
+            ">>"
+            + str(self.__class__.__qualname__)
+            + "\n Name:"
+            + str(self.name)
+            + "<<\n"
         )
         for i in dir(self):
             if i.startswith("_") == False:

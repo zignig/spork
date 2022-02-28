@@ -268,6 +268,12 @@ class LocalLabels:
         setattr(self, name, name + self._postfix)
         return L(name + self._postfix)
 
+    def set(self, name):
+        val = name + self._postfix
+        self._names[name] = val
+        setattr(self, name, val)
+        return val
+
     def __getattr__(self, key):
         if key in self._names:
             return self._names[key]

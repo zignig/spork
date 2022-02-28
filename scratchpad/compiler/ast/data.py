@@ -21,10 +21,10 @@ class index(Base):
 
 class array(Base):
     def __init__(self, meta, ctype, size):
-        print("ERROR")
+        self.name = "array"
+        self.meta = meta
         self.ctype = ctype
         self.size = size
-        print(meta, ctype, size)
 
 
 class number(Base):

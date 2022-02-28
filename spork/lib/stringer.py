@@ -120,6 +120,7 @@ class Stringer(CodeObject):
         val = SingleString(item, value, self._postfix, self.compact)
         self._strings[item] = val
         object.__setattr__(self, item, val)
+        return val
 
     def __setattr__(self, item, value):
         # If you assign a attr it will create a string
