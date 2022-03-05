@@ -56,7 +56,7 @@ class menu:
         l = []
         self.flat = self.flatten()
         for i in self.flat:
-            l += ["-----"]
+            l += [Rem("-----")]
             l += [[Rem(i.name), L(i.label)]]
             l += [[Rem("str"), Ref(i.stringlabel.get_name())]]
             l += [len(i.children)]
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     under.add("base")
     under.add("base")
 
-    m.add("this is a little longer", None)
+    m.add("under", None)
     m.show()
     n = m.dump()
     print(n)

@@ -26,7 +26,7 @@ from spork.lib.commands import MetaCommand, Command
 import spork.lib.base_command
 
 # TODO compress the banner, it is phat.
-from spork.cpu.banner import banner
+from spork.lib.banner import banner
 
 # date stamp
 import datetime
