@@ -74,7 +74,7 @@ class Uploader:
                 # self.ser.readall()  # clear out the buffer
                 # self.ser.write(4)
                 # wait for the pll to settle
-                time.sleep(0.2)
+                time.sleep(0.3)
                 counter = 0
                 log.info("Upload Firmware")
                 for i in grouper(self.hex_blob, 4):
