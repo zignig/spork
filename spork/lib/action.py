@@ -2,6 +2,7 @@
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
+from spork.lib import console
 
 from ..firmware.base import *
 
@@ -104,6 +105,24 @@ class EscString(CodeObject):
             # m.append(Rem(lref))
             m.append(Ref(lref))
         return m
+
+
+class EscapeAction(SubR):
+    def setup(self):
+        self.params = ["command", "charpad"]
+
+    def build(self):
+        self.selector = Switch(self.w, self.w.command)
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        cons = console.Console()
+        esccode = EscCode()
+        sel = self.selector
+        sel.add((EscKeys.DEL, cons.bs(w.charpad)))
+        return [Rem("Escape Key Actions"), esccode(w.command), sel()]
 
 
 class Escaper(SubR):
@@ -225,7 +244,9 @@ class Action(SubR):
         List = MetaCommand.List()
         Search = MetaCommand.Search()
         Run = MetaCommand.Run()
+        EscA = EscapeAction()
         esccode = EscCode()
+        cons = console.Console()
         # make a CASE style selection
         sel = self.selector
         self.stringer.notfound = "Command not found :"
@@ -266,14 +287,14 @@ class Action(SubR):
         sel.add(
             (
                 Actions.ESCAPE,  # escape sequence
-                [self.esc(ret=[w.status]), esccode(w.status)],
+                [self.esc(ret=[w.status]), EscA(w.status, self.w.pad_address)],
             )
         )
         sel.add(
             # make this an escape sequence, to process the same as the outers.
             (
                 Actions.BACKSPACE,  # escape sequence
-                [MOVI(w.status, EscKeys.BS), esccode(w.status)],
+                [MOVI(w.status, EscKeys.BS), EscA(w.status, self.w.pad_address)],
             )
         )
         sel.add(

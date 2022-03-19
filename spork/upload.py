@@ -84,6 +84,7 @@ class Uploader:
                     # if counter % 4 == 0:
                     #    print('.',end="")
                     self.ser.write(data)
+                    # time.sleep(0.01)
                 # a = self.ser.readall()
                 # print(a)
             if console:

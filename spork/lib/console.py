@@ -131,6 +131,17 @@ class CharPad(CodeObject):
         return data
 
 
+class BackSpace(SubR):
+    "Backspace processor"
+
+    def setup(self):
+        self.params = ["charpad"]
+        self.locals = ["length", "pos", "counter"]
+
+    def instr(self):
+        return [Rem("Backspace")]
+
+
 class Console(SubR):
     # Subroutines inside the console
 
@@ -150,6 +161,7 @@ class Console(SubR):
         ll = LocalLabels()
         self.uart = UART()
         self.wb = WarmBoot()
+        self.bs = BackSpace()
 
     def instr(self):
         w = self.w
@@ -162,8 +174,8 @@ class Console(SubR):
 
         # make a CASE style selection
         sel = self.selector
-        sel.add((8, [MOVI(w.status, Actions.BACKSPACE)]))  # backspace
         sel.add((9, [MOVI(w.status, Actions.COMPLETE)]))  # horizontal tab
+        sel.add((8, [MOVI(w.status, Actions.BACKSPACE)]))  # b
         # CR does prompt for now
         sel.add((13, [MOVI(w.status, Actions.RUN)]))  # enter
         sel.add((27, [MOVI(w.status, Actions.ESCAPE)]))  # escape sequence
