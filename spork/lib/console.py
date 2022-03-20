@@ -6,6 +6,7 @@ from boneless.arch.opcode import *
 from ..firmware.base import *
 from .stringer import Stringer
 from .uartIO import UART
+from .ansi_codes import Term
 from .warm import WarmBoot
 from .switch import Switch
 from .commands import MetaCommand
@@ -35,6 +36,8 @@ class CharPad(CodeObject):
         A character pad with console editing
     """
 
+    length = 32
+
     def setup(self):
         al = Alloc()
         return [Rem("setup the pad")]
@@ -44,7 +47,7 @@ class CharPad(CodeObject):
     class Accept(SubR):
         def setup(self):
             self.params = ["pad_address", "char"]
-            self.locals = ["length", "target_address"]
+            self.locals = ["length", "target_address", "pos"]
 
         def instr(self):
             w = self.w
@@ -52,60 +55,28 @@ class CharPad(CodeObject):
             return [
                 Rem("Copy the length"),
                 LD(w.length, w.pad_address, 0),
-                CMPI(w.length, 32),
+                Rem("Load the cursor position"),
+                LD(w.pos, w.pad_address, CharPad.length),
+                Rem("Check against length"),
+                CMPI(w.length, CharPad.length),
                 BGTU(ll.exit),
                 Rem("Add the length to the address"),
-                # MOVI(w.target_address,1),
+                # TODO do insert instead of append
                 ADD(w.target_address, w.pad_address, w.length),
                 ADDI(w.target_address, w.target_address, 1),
                 ST(w.char, w.target_address, 0),
                 Rem("Offset to the next char slot"),
                 ADDI(w.length, w.length, 1),
                 ST(w.length, w.pad_address, 0),
+                Rem("Store the cursor"),
+                ST(w.length, w.pad_address, CharPad.length),
                 ll("exit"),
             ]
 
-    # Split a char pad on space and remove from the source
-    class SplitChomp(SubR):
-        "Split and chomp a char pad"
-
-        def setup(self):
-            self.params = ["source_pad", "target_pad"]
-            self.locals = ["scounter", "char", "length"]
-            self.ret = ["status"]
-
-        def instr(self):
-            w = self.w
-            ll = LocalLabels()
-            # reuse code a much as possible
-            acc = CharPad.Accept()
-            return [
-                Rem("Reset the target pad"),
-                MOVI(w.scounter, 0),
-                MOVI(w.length, 0),
-                ST(w.length, w.target_pad, 0),
-                Rem("load the start of the pad"),
-                LD(w.length, w.source_pad, 0),
-                Rem("move to the first char"),
-                ADDI(w.source_pad, w.source_pad, 1),
-                ll("again"),
-                LD(w.char, w.source_pad, 0),
-                Rem("check if it is a space"),
-                CMPI(w.char, ord(" ")),
-                BEQ(ll.out),
-                acc(w.target_pad, w.char),
-                ADDI(w.source_pad, w.source_pad, 1),
-                ADDI(w.scounter, w.scounter, 1),
-                J(ll.again),
-                ll("out"),
-                Rem("target pad is ready"),
-            ]
-
-    def __init__(self, name="CharPad", length=32):
+    def __init__(self, name="CharPad"):
         super().__init__()
-        self.length = length
-        self.total_length = length + 1
-        self.cursor = length + 2
+        self.length = CharPad.length
+        self.cursor = 0
         self.name = name
         self._used = False
         # Some internal functions
@@ -121,25 +92,84 @@ class CharPad(CodeObject):
     def code(self):
         data = [Rem("Data Pad"), L(self.name + self._postfix), Rem("length")]
         data.extend([0] * self.length)
-        data += [
-            Rem("total_length"),
-            [self.length],
-            L("cursor" + self._postfix),
-            Rem("cursor"),
-            [0],
-        ]
+        data += [L("cursor" + self._postfix), Rem("cursor"), [0]]
         return data
 
+    class BackSpace(SubR):
+        "Backspace processor"
 
-class BackSpace(SubR):
-    "Backspace processor"
+        def setup(self):
+            self.params = ["charpad"]
+            self.locals = ["length", "pos", "counter"]
 
-    def setup(self):
-        self.params = ["charpad"]
-        self.locals = ["length", "pos", "counter"]
+        def instr(self):
+            w = self.w
+            reg = self.reg
+            ll = LocalLabels()
 
-    def instr(self):
-        return [Rem("Backspace")]
+            uart = UART()
+            wh = uart.writeHex
+            cr = uart.cr
+            return [
+                Rem("Load the length"),
+                uart.cr(),
+                LD(w.length, w.charpad, 0),
+                LD(w.pos, w.charpad, CharPad.length),
+                wh(w.length),
+                uart.cr(),
+                wh(w.pos),
+            ]
+
+    class Left(SubR):
+        def setup(self):
+            self.params = ["charpad"]
+            self.locals = ["length", "pos", "counter", "temp"]
+
+        def instr(self):
+            w = self.w
+            reg = self.reg
+            ll = LocalLabels()
+
+            uart = UART()
+            term = Term()
+            wh = uart.writeHex
+            cr = uart.cr
+            return [
+                LD(w.pos, w.charpad, CharPad.length),
+                CMPI(w.pos, 0),
+                BEQ(ll.skip),
+                SUBI(w.pos, w.pos, 1),
+                ST(w.pos, w.charpad, CharPad.length),
+                self.stringer.left(w.temp),
+                term(w.temp),
+                ll("skip"),
+            ]
+
+    class Right(SubR):
+        def setup(self):
+            self.params = ["charpad"]
+            self.locals = ["length", "pos", "counter", "temp"]
+
+        def instr(self):
+            w = self.w
+            reg = self.reg
+            ll = LocalLabels()
+
+            uart = UART()
+            term = Term()
+            wh = uart.writeHex
+            cr = uart.cr
+            return [
+                LD(w.pos, w.charpad, CharPad.length),
+                LD(w.length, w.charpad, 0),
+                CMP(w.length, w.pos),
+                BEQ(ll.skip),
+                ADDI(w.pos, w.pos, 1),
+                ST(w.pos, w.charpad, CharPad.length),
+                self.stringer.right(w.temp),
+                term(w.temp),
+                ll("skip"),
+            ]
 
 
 class Console(SubR):
@@ -161,7 +191,9 @@ class Console(SubR):
         ll = LocalLabels()
         self.uart = UART()
         self.wb = WarmBoot()
-        self.bs = BackSpace()
+        self.bs = self.pad.BackSpace()
+        self.left = self.pad.Left()
+        self.right = self.pad.Right()
 
     def instr(self):
         w = self.w

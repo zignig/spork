@@ -46,8 +46,8 @@ class EscCode(SubR):
             LD(w.value, w.address, 0),
             Rem("offsets are relative, add to offset"),
             ADD(w.value, w.value, w.address),
-            u.cr(),
-            ws(w.value),
+            # u.cr(),
+            # ws(w.value),
         ]
 
 
@@ -115,6 +115,9 @@ class EscapeAction(SubR):
         self.selector = Switch(self.w, self.w.command)
 
     def instr(self):
+        u = UART()
+        ws = u.writestring
+        wh = u.writeHex
         w = self.w
         reg = self.reg
         ll = LocalLabels()
@@ -122,7 +125,13 @@ class EscapeAction(SubR):
         esccode = EscCode()
         sel = self.selector
         sel.add((EscKeys.DEL, cons.bs(w.charpad)))
-        return [Rem("Escape Key Actions"), esccode(w.command), sel()]
+        sel.add((EscKeys.LEFT, cons.left(w.charpad)))
+        sel.add((EscKeys.RIGHT, cons.right(w.charpad)))
+        return [
+            Rem("Escape Key Actions"),
+            esccode(w.command),
+            sel(),
+        ]  # ,u.cr(),wh(w.charpad)]
 
 
 class Escaper(SubR):
@@ -278,6 +287,7 @@ class Action(SubR):
                     Rem("Reset the pad"),
                     MOVI(w.status, 0),
                     ST(w.status, w.pad_address, 0),
+                    ST(w.status, w.pad_address, console.CharPad.length),
                     uart.cr(),
                     self.stringer.prompt(self.w.temp),
                     uart.writestring(self.w.temp),
