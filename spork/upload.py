@@ -39,12 +39,12 @@ class Uploader:
         self.ser = serial.serial_for_url(
             port, baud, timeout=0.5, dsrdtr=False, do_not_open=True
         )
-        # self.ser.dtr = 0
+        self.ser.dtr = 0
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
         for i in range(count):
-            time.sleep(0.1)
+            time.sleep(0.2)
             self.ser.dtr = 1
             # print("toggle 1")
             self.ser.dtr = 0
@@ -79,11 +79,13 @@ class Uploader:
                 log.info("Upload Firmware")
                 for i in grouper(self.hex_blob, 4):
                     data = "".join(i).encode()
-                    # print(data)
-                    # counter += 1
+                    counter += 1
+                    # print(counter,data,end='')
                     # if counter % 4 == 0:
                     #    print('.',end="")
                     self.ser.write(data)
+                    # if counter % 16 == 0:
+                    #    time.sleep(0.05)
                     # time.sleep(0.01)
                 # a = self.ser.readall()
                 # print(a)

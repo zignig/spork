@@ -8,8 +8,14 @@ from boneless.arch.opcode import *
 
 from rich import print
 
+from spork.firmware.base import *
 
-class menu:
+
+class Menu:
+    # Show subroutine
+    # class Show(SubR):
+    #    pass
+
     _stringer = Stringer()
     _ref = LocalLabels()
     _counter = 0
@@ -24,12 +30,12 @@ class menu:
         self.flat = []
 
     def new_label(self, name):
-        l = menu._ref.set(str(name) + "_" + str(menu._counter))
-        menu._counter += 1
+        l = Menu._ref.set(str(name) + "_" + str(Menu._counter))
+        Menu._counter += 1
         return l
 
     def add(self, name, item=None):
-        val = menu(name, item)
+        val = Menu(name, item)
         val.parent = self
         self.children.append(val)
         return val
@@ -52,7 +58,7 @@ class menu:
                 names += i.flatten()
         return names
 
-    def dump(self):
+    def code(self):
         l = []
         self.flat = self.flatten()
         for i in self.flat:
@@ -64,12 +70,11 @@ class menu:
                 l.append(Ref(j.label))
         print(Rem("strings"))
         self._stringer.all()
-        l += self._stringer.get_code()
         return l
 
 
 if __name__ == "__main__":
-    m = menu("base")
+    m = Menu("base")
     one = m.add("one", None)
     one.add("three", None)
     one.add("four", None)

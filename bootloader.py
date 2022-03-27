@@ -23,7 +23,7 @@ from spork.lib.alloc import Alloc, GAlloc
 from spork.lib.commands import MetaCommand, Command
 
 # these automatically get added to the firmware
-# import spork.lib.base_command
+import spork.lib.base_command
 
 # TODO compress the banner, it is phat.
 from spork.lib.banner import banner

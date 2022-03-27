@@ -163,7 +163,7 @@ class CharPad(CodeObject):
                 LD(w.pos, w.charpad, CharPad.length),
                 LD(w.length, w.charpad, 0),
                 CMP(w.length, w.pos),
-                BEQ(ll.skip),
+                BLEU(ll.skip),
                 ADDI(w.pos, w.pos, 1),
                 ST(w.pos, w.charpad, CharPad.length),
                 self.stringer.right(w.temp),

@@ -139,7 +139,17 @@ class Firmware:
                 i = i | (1 << 15)
             return "{:04X}".format(i)
 
+        def pad(data):
+            " pad the data to the next mod 8 integer value"
+            div = 8
+            l = len(data)
+            extra = (1 - ((l / div) - (l // div))) * 8
+            data += [0] * int(extra)
+            return data
+
         asm = self.assemble()
+        # pad the asm
+        asm = pad(asm)
         # save the length
         full_hex = hex_string(len(asm))
         # append the code
