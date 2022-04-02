@@ -1,8 +1,6 @@
 " Serial interface for uploading boneless firmware"
 
-
 from itertools import zip_longest
-from serial.tools.miniterm import Miniterm
 import serial
 import time
 
@@ -34,12 +32,17 @@ def grouper(iterable, n, fillvalue=None):
 
 class Uploader:
     def __init__(self, port="/dev/ttyUSB0", baud=115200):
-        self.port = port
-        self.baud = baud
-        self.ser = serial.serial_for_url(
-            port, baud, timeout=0.5, dsrdtr=False, do_not_open=True
-        )
-        self.ser.dtr = 0
+        try:
+            from serial.tools.miniterm import Miniterm
+
+            self.port = port
+            self.baud = baud
+            self.ser = serial.serial_for_url(
+                port, baud, timeout=0.5, dsrdtr=False, do_not_open=True
+            )
+            self.ser.dtr = 0
+        except:
+            log.critical("No serial library")
 
     def toggle(self, count):
         # toggles the DTR pin, there is a internal reset device
@@ -53,6 +56,7 @@ class Uploader:
 
     def upload(self, firmware, console=True, reset=True):
         import argparse
+        from serial.tools.miniterm import Miniterm
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-l", "--list", action="store_true")
