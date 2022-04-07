@@ -20,18 +20,129 @@ log = logger(__name__)
 # timeout (if there is another program)
 # consume id
 # calculate checksum
+serial = UART()
+# short cuts to subroutines
+ho = serial.writeHex
+wc = serial.write
+rh = serial.readHex
 
 
-class LoaderAsSub(SubR):
-    " have the bootloader as a subroutine so it can be added to other firmwares "
+class ReadChunk(SubR):
+    " read a chunk off the serial port into memory"
+    params = ["address", "size"]
+    locals = ["counter", "value"]
+    ret = ["status"]
 
-    locals = ["value", "counter", "checksum", "address", "status", "char"]
+    def setup(self):
+        pass
+
+    def instr(self):
+        ll = LocalLabels()
+        w = self.w
+
+        return [
+            Rem("Load a chunk into memory"),
+            ll("loop"),
+            rh(ret=[w.value, w.status]),
+            CMPI(w.status, 1),  # error
+            BEQ(ll.err),
+            ST(w.value, w.address, 0),
+            ADDI(w.address, w.address, 1),
+            SUBI(w.size, w.size, 1),
+            CMPI(w.size, 0),
+            BNE(ll.loop),
+            ll("err"),
+        ]
+
+
+class CheckChunk(SubR):
+    params = ["address", "size", "checksum"]
+    locals = ["counter", "value"]
+    ret = ["status"]
+
+    def setup(self):
+        pass
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        return [
+            Rem("Check that a chunk is valid"),
+            Rem("Reset the CRC"),
+            STXA(w.value, self.reg.crc.reset),
+            ll("checksum_loop"),
+            Rem("get the value"),
+            LD(w.value, w.address, 0),
+            STXA(w.value, self.reg.crc.word),
+            Rem("advance the counters"),
+            ADDI(w.address, w.address, 1),
+            SUBI(w.counter, w.counter, 1),
+            CMPI(w.counter, 0),
+            BNE(ll.checksum_loop),
+            Rem("load the checksum value"),
+            LDXA(w.value, self.reg.crc.crc),
+            Rem("Compare the calculated CS with the bootloader value"),
+            CMP(w.value, w.checksum),
+            BNE(ll.check_fail),
+            Rem("good value"),
+            MOVI(w.status, 0),
+            J(ll.out),
+            ll("check_fail"),
+            MOVI(w.status, 1),
+            ll("out"),
+        ]
+
+
+class ProcessChunk(SubR):
+    params = ["base_addr"]
+    locals = ["value", "address", "size", "checksum"]
+    ret = ["status"]
 
     def setup(self):
         pass
 
     def prelude(self):
-        return [Rem("reset the CRC"), MOVI(w.temp, 1), STXA(w.temp, reg.crc.reset)]
+        pass
+
+    def instr(self):
+        ll = LocalLabels()
+        w = self.w
+        read_chunk = ReadChunk()
+        check_chunk = CheckChunk()
+        return [
+            Rem("load address (relative to base)"),
+            rh(ret=[w.address, w.status]),
+            CMPI(w.status, 1),  # error
+            BEQ(ll.err),
+            Rem("load the HEX count"),
+            rh(ret=[w.size, w.status]),
+            CMPI(w.status, 1),  # error
+            BEQ(ll.err),
+            Rem("load the checksum"),
+            rh(ret=[w.checksum, w.status]),
+            CMPI(w.status, 1),  # error
+            BEQ(ll.err),
+            Rem("Offset from base_addr"),
+            ADD(w.address, w.address, w.base_addr),
+            Rem("read the chunk into memory"),
+            read_chunk(w.address, w.size, ret=[w.status]),
+            CMPI(w.status, 1),
+            BEQ(ll.err),
+            Rem("check the check sum"),
+            check_chunk(w.address, w.size, w.checksum, ret=[w.status]),
+            CMPI(w.status, 1),
+            BEQ(ll.err),
+            ll("err"),
+        ]
+
+
+class LoaderAsSub(SubR):
+    " have the bootloader as a subroutine so it can be added to other firmwares "
+    params = ["address"]
+    locals = ["value", "counter", "checksum", "status", "char"]
+
+    def setup(self):
+        pass
 
     def instr(self):
         " instr returns an array of boneless instructions, make python things first "
@@ -45,6 +156,9 @@ class LoaderAsSub(SubR):
         ho = serial.writeHex
         wc = serial.write
         rh = serial.readHex
+
+        proc_chunk = ProcessChunk()
+
         # make some ASM labels that will not collide.
         ll = LocalLabels()
         self.globals.counter = 0
@@ -59,7 +173,7 @@ class LoaderAsSub(SubR):
             MOVI(R3, 0),
             MOVI(R4, 0),
             MOVI(R5, 0),
-            Rem("Get the count of instructions"),
+            Rem("Get the count of chunks"),
             rh(ret=[w.counter, w.status]),
             CMPI(w.status, 1),  # error
             BEQ(ll.err),
@@ -67,50 +181,7 @@ class LoaderAsSub(SubR):
             self.globals.counter(w.address),
             ST(w.counter, w.address, 0),
             Rem("Load the memory"),
-            MOVR(w.address, "end_of_data"),
-            ll("loop"),
-            rh(ret=[w.value, w.status]),
-            CMPI(w.status, 1),  # error
-            BEQ(ll.err),
-            ST(w.value, w.address, 0),
-            ADDI(w.address, w.address, 1),
-            SUBI(w.counter, w.counter, 1),
-            CMPI(w.counter, 0),
-            BNE(ll.loop),
-            Rem("Get the checksum"),
-            rh(ret=[w.checksum, w.status]),
-            CMPI(w.status, 1),  # error
-            BEQ(ll.err),
-            Rem("TODO, fix checksum"),
-            STXA(w.address, self.reg.crc.reset),
-            Rem("get the counter back"),
-            self.globals.counter(w.address),
-            LD(w.counter, w.address, 0),
-            Rem("load the start of code"),
-            MOVR(w.address, "end_of_data"),
-            ll("checksum_loop"),
-            Rem("get the value"),
-            LD(w.value, w.address, 0),
-            STXA(w.value, self.reg.crc.word),
-            # STXA(w.value, self.reg.crc.byte),
-            # Rem("shift for high byte"),
-            # SRLI(w.value, w.value, 8),
-            # STXA(w.value, self.reg.crc.byte),
-            Rem("advance the counters"),
-            ADDI(w.address, w.address, 1),
-            SUBI(w.counter, w.counter, 1),
-            # MOVI(w.char, 35),  # print hash
-            # wc(w.char),
-            CMPI(w.counter, 0),
-            BNE(ll.checksum_loop),
-            Rem("load the checksum value"),
-            LDXA(w.value, self.reg.crc.crc),
-            # Rem("write out the checksum for now"),
-            # ho(w.value),
-            # ho(w.checksum),
-            Rem("Compare the calculated CS with the bootloader value"),
-            CMP(w.value, w.checksum),
-            BNE(ll.check_fail),
+            proc_chunk(w.address, ret=[w.status]),
             Rem("And boot into your newly minted firmware"),
             Rem("Clear the working registers"),
             # MOVR(w.address, "end_of_data"),
@@ -126,8 +197,6 @@ class LoaderAsSub(SubR):
             ll("check_fail"),
             MOVI(w.char, 70),  # F for checksum fail
             wc(w.char),
-            # ho(w.address),
-            # ho(w.value),
             J(ll.end),
             ll("err"),
             MOVI(w.char, 33),  # ! for error
@@ -157,7 +226,7 @@ class HexLoader(Firmware):
 
     def instr(self):
         # TODO , make the target
-        as_sub = LoaderAsSub()
+        boot_as_sub = LoaderAsSub()
         self.globals.boot_target = 0
         w = self.w
         return [
@@ -166,7 +235,7 @@ class HexLoader(Firmware):
             self.globals.boot_target(w.address),
             MOVR(w.value, "end_of_data"),
             ST(w.value, w.address, 0),
-            as_sub(),
+            boot_as_sub(w.address),
         ]
 
 

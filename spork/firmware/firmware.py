@@ -130,6 +130,8 @@ class Firmware:
         return fw
 
     def hex(self):
+        SLICE = 16
+
         def hex_string(i):
             # encode negative numbers
             if i < 0:
@@ -141,9 +143,9 @@ class Firmware:
 
         def pad(data):
             " pad the data to the next mod 8 integer value"
-            div = 8
+            div = SLICE
             l = len(data)
-            extra = (1 - ((l / div) - (l // div))) * 8
+            extra = (1 - ((l / div) - (l // div))) * SLICE
             data += [0] * int(extra)
             return data
 
@@ -151,6 +153,19 @@ class Firmware:
         # pad the asm
         asm = pad(asm)
         # save the length
+        chunk_length = len(asm) // SLICE
+        for i in range(chunk_length):
+            c = asm[i * SLICE : (i + 1) * SLICE]
+            address = i * SLICE
+            l = len(c)
+            cr = _crc(c)
+            val = [address, l, cr] + c
+            # val = [address,cr]+c
+            chunk_hex = ""
+            for i in val:
+                chunk_hex += hex_string(i)
+            print(chunk_hex)
+            log.critical(chunk_hex)
         full_hex = hex_string(len(asm))
         # append the code
         for i in asm:
