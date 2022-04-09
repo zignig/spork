@@ -1,6 +1,7 @@
 " Serial interface for uploading boneless firmware"
 
 from itertools import zip_longest
+from pdb import _rstr
 import serial
 import time
 
@@ -65,7 +66,7 @@ class Uploader:
         args = parser.parse_args()
         if args.list:
             log.info("Listing information")
-            print(firmware.fw.reg.show())
+            # print(firmware.fw.reg.show())
             print(firmware.fw.code())
             print(firmware.hex_blob)
         else:
@@ -75,24 +76,28 @@ class Uploader:
                 # warmboot
                 self.toggle(4)
                 self.hex_blob = firmware.hex_blob
-                # self.ser.readall()  # clear out the buffer
-                # self.ser.write(4)
-                # wait for the pll to settle
-                time.sleep(0.3)
+                time.sleep(0.5)
                 counter = 0
                 log.info("Upload Firmware")
-                for i in grouper(self.hex_blob, 4):
-                    data = "".join(i).encode()
-                    counter += 1
-                    # print(counter,data,end='')
-                    # if counter % 4 == 0:
-                    #    print('.',end="")
-                    self.ser.write(data)
-                    # if counter % 16 == 0:
-                    #    time.sleep(0.05)
-                    # time.sleep(0.01)
-                # a = self.ser.readall()
-                # print(a)
+                lines = self.hex_blob.split()
+                r = len(lines[1])  # length after the header
+                for i in lines:
+                    # print(">> "+i)
+                    self.ser.write(i.encode())
+                    # a = self.ser.read(r)
+                    # print("<< "+a.decode())
+                    # print()
+                # for i in grouper(self.hex_blob, 4):
+                # data = "".join(i).encode()
+                # counter += 1
+                # print(counter,data,end='')
+                # if counter % 4 == 0:
+                #    print('.',end="")
+                # self.ser.write(data)
+                # if counter % 16 == 0:
+                #    time.sleep(0.05)
+                # time.sleep(0.01)
+
             if console:
                 log.info("Create Terminal")
                 term = Miniterm(self.ser)

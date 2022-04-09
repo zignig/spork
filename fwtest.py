@@ -170,18 +170,18 @@ def build(TheFirmware, mem_size=4096, sim=False, detail=False):
 
     # Build the firmware
     spork.build()
-    if detail:
-        print(spork.cpu.map.show())
+    # if detail:
+    #    print(spork.cpu.map.show())
 
     f = TheFirmware(spork.cpu.map, start_window=mem_size)
     spork.fw = f
-    if detail:
-        f.show()
+    # if detail:
+    #    f.show()
     # Sporkify it !
     code = f.code()
     spork.cpu.firmware(code)
-    if detail:
-        print(f.hex())
+    # if detail:
+    #    print(f.hex())
     spork.hex_blob = f.hex()
     return spork
 

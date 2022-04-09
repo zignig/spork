@@ -1,4 +1,11 @@
-# attempt at a register allocator
+"""
+
+This is the base file for creating subcomponents for the firmware.
+
+The main aim is to only add components to the firmware if they are 
+actually used in the program, otherwise they are not included.
+
+"""
 from collections import OrderedDict
 import random
 import pprint
@@ -24,18 +31,18 @@ __all__ = [
 
 __done__ = False
 """
-Some text 
+Overview
 
-ideas
+Ideas
 
-allocate variables into a register bank, break it into windows 
+Allocate variables into a register bank, break it into windows 
 limit the total number of windows and spill into ram if needed
 , it's all flat ram in the boneless , minimise EXTI...
 
-work out how to make sure that the variables are in the correct window
+Work out how to make sure that the variables are in the correct window
 for actions 
 
-minimise the amount of spill an copying from one window to the other
+Minimise the amount of spill an copying from one window to the other
 
 ? contiguous windows
 ? linked list of windows
@@ -124,7 +131,7 @@ class FWError(Exception):
 
 class Ref:
     """ Create a reference to another symbol
-        assembler will make this into a local integer reference to the label
+        assembler will make this into a absolute integer reference to the label
     """
 
     def __init__(self, name):
@@ -170,12 +177,18 @@ import weakref
 
 class CodeObject:
     " For adding data objects to the firmware "
+    _ItemCounter = 0  # used for ordering in the firmware
     _objects = set()
 
     def __init__(self):
         # log.critical("build " + str(self))
+        CodeObject._ItemCounter += 1
         CodeObject._objects.add(weakref.ref(self))
         object.__setattr__(self, "_postfix", Postfix())
+        object.__setattr__(self, "pos", int(CodeObject._ItemCounter))
+
+    def __lt__(self, other):
+        return self.pos < other.pos
 
     def build(self):
         log.warning("No build for " + str(self))
@@ -187,7 +200,9 @@ class CodeObject:
     def setup_list(cls):
         log.critical("Setup the Code Objects")
         li = [Rem("Setup the Code Objects")]
-        for i in cls._scan():
+        o = list(cls._scan())
+        o.sort()
+        for i in o:
             s = i.setup()
             if len(s) > 0:
                 li += [Rem(str(i)), s]
@@ -199,9 +214,7 @@ class CodeObject:
         log.info("Scan")
         dead = set()
         for ref in cls._objects:
-            log.debug(ref)
             obj = ref()
-            log.debug(obj)
             if obj is not None:
                 # log.info("\t" + str(obj))
                 yield obj
@@ -212,8 +225,11 @@ class CodeObject:
     @classmethod
     def get_code(cls):
         l = []
+        o = []
+        o = list(cls._scan())
+        o.sort()
         log.info("Data Objects")
-        for i in cls._scan():
+        for i in o:
             log.info(i)
             l += [i.code()]
         return l
@@ -437,7 +453,8 @@ class SubR(metaclass=MetaSub):
 
     def setup(self):
         # Override me.
-        raise FWError("Need to set up subroutine , params , locals and ret")
+        log.warning("Should have setup")
+        # raise FWError("Need to set up subroutine , params , locals and ret")
 
     def build(self):
         # build the objects and stuff

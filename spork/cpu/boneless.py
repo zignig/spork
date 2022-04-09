@@ -59,7 +59,7 @@ class BonelessSpork(Elaboratable):
             raise BuildException("No firmware")
         fw = Instr.assemble(fw)
         self.fw = fw
-        if len(fw) > self.mem_size - 4 * 8:  # some space for the window stack
+        if len(fw) > self.mem_size - 8 * 8:  # some space for the window stack
             raise BuildException("Firmware too long")
         log.info(
             "Firmware is {:d}/{:d} ({:.2f}% of mem) words long".format(

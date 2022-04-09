@@ -130,7 +130,7 @@ class Firmware:
         return fw
 
     def hex(self):
-        SLICE = 16
+        SLICE = 32
 
         def hex_string(i):
             # encode negative numbers
@@ -154,24 +154,21 @@ class Firmware:
         asm = pad(asm)
         # save the length
         chunk_length = len(asm) // SLICE
+        chunks = []
         for i in range(chunk_length):
             c = asm[i * SLICE : (i + 1) * SLICE]
             address = i * SLICE
             l = len(c)
             cr = _crc(c)
-            val = [address, l, cr] + c
+            val = [address, cr] + c
             # val = [address,cr]+c
             chunk_hex = ""
             for i in val:
                 chunk_hex += hex_string(i)
-            print(chunk_hex)
-            log.critical(chunk_hex)
-        full_hex = hex_string(len(asm))
-        # append the code
-        for i in asm:
-            full_hex += hex_string(i)
-        # append the checksum
-        full_hex += hex_string(_crc(asm))
+            # chunk_hex += '\n'
+            chunks.append(chunk_hex)
+        header = "BL3_" + hex_string(chunk_length) + hex_string(SLICE) + "\n"
+        full_hex = header + "\n".join(chunks)
         return full_hex
 
     def disassemble(self):
