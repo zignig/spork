@@ -1,4 +1,7 @@
-Master window 
+# Ideas and stuff
+
+
+## Master window 
 
 - Task start
 - current task
@@ -24,6 +27,20 @@ aligned allocator ( align on window MOD 8 )
 context switch 
 task switcher 
 
+# Tree
+
+spork/lib/tree.py
+
+the tree is currently
+
+  - 
+
+
+## Ideas 
+
 need to gateware 
 
 free running jiffy timer.
+
+- move length indexes to -1 from the label, no shifting and -2 can
+  be other data 

@@ -148,7 +148,7 @@ class Firmware:
         return fw
 
     def hex(self):
-        SLICE = 32
+        SLICE = 16
 
         def hex_string(i):
             # encode negative numbers

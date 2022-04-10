@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# minimal firmware the boneless
 # testing for tree structures
 
 from boneless.arch.opcode import Instr
@@ -8,7 +7,7 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 from spork.lib.uartIO import UART
-from spork.lib.tree import Menu, ShowMenu
+from spork.lib.tree import Tree, ShowTree
 
 from spork.firmware.firmware import Firmware
 
@@ -22,10 +21,13 @@ def descend_children():
 
 
 class TreeTest(Firmware):
+    " Take the firmware registers and make them into tree"
+    " WORKS!!! 20220410 "
+
     def setup(self):
         self.w.req(["temp", "counter", "wait", "depth"])
         # Create the tree structures
-        m = self.m = Menu("reg")
+        m = self.m = Tree("reg")
         reg = self.reg
 
         def recurse(item, m):
@@ -61,7 +63,7 @@ class TreeTest(Firmware):
         reg = self.reg
         ll = LocalLabels()
         uart = UART()
-        sm = ShowMenu()
+        sm = ShowTree()
         ll = LocalLabels()
         return [
             self.m(w.temp),
