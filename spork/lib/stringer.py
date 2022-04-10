@@ -98,6 +98,10 @@ class Stringer(CodeObject):
         object.__setattr__(self, "_strings", {})
         object.__setattr__(self, "compact", compact)
 
+    def __repr__(self):
+        s = "\t" + type(self).__qualname__ + " " + str(len(self._strings))
+        return s
+
     @property
     def _used(self):
         "Are any of the string used?"

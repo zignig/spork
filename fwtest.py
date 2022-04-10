@@ -113,7 +113,6 @@ class TestSpork(Elaboratable):
         # build the register map
 
     def build(self):
-        log.critical("BUILD")
         self.cpu.build()
         # Attach the firmware
         if self.firmware is not None:
@@ -143,7 +142,7 @@ from nmigen.hdl.ir import UnusedElaboratable
 FIRM = HexLoader
 
 # TODO this needs to be moved into the spork
-def build(TheFirmware, mem_size=4096, sim=False, detail=False):
+def build(TheFirmware, mem_size=1024 * 6, sim=False, detail=False):
     # for programming from a firmware file
     if detail:
         print("Testing Spork")

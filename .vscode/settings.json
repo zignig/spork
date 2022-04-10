@@ -2,4 +2,5 @@
     "editor.fontSize": 16,
     "editor.fontFamily": "'Courier New',monospace",
     "editor.fontWeight": "bold",
+    "python.languageServer": "Pylance"
 }

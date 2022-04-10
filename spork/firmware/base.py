@@ -198,7 +198,7 @@ class CodeObject:
 
     @classmethod
     def setup_list(cls):
-        log.critical("Setup the Code Objects")
+        log.info("Setup the Code Objects")
         li = [Rem("Setup the Code Objects")]
         o = list(cls._scan())
         o.sort()
@@ -206,7 +206,7 @@ class CodeObject:
             s = i.setup()
             if len(s) > 0:
                 li += [Rem(str(i)), s]
-        log.critical("End Setup Code")
+        log.info("End Setup Code")
         return li
 
     @classmethod
@@ -217,6 +217,7 @@ class CodeObject:
             obj = ref()
             if obj is not None:
                 # log.info("\t" + str(obj))
+                log.critical(obj)
                 yield obj
             else:
                 dead.add(ref)
@@ -453,7 +454,8 @@ class SubR(metaclass=MetaSub):
 
     def setup(self):
         # Override me.
-        log.warning("Should have setup")
+        pass
+        # log.warning("{} should have setup function".format(type(self).__qualname__))
         # raise FWError("Need to set up subroutine , params , locals and ret")
 
     def build(self):

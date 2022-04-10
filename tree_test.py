@@ -1,5 +1,6 @@
 #!/usr/bin/python
-# minimal firmware the boneless, dump the char set and blink a light.
+# minimal firmware the boneless
+# testing for tree structures
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -7,7 +8,7 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 from spork.lib.uartIO import UART
-from spork.lib.tree import Menu
+from spork.lib.tree import Menu, ShowMenu
 
 from spork.firmware.firmware import Firmware
 
@@ -19,29 +20,36 @@ log = logger(__name__)
 class TreeTest(Firmware):
     def setup(self):
         " registers in the bottom Window "
-        self.w.req(["temp", "counter", "wait", "dur"])
+        self.w.req(["temp", "counter", "wait", "depth"])
         m = self.m = Menu("testing")
         sub = m.add("hello", None)
-        m.add("two", None)
-        m.add("three", None)
-        sub.add("test", None)
-        un = sub.add("fnord", None)
-        for i in range(10):
-            un.add("again", None)
+        # m.add("two", None)
+        # m.add("three", None)
+        # sub.add("test", None)
+        # un = sub.add("fnord", None)
+        # for i in range(10):
+        #    un.add("again", None)
 
     def prelude(self):
         return []
 
-    def extra(self):
-        return self.m.code()
+    # def extra(self):
+    #    return self.m.code()
 
     def instr(self):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
         uart = UART()
-
-        return [[]]
+        sm = ShowMenu()
+        ll = LocalLabels()
+        return [
+            self.m(w.temp),
+            MOVI(w.depth, 1),
+            sm(w.temp, w.depth),
+            ll("again"),
+            J(ll.again),
+        ]
 
 
 firmware = TreeTest

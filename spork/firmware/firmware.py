@@ -5,7 +5,6 @@ import pprint
 import math
 
 from ..logger import logger
-from ..upload import _crc
 
 log = logger(__name__)
 from boneless.arch.opcode import *
@@ -17,6 +16,25 @@ from ..lib.commands import Command
 
 
 __done__ = False
+# CRC
+# implementation taken from crcany
+# lifted from https://github.com/tpwrules/ice_panel/
+# need to crc on signed data for backwards refs
+def _crc(words):
+    crc = 0
+    for word in words:
+        if word < 0:
+            # negate
+            word = -word
+            # set the sign bit
+            word = word | (1 << 15)
+        crc ^= word
+        for bi in range(16):
+            if crc & 1:
+                crc = (crc >> 1) ^ 0x8408
+            else:
+                crc >>= 1
+    return crc
 
 
 class Firmware:
@@ -130,7 +148,7 @@ class Firmware:
         return fw
 
     def hex(self):
-        SLICE = 32
+        SLICE = 4
 
         def hex_string(i):
             # encode negative numbers
@@ -160,13 +178,13 @@ class Firmware:
             address = i * SLICE
             l = len(c)
             cr = _crc(c)
-            val = [address, cr] + c
-            # val = [address,cr]+c
             chunk_hex = ""
-            for i in val:
+            log.debug(c)
+            for i in c:
                 chunk_hex += hex_string(i)
-            # chunk_hex += '\n'
-            chunks.append(chunk_hex)
+            cr = hex_string(cr)
+            addr = hex_string(address)
+            chunks.append(addr + cr + chunk_hex)
         header = "BL3_" + hex_string(chunk_length) + hex_string(SLICE) + "\n"
         full_hex = header + "\n".join(chunks)
         return full_hex

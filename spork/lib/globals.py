@@ -41,6 +41,10 @@ class Globals(CodeObject):
         # need to make attrs like this because of the __setattr__
         object.__setattr__(self, "_globals", {})
 
+    def __repr__(self):
+        s = "\t" + type(self).__qualname__ + " " + str(len(self._globals))
+        return s
+
     @property
     def _used(self):
         used = False
