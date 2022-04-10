@@ -17,18 +17,38 @@ from spork.logger import logger
 log = logger(__name__)
 
 
+def descend_children():
+    pass
+
+
 class TreeTest(Firmware):
     def setup(self):
-        " registers in the bottom Window "
         self.w.req(["temp", "counter", "wait", "depth"])
-        m = self.m = Menu("testing")
-        sub = m.add("hello", None)
-        # m.add("two", None)
+        # Create the tree structures
+        m = self.m = Menu("reg")
+        reg = self.reg
+
+        def recurse(item, m):
+            if type(item) == int:
+                return
+            # if type(item) == type(int):
+            #     return
+            for i, j in item._children.items():
+                sub = m.add(i)
+                recurse(j, sub)
+
+        recurse(reg, m)
+        # sub = m.add("hello", None)
+        # un2 = m.add("two", None)
+        # for i in range(20):
+        #     un2.add('added'+str(i))
         # m.add("three", None)
+        # m.add("four",None)
         # sub.add("test", None)
         # un = sub.add("fnord", None)
         # for i in range(10):
-        #    un.add("again", None)
+        #     un2.add("again" + str(i ), None)
+        # un.add("longer")
 
     def prelude(self):
         return []
@@ -45,7 +65,7 @@ class TreeTest(Firmware):
         ll = LocalLabels()
         return [
             self.m(w.temp),
-            MOVI(w.depth, 1),
+            MOVI(w.depth, 0),
             sm(w.temp, w.depth),
             ll("again"),
             J(ll.again),

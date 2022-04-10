@@ -20,33 +20,65 @@ u = UART()
 ws = u.writestring  # write a char
 sp = u.sp  # write a space
 cr = u.cr
+ho = u.writeHex
 
 
 class ShowMenu(SubR):
+    """ 
+    The addressing of the pointer are annoying
+    because they are relative pointers that may or may not
+    be negative
+    """
+
     params = ["address", "depth"]
-    locals = ["children", "pointer", "temp", "child_counter"]
+    locals = ["children", "pointer", "temp", "offfset"]
+
+    def setup(self):
+        log.critical("OFFSETS may be bad")
 
     def instr(self):
         w = self.w
         ll = LocalLabels()
         return [
             LD(w.pointer, w.address, 0),
+            Rem("Addresses are relative offsets that may be -ve"),
+            Rem("drop the high bit"),
+            # ANDI(w.temp, w.pointer, 0x8000 - 1),
+            # ho(w.temp),cr(),
+            SUB(w.pointer, w.address, w.pointer),
             LD(w.children, w.address, 1),
             MOV(w.temp, w.depth),
-            ll("child_loop"),
+            # ho(w.address),cr(),
+            # ho(w.pointer),cr(),
             ll("depth_loop"),
             sp(),
             SUBI(w.temp, w.temp, 1),
             CMPI(w.temp, 0),
-            BNE(ll.depth_loop),
+            BGES(ll.depth_loop),
+            Rem("Output the name"),
             ws(w.pointer),
             cr(),
             CMPI(w.children, 0),
             BEQ(ll.no_children),
+            # ho(w.children),cr(),
+            Rem("copy and increment depth"),
             MOV(w.temp, w.depth),
-            ADDI(w.temp, w.temp, 1),
+            ADDI(w.temp, w.temp, 2),
+            Rem("Adjust the address to point to the first child"),
+            ADDI(w.address, w.address, 1),
+            ll("child_loop"),
+            ADDI(w.address, w.address, 1),
+            LD(w.pointer, w.address, 0),
+            Rem("pointers here are positive WTF?"),
+            ADD(w.pointer, w.address, w.pointer),
             Rem("Recursive Call"),
-            # self(w.address,w.temp),
+            # ho(w.pointer),
+            # cr(),cr(),
+            self(w.pointer, w.temp),
+            Rem("Loop through the children"),
+            SUBI(w.children, w.children, 1),
+            CMPI(w.children, 0),
+            BNE(ll.child_loop),
             ll("no_children"),
         ]
 
@@ -59,9 +91,9 @@ class Menu(CodeObject):
 
     def __init__(self, name, item=None, parent=None):
         self.parent = parent
-        log.critical("{} {}".format(name, parent))
+        # log.critical("{} {}".format(name, parent))
         if parent == None:
-            log.critical("ATTACH TREE")
+            log.debug("Attach root of tree")
             super().__init__()
         self.name = name
         self.item = item
@@ -111,7 +143,7 @@ class Menu(CodeObject):
         for i in self.flat:
             l += [Rem("-----")]
             l += [[Rem(i.name), L(i.label)]]
-            l += [[Rem("str"), Ref(i.stringlabel.get_name())]]
+            l += [Ref(i.stringlabel.get_name())]
             l += [len(i.children)]
             # l += [Ref(i.item)]
             for j in i.children:

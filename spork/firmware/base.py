@@ -217,7 +217,7 @@ class CodeObject:
             obj = ref()
             if obj is not None:
                 # log.info("\t" + str(obj))
-                log.critical(obj)
+                # log.critical(obj)
                 yield obj
             else:
                 dead.add(ref)
