@@ -74,6 +74,7 @@ class CharPad(CodeObject):
             ]
 
     def __init__(self, name="CharPad"):
+        # attach to the firmware
         super().__init__()
         self.length = CharPad.length
         self.cursor = 0
