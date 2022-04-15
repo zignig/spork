@@ -28,6 +28,10 @@ rh = serial.readHex
 nl = serial.cr
 sp = serial.sp
 
+stringer = Stringer(compact=False)
+stringer.boot_id = LOADER_ID
+# stringer.all()
+
 
 class ZeroReg(Inline):
     def instr(self):
@@ -70,12 +74,9 @@ class ID(SubR):
     def instr(self):
         w = self.w
         ll = LocalLabels()
-        self.st = s = Stringer(compact=False)
-        s.boot_id = LOADER_ID
-        s.all()
 
         return [
-            self.st.boot_id(w.address),
+            stringer.boot_id(w.address),
             LD(w.count, w.address, 0),
             Rem("advance to the first char"),
             ADDI(w.address, w.address, 1),
@@ -233,7 +234,7 @@ class LoaderAsSub(SubR):
         serial = UART()
         # short cuts to subroutines
         ho = serial.writeHex
-        wc = serial.write
+        wc = serial.writelongstring
         rh = serial.readHex
         gnl = GetNL()
         proc_chunk = ProcessChunk()
@@ -282,10 +283,11 @@ class LoaderAsSub(SubR):
             JR(w.address, 0),
             Rem("Error Sequences"),
             ll("id_fail"),
-            MOVI(w.size, 73),  # I
+            # MOVI(w.size, 73),  # I
+            stringer.boot_id(w.size),
             wc(w.size),
-            J(ll.end),
             ll("check_fail"),
+            J(ll.end),
             MOVI(w.size, 70),  # F for checksum fail
             wc(w.size),
             J(ll.end),
@@ -296,7 +298,8 @@ class LoaderAsSub(SubR):
             J(ll.end),
             ll("err"),
             MOVI(w.size, 33),  # ! for error
-            wc(w.size),
+            # wc(w.size)
+            J(ll.end),
             Rem("any error will reset the bootloader"),
             ll("end"),
         ]
@@ -323,6 +326,7 @@ class HexLoader(Firmware):
 
     def setup(self):
         # Define the registers used in this firmware "
+
         self.w.req(["value", "counter", "checksum", "address", "status", "char"])
         pass
 
@@ -331,6 +335,7 @@ class HexLoader(Firmware):
         return z()
 
     def instr(self):
+
         # TODO , make the target
         boot_as_sub = LoaderAsSub()
         w = self.w

@@ -156,9 +156,7 @@ class Write(SubR):
             ll("again"),
             LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
-            BEQ(ll.cont),
-            J(ll.again),
-            ll("cont"),
+            BNE(ll.again),
             STXA(w.value, reg.serial.tx.data),
         ]
 
@@ -191,6 +189,36 @@ class SP(SubR):
         w = self.w
         wc = Write()
         return [MOVI(w.char, 32), wc(w.char)]  # SPACE
+
+
+class WriteLongString(SubR):
+    """ Only write long strings no compact check """
+
+    def setup(self):
+        self.params = ["address"]
+        self.locals = ["length", "value"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        # create the subroutine
+        uart_out = Write()
+        return [
+            LD(w.length, w.address, 0),
+            ADDI(w.address, w.address, 1),
+            ll("loop"),
+            # Write out the char
+            LD(w.value, w.address, 0),
+            uart_out(w.value),
+            # Increment the address
+            ADDI(w.address, w.address, 1),
+            # Increment the counter
+            SUBI(w.length, w.length, 1),
+            # check if we are at length
+            CMPI(w.length, 0),
+            BNE(ll.loop),
+        ]
 
 
 class WriteString(SubR):
@@ -395,6 +423,7 @@ class UART:
     read = Read()
     write = Write()
     writestring = WriteString()
+    writelongstring = WriteLongString()
     writeHex = WriteHex()
     readHex = ReadHex()
     readWait = ReadWait()

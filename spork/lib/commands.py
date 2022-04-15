@@ -240,7 +240,11 @@ class Command(metaclass=MetaCommand):
         self.post_fix = "_comm"
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
-        self.commname = SingleString(self.name, self.name.lower(), "", compact=False)
+        if hasattr(self, "case"):
+            name = self.name
+        else:
+            name = self.name.lower()
+        self.commname = SingleString(self.name, name, "", compact=False)
 
     def __repr__(self):
         t = self.label + " --> "

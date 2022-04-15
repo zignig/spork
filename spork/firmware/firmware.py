@@ -14,6 +14,7 @@ from ..lib.stringer import Stringer
 from ..lib.globals import Globals
 from ..lib.commands import Command
 
+SLICE = 16
 
 __done__ = False
 # CRC
@@ -148,8 +149,6 @@ class Firmware:
         return fw
 
     def hex(self):
-        SLICE = 16
-
         def hex_string(i):
             # encode negative numbers
             if i < 0:

@@ -61,7 +61,7 @@ class ClearScreen(Command):
 
 
 class JumpToBootloader(Command):
-    name = "BL_0"
+    name = "BL3_"
     case = True
 
     class _bl(SubR):

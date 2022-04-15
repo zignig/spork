@@ -71,7 +71,7 @@ class ShowTree(SubR):
                 BEQ(ll.no_children),
                 Rem("copy and increment depth"),
                 MOV(w.temp, w.depth),
-                ADDI(w.temp, w.temp, 3),
+                ADDI(w.temp, w.temp, 1),
                 Rem("+1 , child count , +1 data ref "),
                 ADDI(w.address, w.address, 3),
                 [
