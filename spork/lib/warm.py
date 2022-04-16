@@ -1,4 +1,4 @@
-"Serail to char and word reading and writing"
+"Use the ice40 warmboot from code"
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

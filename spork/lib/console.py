@@ -229,6 +229,7 @@ class Console(SubR):
                     J(ll.again),
                     ll("out"),
                     MOVI(self.w.temp, 1),
+                    Rem("Write to the warmboot device"),
                     self.wb(self.w.temp),
                 ],
             )

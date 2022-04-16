@@ -1,4 +1,9 @@
-" make space for a global stored registers "
+""" 
+Global values are named values that are added to the Firmware as labels,
+
+
+
+"""
 
 from ..firmware.base import *
 from ..logger import logger
@@ -37,6 +42,7 @@ class Globals(CodeObject):
     " Collection of global single register variables, all labeled"
 
     def __init__(self, postfix=None, compact=True):
+        # this super will attach it to the firmware
         super().__init__()
         # need to make attrs like this because of the __setattr__
         object.__setattr__(self, "_globals", {})
@@ -56,6 +62,7 @@ class Globals(CodeObject):
         return used
 
     def __setattr__(self, item, value):
+        " in code you can use self.globals.NAME = value to create a global"
         val = _glob_var(item, value, self._postfix)
         self._globals[item] = val
         object.__setattr__(self, item, val)

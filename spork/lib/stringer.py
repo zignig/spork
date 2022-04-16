@@ -2,7 +2,7 @@
 
 from ..firmware.base import *
 from ..logger import logger
-
+from ..utils.search import Enroll
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -89,6 +89,7 @@ class SingleString:
         return [[L(self.name + self._postfix), comment, length, chars]]
 
 
+@Enroll(lib="stringer")
 class Stringer(CodeObject):
     " Collection of string objects "
 

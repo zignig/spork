@@ -12,6 +12,8 @@ from ..logger import logger
 
 log = logger(__name__)
 
+__done__ = False
+
 
 class Scheduler(CodeObject):
     "Base Scheduler"

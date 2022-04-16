@@ -34,7 +34,8 @@ class ShowTree(SubR):
     locals = ["children", "pointer", "temp"]
 
     def setup(self):
-        log.warning("OFFSETS may be bad")
+        pass
+        # log.warning("OFFSETS may be bad")
 
     def instr(self):
         w = self.w

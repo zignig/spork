@@ -294,7 +294,7 @@ class LoaderAsSub(SubR):
             ll("chunk_fail"),
             MOVI(w.size, 67),  # ! for error
             wc(w.size),
-            ho(w.counter),
+            # ho(w.counter),
             J(ll.end),
             ll("err"),
             MOVI(w.size, 33),  # ! for error
