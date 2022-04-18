@@ -91,6 +91,38 @@ class WriteHex(SubR):
         ]
 
 
+class WriteBin(SubR):
+    "Write a 16 bit reg as binary to the serial port"
+
+    def setup(self):
+        self.params = ["value"]
+        self.locals = ["temp", "char", "repeat"]
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        wr = Write()
+        return [
+            MOVI(w.repeat, 16),
+            AND(w.temp, w.value, w.value),  # copy to temp
+            ll("again"),
+            CMPI(w.temp, 0xFFFF),
+            BS(ll.one),
+            MOVI(w.char, 48),  # zero
+            wr(w.char),
+            J(ll.next),
+            ll("one"),
+            MOVI(w.char, 49),  # one
+            wr(w.char),
+            ll("next"),
+            SLLI(w.temp, w.temp, 1),
+            SUBI(w.repeat, w.repeat, 1),  # decrement the counter
+            CMPI(w.repeat, 0),  # check the counter
+            BNE(ll.again),
+        ]
+
+
 class ReadWait(SubR):
     "Wait and return a char"
 
@@ -425,6 +457,7 @@ class UART:
     writestring = WriteString()
     writelongstring = WriteLongString()
     writeHex = WriteHex()
+    writeBin = WriteBin()
     readHex = ReadHex()
     readWait = ReadWait()
     cr = CR()

@@ -2,6 +2,7 @@
 
 # the instruction set
 # TODO port to allocator IR
+from re import I
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
@@ -30,17 +31,31 @@ class Small(Firmware):
         uart = UART()
 
         return [
-            MOVI(w.other, 1),
+            MOVI(w.counter, 0),
+            MOVI(w.other, 0),
             STXA(w.other, reg.lsfr.mode),
-            MOVI(w.other, 0x00FF),
-            STXA(w.other, reg.lsfr.value),
-            ll("again"),
-            uart.readWait(ret=[w.value]),
-            [uart.writeHex(w.value), uart.cr(), uart.cr()],
+            MOVI(w.value, 0xA0A0),
+            STXA(w.value, reg.lsfr.value),
+            MOVI(w.other, 0x84E2),
+            STXA(w.other, reg.lsfr.taps),
             LDXA(w.temp, reg.lsfr.value),
-            uart.writeHex(w.temp),
+            LDXA(w.temp, reg.lsfr.value),
+            ll("again"),
+            # uart.readWait(ret=[w.value]),
+            # [uart.writeHex(w.value), uart.cr(), uart.cr()],
+            LDXA(w.temp, reg.lsfr.value),
+            # uart.writeBin(w.temp),
+            # uart.cr(),
+            ADDI(w.counter, w.counter, 1),
+            CMP(w.temp, w.value),
+            BNE(ll.again),
+            uart.writeHex(w.counter),
+            uart.sp(),
+            # uart.writeHex(w.temp),
+            uart.writeBin(w.temp),
             uart.cr(),
-            J(ll.again),
+            ll("wait"),
+            J(ll.wait),
         ]
 
 
