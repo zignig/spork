@@ -10,7 +10,7 @@ __all__ = ["catalog"]
 
 
 class Catalog:
-    " A catalogue of registered things"
+    "A catalogue of registered things"
 
     def __init__(self):
         self.sections = {}
@@ -30,7 +30,7 @@ catalog = Catalog()
 
 
 def Enroll(**info):
-    " Wrapper for registering meta data of constructs "
+    "Wrapper for registering meta data of constructs"
 
     def inner(cls):
         for section, name in info.items():

@@ -80,7 +80,7 @@ class GenCode(NodeVisitor):
         return self.visit(node.expr)
 
     def binop(self, node):
-        " binary operation "
+        "binary operation"
         lhs = self.visit(node.lhs)
         rhs = self.visit(node.rhs)
         tmp = self.resolver.new()

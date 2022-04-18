@@ -9,6 +9,7 @@ from ..logger import logger
 log = logger(__name__)
 from boneless.arch.opcode import *
 from boneless.arch.instr import Instr
+from boneless.arch.asm import assemble
 
 from ..lib.stringer import Stringer
 from ..lib.globals import Globals
@@ -39,8 +40,8 @@ def _crc(words):
 
 
 class Firmware:
-    """ 
-    Firmware construct 
+    """
+    Firmware construct
 
     does initialization , main loop and library code
 
@@ -95,7 +96,7 @@ class Firmware:
         return []
 
     def extra(self):
-        "Add extra code/data to the firmware, override "
+        "Add extra code/data to the firmware, override"
         return []
 
     def code(self):
@@ -159,7 +160,7 @@ class Firmware:
             return "{:04X}".format(i)
 
         def pad(data):
-            " pad the data to the next mod 8 integer value"
+            "pad the data to the next mod 8 integer value"
             div = SLICE
             l = len(data)
             extra = (1 - ((l / div) - (l // div))) * SLICE

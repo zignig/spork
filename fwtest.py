@@ -14,7 +14,7 @@ from spork.peripheral.warmboot import WarmBoot, FakeWarm
 from spork.peripheral.watchdog import Watchdog
 from spork.peripheral.profiler import Profiler
 from spork.peripheral.systick import SysTick
-
+from spork.peripheral.lsfr import LSFR
 
 from spork.cores.ext_reset import ExternalReset
 from spork.cores.debounce import Debounce
@@ -65,8 +65,8 @@ class TestSpork(Elaboratable):
         timer = TimerPeripheral(32)
         cpu.add_peripheral(timer)
 
-        timer2 = TimerPeripheral(32)
-        cpu.add_peripheral(timer2)
+        # timer2 = TimerPeripheral(32)
+        # cpu.add_peripheral(timer2)
 
         # A blinky thing
         led = platform.request("led")
@@ -78,10 +78,13 @@ class TestSpork(Elaboratable):
         cpu.add_peripheral(crc)
 
         # System Ticker
-        systick = SysTick(16)
+        systick = SysTick(0xFFFF)
         cpu.add_peripheral(systick)
         # Reg test
 
+        # LSFT
+        lsfr = LSFR()
+        cpu.add_peripheral(lsfr)
         # watchdog = Watchdog(cpu.cpu)
         # cpu.add_peripheral(watchdog)
 
@@ -203,7 +206,7 @@ if __name__ == "__main__":
     if args.simulate:
         spork = build(fw, mem_size=1024)
         from nmigen.sim import Simulator
-        from sim_data import test_rx, str_data
+        from scratchpad.sim_data import test_rx, str_data
 
         st = "sphinx of black quartz judge my vow"
         # print(hex(_crc(st.encode("utf-8"))))

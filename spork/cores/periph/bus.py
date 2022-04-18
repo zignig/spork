@@ -9,7 +9,7 @@ log = logger(__name__)
 
 
 class RegMap:
-    """ mapping of the registers """
+    """mapping of the registers"""
 
     # TODO export in various formats
 
@@ -45,7 +45,7 @@ class RegMap:
 
 
 class PeripheralCollection(Elaboratable):
-    """ Collection of peripherals to attach to a BonelessCPU """
+    """Collection of peripherals to attach to a BonelessCPU"""
 
     def __init__(self, addr_width=16, data_width=16):
         log.debug("Create Peripheral Collection")

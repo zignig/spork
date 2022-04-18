@@ -30,7 +30,7 @@ class Term(SubR):
 
 
 def AnsiStrings(s):
-    s.a_esc = u"\x1b["
+    s.a_esc = "\x1b["
     # colors
     s.black = "30m"
     s.red = "31m"

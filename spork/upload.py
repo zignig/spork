@@ -66,7 +66,7 @@ class Uploader:
         args = parser.parse_args()
         if args.list:
             log.info("Listing information")
-            # print(firmware.fw.reg.show())
+            print(firmware.fw.reg.show())
             print(firmware.fw.code())
             print(firmware.hex_blob)
         else:

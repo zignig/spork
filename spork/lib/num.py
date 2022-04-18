@@ -1,12 +1,12 @@
 class AsDec(SubR):
-    " Convert a register into a decimal number"
+    "Convert a register into a decimal number"
 
     def setup(self):
         self.params = ["value", "target"]
         self.locals = ["holding", "leading", "index", "count"]
 
     def instr(self):
-        """ Subtract from the the table set , until negative
+        """Subtract from the the table set , until negative
         increment the count, move down the table until empty
         push digits onto the target"""
 

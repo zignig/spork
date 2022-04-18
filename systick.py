@@ -24,7 +24,7 @@ log = logger(__name__)
 
 class tick(Firmware):
     def setup(self):
-        " registers in the bottom Window "
+        "registers in the bottom Window"
         self.w.req(
             ["temp", "counter", "address", "checksum", "incoming_word", "status"]
         )
@@ -37,7 +37,7 @@ class tick(Firmware):
         self.sc.add_task(t3)
 
     def prelude(self):
-        " code before the main loop "
+        "code before the main loop"
         return []
 
     # Code objects need to return a list of ASM instructions to do stuff.

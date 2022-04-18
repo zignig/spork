@@ -79,7 +79,7 @@ class JumpEntry:
 class JumpTable:
     """
      The jump table takes a bounded integer and runs that code
-    
+
     enumer : a list of integers to bind
 
     """

@@ -38,7 +38,7 @@ def extract_boards():
 
 
 def get_board(name):
-    " get board by name"
+    "get board by name"
     boards = extract_boards()
     if name in boards:
         return (name, boards[name])
@@ -59,7 +59,7 @@ def board_info(board):
 
 
 def short_list():
-    " return a list of the board names"
+    "return a list of the board names"
     boards = extract_boards()
     return list(boards.keys())
 
@@ -76,7 +76,7 @@ def show_list():
 
 
 def select_board():
-    " select one board from all available boards"
+    "select one board from all available boards"
     boards = short_list()
     val = select_from_list(boards, name="Boards")
     board = check_board(val)

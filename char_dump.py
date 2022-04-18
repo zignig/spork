@@ -17,14 +17,14 @@ log = logger(__name__)
 
 class CharSplash(Firmware):
     def setup(self):
-        " registers in the bottom Window "
+        "registers in the bottom Window"
         self.w.req(["temp", "counter", "wait", "dur"])
 
     def prelude(self):
         return [MOVI(self.w.dur, 0xFFFF)]
 
     def instr(self):
-        " Locals and the attached subroutine in the main loop "
+        "Locals and the attached subroutine in the main loop"
         " grab the named register window for local use"
         w = self.w
         " local reference to this list of named registers for the peripherals"

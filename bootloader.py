@@ -42,7 +42,7 @@ An interactive console shell for the Boneless-v3 cpu"
 
 # TODO convert to inline
 class Init(Inline):
-    " Run this code on reset , device init "
+    "Run this code on reset , device init"
     # TODO find best way to attach this to the peripherals.
     def instr(self):
         w = self.w
@@ -70,7 +70,7 @@ class Init(Inline):
 # A subclass of Command will add the name into the command line search list
 # TODO limit the auto insert.
 class show(Command):
-    " List the escape code Enumerator names"
+    "List the escape code Enumerator names"
 
     class _show(SubR):
         def setup(self):
@@ -90,7 +90,7 @@ class show(Command):
 
 
 class al(Command):
-    " allocation testing "
+    "allocation testing"
 
     class _al_test(SubR):
         def setup(self):
@@ -117,7 +117,7 @@ class al(Command):
 
 
 class ON(Command):
-    " switch on the led "
+    "switch on the led"
 
     class _ledon(SubR):
         def setup(self):
@@ -135,7 +135,7 @@ class ON(Command):
 
 
 class OFF(Command):
-    " switch off the led "
+    "switch off the led"
 
     class _ledoff(SubR):
         def setup(self):
@@ -156,13 +156,13 @@ class Bootloader(Firmware):
     requires = ["timer", "uart", "crc", "led"]
 
     def setup(self):
-        " registers in the bottom Window "
+        "registers in the bottom Window"
         self.w.req(
             ["temp", "pad_address", "address", "checksum", "incoming_word", "status"]
         )
 
     def prelude(self):
-        " code before the main loop "
+        "code before the main loop"
         i = Init(self.w)
         return i()
 
@@ -173,7 +173,7 @@ class Bootloader(Firmware):
 
     # Code objects need to return a list of ASM instructions to do stuff.
     def instr(self):
-        " Locals and the attached subroutine in the main loop "
+        "Locals and the attached subroutine in the main loop"
         " my window "
         w = self.w
         " my registers "

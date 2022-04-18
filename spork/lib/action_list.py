@@ -4,7 +4,7 @@ from enum import IntEnum, auto
 
 
 class Actions(IntEnum):
-    " Enumeration of console actions"
+    "Enumeration of console actions"
     NONE = auto()
     RUN = auto()
     ESCAPE = auto()
@@ -13,7 +13,7 @@ class Actions(IntEnum):
 
 
 class EscKeys(IntEnum):
-    " Convert Escape sequences into an Integer"
+    "Convert Escape sequences into an Integer"
     ESC = auto()
     INS = auto()
     UP = auto()

@@ -23,7 +23,7 @@ term = Term()
 
 
 class EscCode(SubR):
-    " Write the escape code string"
+    "Write the escape code string"
 
     def setup(self):
         self.params = ["number"]
@@ -52,7 +52,7 @@ class EscCode(SubR):
 
 
 class dumpEsc(SubR):
-    " Dump the enumerated string list"
+    "Dump the enumerated string list"
 
     def setup(self):
         self.locals = ["value", "counter", "address", "limit"]
@@ -135,7 +135,7 @@ class EscapeAction(SubR):
 
 
 class Escaper(SubR):
-    " Process the escape sequence"
+    "Process the escape sequence"
     e = EscString(EscKeys)
 
     def setup(self):
@@ -233,7 +233,7 @@ class Escaper(SubR):
 
 
 class Action(SubR):
-    " Action switch from the console status"
+    "Action switch from the console status"
 
     def setup(self):
         self.params = ["pad_address", "status"]

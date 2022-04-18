@@ -24,7 +24,7 @@ ho = u.writeHex
 
 
 class ShowTree(SubR):
-    """ 
+    """
     The addressing of the pointer are annoying
     because they are relative pointers that may or may not
     be negative
@@ -46,8 +46,6 @@ class ShowTree(SubR):
             Rem("calc sign of offset"),
             CMPI(w.pointer, 0),
             BNS(ll.positive),
-            # ANDI(w.emp, w.pointer, 0x8000 - 1),
-            # ho(w.temp),cr(),
             SUB(w.pointer, w.address, w.pointer),
             J(ll.isneg),
             ll("positive"),
@@ -55,8 +53,6 @@ class ShowTree(SubR):
             ll("isneg"),
             LD(w.children, w.address, 1),
             MOV(w.temp, w.depth),
-            # ho(w.address),cr(),
-            # ho(w.pointer),cr(),
             [
                 ll("depth_loop"),
                 sp(),
@@ -74,7 +70,7 @@ class ShowTree(SubR):
                 MOV(w.temp, w.depth),
                 ADDI(w.temp, w.temp, 1),
                 Rem("+1 , child count , +1 data ref "),
-                ADDI(w.address, w.address, 3),
+                ADDI(w.address, w.address, 4),
                 [
                     ll("child_loop"),
                     ADDI(w.address, w.address, 1),
@@ -82,8 +78,6 @@ class ShowTree(SubR):
                     Rem("interal pointers are only positive"),
                     ADD(w.pointer, w.address, w.pointer),
                     Rem("Recursive Call"),
-                    # ho(w.pointer),
-                    # cr(),cr(),
                     self(w.pointer, w.temp),
                     Rem("Loop through the children"),
                     SUBI(w.children, w.children, 1),
@@ -110,6 +104,7 @@ class Tree(CodeObject):
         self.name = name
         self.item = item
         self.children = []
+        self.tag = 0  # 16 bits of statusy goodness
         self.label = self.new_label(name)
         self.stringlabel = self._stringer.add(name, name)
         self.stringlabel._used = True
@@ -168,7 +163,7 @@ class Tree(CodeObject):
             l += (
                 # [Rem("-----")],
                 [Rem(i.name), L(i.label), Ref(i.stringlabel.get_name())],
-                [len(i.children), fix_parent(i), fix_ref(i)],
+                [len(i.children), fix_parent(i), fix_ref(i), self.tag],
             )
 
             for j in i.children:

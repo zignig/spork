@@ -7,7 +7,7 @@ from ..firmware.base import *
 
 
 class WarmBoot(SubR):
-    " Warmboot the device"
+    "Warmboot the device"
 
     def setup(self):
         self.params = ["image"]

@@ -7,7 +7,7 @@ from ..firmware.base import *
 
 
 class ReadHex(SubR):
-    " Read 4 hex char and make a 16 bit register"
+    "Read 4 hex char and make a 16 bit register"
 
     def setup(self):
         self.ret = ["value", "status"]
@@ -57,7 +57,7 @@ class ReadHex(SubR):
 
 
 class WriteHex(SubR):
-    " Write a 16 bit reg as hex to the serial port"
+    "Write a 16 bit reg as hex to the serial port"
 
     def setup(self):
         self.params = ["value"]
@@ -92,7 +92,7 @@ class WriteHex(SubR):
 
 
 class ReadWait(SubR):
-    "Wait and return a char  "
+    "Wait and return a char"
 
     def setup(self):
         self.ret = ["value"]
@@ -116,7 +116,7 @@ class ReadWait(SubR):
 
 
 class Read(SubR):
-    " Status and Char return "
+    "Status and Char return"
 
     def setup(self):
         self.ret = ["value", "status"]
@@ -141,7 +141,7 @@ class Read(SubR):
 
 
 class Write(SubR):
-    " Write a char to the uart"
+    "Write a char to the uart"
 
     def setup(self):
         self.params = ["value"]
@@ -192,7 +192,7 @@ class SP(SubR):
 
 
 class WriteLongString(SubR):
-    """ Only write long strings no compact check """
+    """Only write long strings no compact check"""
 
     def setup(self):
         self.params = ["address"]
@@ -222,8 +222,8 @@ class WriteLongString(SubR):
 
 
 class WriteString(SubR):
-    """ Write a string to the uart
-        Strings are pascal style with the length as the first word
+    """Write a string to the uart
+    Strings are pascal style with the length as the first word
     """
 
     def setup(self):
@@ -374,7 +374,7 @@ class ReadWord(SubR):
 
 
 class CoreDump(SubR):
-    " just dump the core "
+    "just dump the core"
 
     def setup(self):
         self.locals = ["counter", "endpoint", "char", "value", "slice"]

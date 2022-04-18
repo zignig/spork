@@ -3,6 +3,10 @@
 from ..firmware.base import *
 from .stringer import Stringer
 
+from ..logger import logger
+
+log = logger(__name__)
+
 banner = """
 ┌────────────────────────────────────────────────┐
 │░░░█▀▄░█▀█░█▀█░█▀▀░█░░░█▀▀░█▀▀░█▀▀░░░░░█░█░▀▀█░░│
@@ -27,8 +31,8 @@ class EncodedData(CodeObject):
 
 class Encoder:
     """
-         Take a text block and compress,
-        Currently run length encoding an a dictionary
+     Take a text block and compress,
+    Currently run length encoding an a dictionary
     """
 
     def __init__(self, text_object):

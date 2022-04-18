@@ -6,6 +6,7 @@
 # see https://freenode.irclog.whitequark.org/nmigen/2020-05-05#26964009
 
 from nmigen import *
+from nmigen.lib.cdc import FFSynchronizer
 
 
 class Debounce(Elaboratable):

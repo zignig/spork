@@ -79,7 +79,7 @@ class TaskError(BORK):
 
 
 class Task:
-    " individual task "
+    "individual task"
 
     def __init__(self, name):
         self.name = name
@@ -87,7 +87,7 @@ class Task:
 
 
 class Scheduler:
-    " Upper class for the scheduling "
+    "Upper class for the scheduling"
     pass
 
 
@@ -119,23 +119,23 @@ class Runtime:
 
     # build sections
     def build_info(self):
-        " build the info header "
+        "build the info header"
         return self.info.dump()
 
     def build_task(self):
-        " build the task table"
+        "build the task table"
         return self.task.dump()
 
     def build_vector(self):
-        " build the vector table"
+        "build the vector table"
         return self.vector.dump()
 
     def build_static(self):
-        " build the static data"
+        "build the static data"
         return []
 
     def build_code(self):
-        " build the code section "
+        "build the code section"
         return []
 
     def header(self):
@@ -150,7 +150,7 @@ class Runtime:
         return header_code
 
     def build(self):
-        " Build all the sections"
+        "Build all the sections"
         self.code = []
         self.code += [
             self.header(),

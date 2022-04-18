@@ -3,5 +3,10 @@
     "editor.fontFamily": "'Courier New',monospace",
     "editor.fontWeight": "bold",
     "python.languageServer": "Pylance",
-    "python.analysis.extraPaths": ["/opt/FPGA", "/opt/FPGA/Boneless-CPU"]
+    "python.analysis.extraPaths": [
+        "/opt/FPGA",
+        "/opt/FPGA/Boneless-CPU",
+        "/usr/local/lib/python3.7/dist-packages/"
+    ],
+    "python.formatting.provider": "black"
 }

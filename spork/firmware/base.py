@@ -130,8 +130,8 @@ class FWError(Exception):
 
 
 class Ref:
-    """ Create a reference to another symbol
-        assembler will make this into a absolute integer reference to the label
+    """Create a reference to another symbol
+    assembler will make this into a absolute integer reference to the label
     """
 
     def __init__(self, name):
@@ -176,7 +176,7 @@ import weakref
 
 
 class CodeObject:
-    " For adding data objects to the firmware "
+    "For adding data objects to the firmware"
     _ItemCounter = 0  # used for ordering in the firmware
     _objects = set()
 
@@ -237,7 +237,7 @@ class CodeObject:
 
 
 class Inline:
-    " Define an inline function "
+    "Define an inline function"
 
     def __init__(self, window, ll=None):
         self.w = window
@@ -254,7 +254,7 @@ class Inline:
 
 
 class Rem:
-    " for adding remarks in code "
+    "for adding remarks in code"
 
     def __init__(self, val):
         self.val = val
@@ -267,13 +267,13 @@ class Rem:
 
 
 class LocalLabels:
-    """ Local sequential label for inside subr
-        create a local labeler
-        ll = LocalLabels()
-        make a label - ll('test')
-        reference the label - ll.test
+    """Local sequential label for inside subr
+    create a local labeler
+    ll = LocalLabels()
+    make a label - ll('test')
+    reference the label - ll.test
 
-        local labels that don't collide
+    local labels that don't collide
     """
 
     def __init__(self):
@@ -301,7 +301,7 @@ class LocalLabels:
 
 
 class Window:
-    """ Allocatable register window 
+    """Allocatable register window
     this needs to be converted for the register allocator
     TODO : fix for the allocator
     """
@@ -400,15 +400,15 @@ class SubR(metaclass=MetaSub):
     R7 = return address (used by the child frame)
     R6 = frame pointer
 
-    Call structure 
-    
+    Call structure
+
     1. copy registers up into frame
     2. jump into subroutine
     3. shift window up
     4. run code
     5. shift window down
     6. return from jump
-    7. copy data from upper frame 
+    7. copy data from upper frame
 
     """
 
@@ -449,7 +449,7 @@ class SubR(metaclass=MetaSub):
 
     @classmethod
     def mark(cls):
-        " include code if the subroutine has been called "
+        "include code if the subroutine has been called"
         cls._called = True
 
     def setup(self):
@@ -502,7 +502,7 @@ class SubR(metaclass=MetaSub):
                 raise ValueError("No return registers exist")
 
         if False:  # self.debug:
-            " clean up the above frame "
+            "clean up the above frame"
             instr += [MOVI(self.w.ret, 0)]
             for i in range(8, 0, -1):
                 instr += [ST(self.w.ret, self.w.fp, -i)]
@@ -510,7 +510,7 @@ class SubR(metaclass=MetaSub):
         return instr
 
     def instr(self):
-        " empty code "
+        "empty code"
         return []
 
     def code(self):

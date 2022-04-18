@@ -87,7 +87,7 @@ class Reset(Command):
 
 class Demo(Command):
     class _demo(SubR):
-        " turn this into a fancy demo"
+        "turn this into a fancy demo"
 
         def setup(self):
             self.locals = ["tmp"]

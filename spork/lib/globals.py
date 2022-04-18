@@ -16,9 +16,9 @@ log = logger(__name__)
 
 
 class _glob_var:
-    """ 
-        make a labeled construct of 
-        If it has been called , _used is true and it is added to the string data in the firmware
+    """
+    make a labeled construct of
+    If it has been called , _used is true and it is added to the string data in the firmware
     """
 
     def __init__(self, name, value, postfix, compact=True):
@@ -39,7 +39,7 @@ class _glob_var:
 
 
 class Globals(CodeObject):
-    " Collection of global single register variables, all labeled"
+    "Collection of global single register variables, all labeled"
 
     def __init__(self, postfix=None, compact=True):
         # this super will attach it to the firmware
@@ -62,7 +62,7 @@ class Globals(CodeObject):
         return used
 
     def __setattr__(self, item, value):
-        " in code you can use self.globals.NAME = value to create a global"
+        "in code you can use self.globals.NAME = value to create a global"
         val = _glob_var(item, value, self._postfix)
         self._globals[item] = val
         object.__setattr__(self, item, val)

@@ -19,8 +19,8 @@ __all__ = ["SingleString", "Stringer"]
 
 
 class SingleString:
-    """ A single string with postfix and 
-        If it has been called , _used is true and it is added to the string data in the firmware
+    """A single string with postfix and
+    If it has been called , _used is true and it is added to the string data in the firmware
     """
 
     def __init__(self, name, value, postfix, compact=True):
@@ -91,7 +91,7 @@ class SingleString:
 
 @Enroll(lib="stringer")
 class Stringer(CodeObject):
-    " Collection of string objects "
+    "Collection of string objects"
 
     def __init__(self, postfix=None, compact=True):
         super().__init__()
@@ -115,7 +115,7 @@ class Stringer(CodeObject):
         return used
 
     def all(self):
-        " mark all strings for use"
+        "mark all strings for use"
         for i in self._strings:
             single = self._strings[i]
             single._used = True

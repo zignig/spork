@@ -108,7 +108,7 @@ class Base:
         Base._current = Base._current.parent
 
     def detail(self):
-        " print detailed information "
+        "print detailed information"
         base = (
             ">>"
             + str(self.__class__.__qualname__)

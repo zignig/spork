@@ -45,7 +45,7 @@ class DivMod(SubR):
 
 
 class PushDigit(SubR):
-    " Push a digit onto the front of a string"
+    "Push a digit onto the front of a string"
 
     def setup(self):
         self.params = ["spointer", "value"]
@@ -81,7 +81,7 @@ class PushDigit(SubR):
 
 
 class Decimal(SubR):
-    " Convert a Register to a decimal string"
+    "Convert a Register to a decimal string"
 
     def setup(self):
         self.params = ["spointer", "value"]

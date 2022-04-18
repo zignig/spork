@@ -19,10 +19,10 @@ __working__ = False
 
 
 class Wrapper:
-    """ Wrapping instructions for register allocation"""
+    """Wrapping instructions for register allocation"""
 
     def allocate(self):
-        " Low quality request allocator "
+        "Low quality request allocator"
         att = {}
         spill = False
         spilled = {}
@@ -80,7 +80,7 @@ class BasicBlock:
         self.registers = set()
 
     def GetReg(self):
-        " get all the registers in this basic block"
+        "get all the registers in this basic block"
         for i, j in self.code:
             if hasattr(j, "_fields"):
                 for k in j._fields:
@@ -111,7 +111,7 @@ class SpillError(Exception):
 
 
 class Register:
-    """ Register wrapper for allocation """
+    """Register wrapper for allocation"""
 
     debug = False
 
@@ -170,7 +170,7 @@ class Register:
 
 
 class Window:
-    " Automatic Window class"
+    "Automatic Window class"
     max = 6
 
     def __init__(self, jumper=True):
@@ -242,7 +242,7 @@ class Window:
         return r  # count
 
     def __getattr__(self, name):
-        """ create a new register on access """
+        """create a new register on access"""
         if name not in self.registers:
             new_reg = Register(name, self)
             setattr(self, name, new_reg)
@@ -267,7 +267,7 @@ def reverse_enum(L):
 
 
 class LSRA:
-    """Linear Register Allocator """
+    """Linear Register Allocator"""
 
     # Instruction groups
     INSTRS_BRANCH = {
@@ -315,25 +315,25 @@ class LSRA:
 
     def expire(self, interval):
         """ExpireOldIntervals(i)
-            foreach interval j in active, in order of increasing end point
-                if endpoint[j] ≥ startpoint[i] then
-                    return
-                remove j from active
-                add register[j] to pool of free registers
+        foreach interval j in active, in order of increasing end point
+            if endpoint[j] ≥ startpoint[i] then
+                return
+            remove j from active
+            add register[j] to pool of free registers
         """
         pass
 
     def spill(self, interval):
         """
-            SpillAtInterval(i)
-            spill ← last interval in active
-            if endpoint[spill] > endpoint[i] then
-                register[i] ← register[spill]
-                location[spill] ← new stack location
-                remove spill from active
-                add i to active, sorted by increasing end point
-            else
-                location[i] ← new stack location
+        SpillAtInterval(i)
+        spill ← last interval in active
+        if endpoint[spill] > endpoint[i] then
+            register[i] ← register[spill]
+            location[spill] ← new stack location
+            remove spill from active
+            add i to active, sorted by increasing end point
+        else
+            location[i] ← new stack location
         """
         pass
 

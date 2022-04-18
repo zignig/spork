@@ -33,7 +33,7 @@ from rich import print
 
 class CharPad(CodeObject):
     """
-        A character pad with console editing
+    A character pad with console editing
     """
 
     length = 32

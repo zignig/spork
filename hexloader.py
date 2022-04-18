@@ -99,7 +99,7 @@ class ID(SubR):
 
 
 class ReadChunk(SubR):
-    " read a chunk off the serial port into memory"
+    "read a chunk off the serial port into memory"
     params = ["address", "size"]
     locals = ["counter", "value"]
     ret = ["status"]
@@ -217,7 +217,7 @@ class ProcessChunk(SubR):
 
 
 class LoaderAsSub(SubR):
-    " have the bootloader as a subroutine so it can be added to other firmwares "
+    "have the bootloader as a subroutine so it can be added to other firmwares"
     params = ["address"]
     locals = ["value", "counter", "checksum", "status", "size"]
 
@@ -225,7 +225,7 @@ class LoaderAsSub(SubR):
         pass
 
     def instr(self):
-        " instr returns an array of boneless instructions, make python things first "
+        "instr returns an array of boneless instructions, make python things first"
         # the map of the IO registers
         reg = self.reg
         # the current register window
@@ -330,9 +330,10 @@ class HexLoader(Firmware):
         self.w.req(["value", "counter", "checksum", "address", "status", "char"])
         pass
 
-    def extra(self):
-        z = ZeroReg(self.w)
-        return z()
+    # def extra(self):
+    # pass
+    # z = ZeroReg(self.w)
+    # return z()
 
     def instr(self):
 

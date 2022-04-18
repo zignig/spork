@@ -52,7 +52,7 @@ from fwtest import TestSpork
 
 
 class TinyFPGABxDomainGenerator(Elaboratable):
-    """ Creates clock domains for the TinyFPGA Bx. """
+    """Creates clock domains for the TinyFPGA Bx."""
 
     def __init__(self, *, clock_frequencies=None, clock_signal_name=None):
         pass
@@ -115,7 +115,7 @@ class TinyFPGABxPlatform(_TinyFPGABXPlatform):
 
 
 class USBSerialDeviceExample(Elaboratable):
-    """ Device that acts as a 'USB-to-serial' loopback using our premade gateware. """
+    """Device that acts as a 'USB-to-serial' loopback using our premade gateware."""
 
     def elaborate(self, platform):
         m = Module()

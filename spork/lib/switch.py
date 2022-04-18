@@ -11,7 +11,7 @@ log = logger(__name__)
 
 
 class Switch:
-    " Construct a jump table for single chars, or integers "
+    "Construct a jump table for single chars, or integers"
 
     def __init__(self, window, select, default=None):
         self.mapping = {}

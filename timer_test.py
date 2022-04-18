@@ -34,24 +34,18 @@ class Info(SubR):
         reg = self.reg
         uart = UART()
         return [
-            LDXA(w.temp, reg.timer.ctr_1),
+            uart.sp(),
+            LDXA(w.temp, reg.systick.interval),
             uart.writeHex(w.temp),
             uart.sp(),
-            LDXA(w.temp, reg.timer.ctr_0),
+            LDXA(w.temp, reg.systick.multiplier),
             uart.writeHex(w.temp),
-            uart.sp(),
-            LDXA(w.temp, reg.timer.reload_1),
-            uart.writeHex(w.temp),
-            uart.sp(),
-            LDXA(w.temp, reg.timer.reload_0),
-            uart.writeHex(w.temp),
-            uart.cr(),
         ]
 
 
 # TODO convert to inline
 class Init(Inline):
-    " Run this code on reset , device init "
+    "Run this code on reset , device init"
     # TODO find best way to attach this to the peripherals.
     def instr(self):
         w = self.w
@@ -72,13 +66,11 @@ class Init(Inline):
 
 class Small(Firmware):
     def setup(self):
-        " registers in the bottom Window "
-        self.w.req(
-            ["temp", "counter", "address", "checksum", "incoming_word", "status"]
-        )
+        "registers in the bottom Window"
+        self.w.req(["temp", "counter", "address", "checksum", "other", "status"])
 
     def prelude(self):
-        " code before the main loop "
+        "code before the main loop"
         i = Init(self.w)
         return i()
 
@@ -95,24 +87,28 @@ class Small(Firmware):
         # TODO make globals typesafe
 
         return [
-            LDXA(w.temp, reg.timer.ev.pending),
+            MOVI(w.other, 0x0040),
+            STXA(w.other, reg.systick.multiplier),
+            MOVI(w.other, 0xFFFF),
+            STXA(w.other, reg.systick.interval),
+            ll("again"),
+            LDXA(w.temp, reg.systick.ev.pending),
             CMPI(w.temp, 1),
             BNE(ll.over),
             MOVI(w.temp, 1),
-            STXA(w.temp, reg.timer.ev.pending),
-            uart.cr(),
+            STXA(w.temp, reg.systick.ev.pending),
             self.stringer.boop(w.temp),
             uart.writestring(w.temp),
-            uart.cr(),
             info(),
             uart.cr(),
+            # LDXA(w.other,reg.systick.interval),
+            # SUBI(w.other,w.other,256),
+            # STXA(w.other,reg.systick.interval),
             ll("over"),
             ADDI(w.counter, w.counter, 1),
-            # ANDI(w.temp,w.counter,0xFFFF),
-            CMPI(w.counter, 0),
-            BNE(ll.skip),
-            info(),
-            ll("skip"),
+            uart.writeHex(w.counter),
+            uart.cr(),
+            J(ll.again),
         ]
 
 

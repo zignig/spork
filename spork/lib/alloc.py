@@ -7,7 +7,7 @@ from ..firmware.base import *
 
 
 class CopyMem(SubR):
-    " Copy a block of memory "
+    "Copy a block of memory"
 
     def setup(self):
         self.params = ["source", "destination", "count"]
@@ -24,13 +24,13 @@ class CopyMem(SubR):
             ADDI(w.source, w.source, 1),
             ADDI(w.destination, w.source, 1),
             ADDI(w.counter, w.counter, 1),
-            CPM(w.count, w.counter),
+            CMP(w.count, w.counter),
             BNE(ll.again),
         ]
 
 
 class ModAlloc(SubR):
-    " Move to MOD8 boundary and alloc some windows"
+    "Move to MOD8 boundary and alloc some windows"
 
     def setup(self):
         self.params = ["size", "heap_pointer"]
@@ -62,7 +62,7 @@ class ModAlloc(SubR):
 
 
 class GAlloc(SubR):
-    " Alloc from the global heap"
+    "Alloc from the global heap"
 
     def setup(self):
         self.params = ["size"]
@@ -80,7 +80,7 @@ class GAlloc(SubR):
 
 
 class Alloc(SubR):
-    " Alloc some memory "
+    "Alloc some memory"
 
     def setup(self):
         self.params = ["size"]

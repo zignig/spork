@@ -96,8 +96,8 @@ gram = r"""
 @v_args(inline=True, meta=True)
 class BoneTree(Transformer):
     """
-        This is the main transform tree, it takes the parse tree
-        and converts it into a collection of python objects as an ast.
+    This is the main transform tree, it takes the parse tree
+    and converts it into a collection of python objects as an ast.
     """
 
     from ..ast.eval import (

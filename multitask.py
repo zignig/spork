@@ -19,7 +19,7 @@ from spork.lib.alloc import GAlloc
 
 class MultiTask(Firmware):
     def setup(self):
-        " registers in the bottom Window "
+        "registers in the bottom Window"
         self.w.req(["temp", "counter", "pointer", "dur", "size"])
 
     def prelude(self):

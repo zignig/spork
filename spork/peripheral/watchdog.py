@@ -15,7 +15,7 @@ class Watchdog(Peripheral, Elaboratable):
         bank = self.csr_bank()
 
         self.bits = bits
-        self.reset_val = 2 ** bits - 1
+        self.reset_val = 2**bits - 1
 
         self._en = bank.csr(1, "rw")
         self._poke = bank.csr(1, "w")

@@ -25,14 +25,14 @@ USB test harness
 
 class USBHarness(Firmware):
     def setup(self):
-        " registers in the bottom Window "
+        "registers in the bottom Window"
         self.w.req(["value", "status", "temp", "counter"])
 
     def prelude(self):
         return []
 
     def instr(self):
-        " Locals and the attached subroutine in the main loop "
+        "Locals and the attached subroutine in the main loop"
         w = self.w
         reg = self.reg
         ll = LocalLabels()

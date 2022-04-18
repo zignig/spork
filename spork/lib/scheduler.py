@@ -25,10 +25,10 @@ class Scheduler(CodeObject):
 
 class CreateTask(SubR):
     """
-        Take an address to the task data
-        1. Allocate Memory
-        2. Save Heap pointer
-        3. Save Window reference
+    Take an address to the task data
+    1. Allocate Memory
+    2. Save Heap pointer
+    3. Save Window reference
     """
 
     def setup(self):

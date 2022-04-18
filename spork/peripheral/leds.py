@@ -13,7 +13,7 @@ class LedPeripheral(Peripheral, Elaboratable):
     CSR registers
     -------------
     val : read/write
-        Set the value of the Leds 
+        Set the value of the Leds
     en : read/write
         enable leds.
     """

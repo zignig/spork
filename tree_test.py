@@ -22,7 +22,7 @@ def descend_children():
 
 
 class TreeTest(Firmware):
-    " Take the firmware registers and make them into tree"
+    "Take the firmware registers and make them into tree"
     " WORKS!!! 20220410 "
 
     def setup(self):

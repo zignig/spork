@@ -76,7 +76,7 @@ class MetaCommand(type):
         return out
 
     class Run(SubR):
-        " given a pointer run the command"
+        "given a pointer run the command"
 
         def setup(self):
             self.params = ["command"]
@@ -196,7 +196,7 @@ class MetaCommand(type):
             ]
 
     class List(SubR):
-        " List all the available commands"
+        "List all the available commands"
 
         def setup(self):
             self.locals = ["incr", "start", "end", "current"]
@@ -228,7 +228,7 @@ class MetaCommand(type):
 
 
 class Command(metaclass=MetaCommand):
-    " Define a command and add it to the metacommand list"
+    "Define a command and add it to the metacommand list"
     # just has a subroutine that it points to
     # with no parameters
     # TODO pass down chomped strings
