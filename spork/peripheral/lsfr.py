@@ -17,7 +17,8 @@ log = logger(__name__)
 __all__ = ["LSFR"]
 
 # https://users.ece.cmu.edu/~koopman/lfsr/16.txt
-# for max lenth sequences
+# for max length sequences
+# 8016,801C,801F,8029,805E,806B,8097,809E,80A7,80AE,80CB,80D0,80D6,80DF,80E3,810A,810C,8112
 def get_taps(mls):
     "takes a hex value and turns it into taps"
     bin_string = bin(mls)[2:]
@@ -63,7 +64,7 @@ class LSFR(Peripheral, Elaboratable):
         # mode 1 , increment per read
         out = Signal()  # the output bit
         # make all the internal taps and with the data
-        m.d.comb += self.match.eq(self.taps_internal & self.value.r_data)
+        m.d.comb += self.match.eq(self.taps_internal & self.current)
         # create an XOR monster that binds all taps . zeros propagate
         # I _think_ that it will work out
         m.d.comb += out.eq(~reduce(xor, [self.match[i] for i in range(self.SIZE)]))
