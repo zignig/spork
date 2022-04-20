@@ -57,7 +57,11 @@ class Uploader:
 
     def upload(self, firmware, console=True, reset=True):
         import argparse
-        from serial.tools.miniterm import Miniterm
+
+        try:
+            from serial.tools.miniterm import Miniterm
+        except:
+            log.critical("no device driver")
 
         parser = argparse.ArgumentParser()
         parser.add_argument("-l", "--list", action="store_true")
