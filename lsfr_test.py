@@ -27,7 +27,7 @@ class Small(Firmware):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
-        self.stringer.second = "second string"
+        self.stringer.second = "free running"
         uart = UART()
 
         return [
@@ -46,16 +46,18 @@ class Small(Firmware):
             LDXA(w.temp, reg.lsfr.value),
             # uart.writeBin(w.temp),
             # uart.cr(),
-            uart.writeHex(w.counter),
-            uart.sp(),
+            # uart.writeHex(w.counter),
+            # uart.sp(),
             uart.writeHex(w.temp),
+            uart.sp(),
             # uart.writeBin(w.temp),
-            uart.cr(),
+            # uart.cr(),
             ADDI(w.counter, w.counter, 1),
             # J(ll.again),
             CMPI(w.counter, 32),
             # CMP(w.value,w.temp),
             BNE(ll.again),
+            uart.cr(),
             MOVI(w.temp, 0),
             STXA(w.temp, reg.lsfr.mode),
             MOVI(w.counter, 0),

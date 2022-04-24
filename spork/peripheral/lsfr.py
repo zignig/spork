@@ -35,7 +35,7 @@ class LSFR(Peripheral, Elaboratable):
     Linear Feedback Shift register
     """
 
-    def __init__(self, initial=1, start_taps=0x83BC):
+    def __init__(self, initial=0xCAFE, start_taps=0x83BC):
         log.info("Create LSFR Peripheral")
         super().__init__()
         self.SIZE = 16
