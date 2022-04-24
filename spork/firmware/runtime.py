@@ -1,11 +1,13 @@
 # boneless runtime
 from collections import OrderedDict
 
-from registers import Window, VectorTable
+# from registers import Window, VectorTable
 
 from boneless.arch.opcode import *
 
 import pprint
+
+__done__ = False
 
 """
 #Boneless runtime

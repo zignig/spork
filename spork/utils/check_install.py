@@ -25,6 +25,10 @@ def update_install(directory):
     pass
 
 
+class Repo:
+    pass
+
+
 # Transplant for elsewhere pls ignore
 def Fetch(item):
     name = item[0]

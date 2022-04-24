@@ -1,9 +1,10 @@
-# create a interactive monitor program
+# Monitor overview
 
-# General structure stolen from
-# https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/gateware/bootloader_fw.py
+ Create a interactive monitor program. This should enable running, interrogating and modifying a firware from within the python console. 
 
-# a extensible serial monitor
+- General structure stolen from
+-  https://github.com/tpwrules/tasha_and_friends/blob/master/tasha/gateware/bootloader_fw.py
+- a extensible serial monitor
 
 # Command / Response packet based serial connection 
 
@@ -17,6 +18,7 @@ Each Packet consists of
 if the command has data attached
 
 - data , data , data , data 
+- status
 - checksum of data
 
 # Possible commands 
@@ -28,9 +30,10 @@ store 'jvt end' in R7 , return register
 jump through table 
 
 - hello ; liveness check
-
-- write data ; datablock write
-- read data ; datablock read 
+- host_info ; some version and gateway information
+- heart_beat ; a heartbeat event (monotonic counter)
+- write_data ; datablock write
+- read_data ; datablock read 
 - jump ; jump to address and execute
 
 - read external ; read peripheral data 
@@ -41,10 +44,12 @@ jump through table
 - list code ; list the set of loaded code blocks
 
 - watch ; add code that is run every cycle
+- unwatch ; remove watch 
+- notify ; send a packet when a value changes
 
 - reset ; reset the monitor 
 - core dump ; dump the entire memory
-- unwind stack 
+- unwind stack ; harder than it looks
 - breakpoint ; set and remove
 - ... other 
   - object load
@@ -57,7 +62,28 @@ jump through table
     - etc
 
 
-label('jvt end')
-"""
+ends with label('jvt end'), code 
 
-# 
+# Response Codes 
+
+- hello_response ( possibly olleh :) hehe )
+- ok
+- crc_error
+- data_error
+- heart_beat
+# Transaction 
+Coded as two byte words, Command followed by response
+## Example hello packet
+send |> MAGIC  , HELLO , 0 , 0 , CHECKSUM
+
+recieve <| MAGIC , HELLO_RESP , 0 , 0 , CHECKSUM
+
+# Firmware and Code infrastructure.
+
+Both host and firmware sides are encapsulated and extensable. A single class file should contain host and soc code, adding a new command should just be a new class that is attached.
+- ## Host Side
+  - Connection and error handling is transparent.
+  - Check capability of monitor firmware and send updated codes and functions.
+  - Update assembler to have all symbols and register names available.
+- ## Client side
+  - Main loop check for serial port
