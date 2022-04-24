@@ -1,3 +1,19 @@
+# Unfinished number commands.
+
+__done__ = False
+
+from ..firmware.base import *
+from ..logger import logger
+
+
+from boneless.arch.opcode import Instr
+from boneless.arch.opcode import *
+
+from enum import IntEnum, auto
+
+log = logger(__name__)
+
+
 class AsDec(SubR):
     "Convert a register into a decimal number"
 

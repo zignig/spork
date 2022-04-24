@@ -63,7 +63,7 @@ class LSFR(Peripheral, Elaboratable):
         # mode 0 , free running values
         # mode 1 , increment per read
         out = Signal()  # the output bit
-        # make all the internal taps and with the data
+        # make all the internal taps AND with the data
         m.d.comb += self.match.eq(self.taps_internal & self.current)
         # create an XOR monster that binds all taps . zeros propagate
         # I _think_ that it will work out

@@ -22,7 +22,7 @@ class CopyMem(SubR):
             LD(w.holding, w.source, 0),
             ST(w.holding, w.destination, 0),
             ADDI(w.source, w.source, 1),
-            ADDI(w.destination, w.source, 1),
+            ADDI(w.destination, w.destination, 1),
             ADDI(w.counter, w.counter, 1),
             CMP(w.count, w.counter),
             BNE(ll.again),

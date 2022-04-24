@@ -8,7 +8,7 @@
 # Command / Response packet based serial connection 
 
 Each Packet consists of 
-- magic number 16bit
+- magic number 16bit (0x5A04 for now see MAGIC in commands)
 - command ( use Enum )
 - parameter 1
 - parameter 2

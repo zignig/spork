@@ -46,6 +46,6 @@ TODO
 HEXLOADER
 
 - [ ] Timeout
-- [ ] : id starter
+- [X] : id starter
 - [X] Checksum with - no blanking 
 - [X] as a SubR for multi boot ! need to block and ROM
