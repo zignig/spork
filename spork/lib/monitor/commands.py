@@ -99,3 +99,8 @@ class WriteData(Com):
 @Attach()
 class ReadData(Com):
     pass
+
+
+@Attach()
+class Jump(Com):
+    pass

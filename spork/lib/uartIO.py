@@ -321,9 +321,10 @@ class WriteString(SubR):
 
 
 class WriteWord(SubR):
-    def setup(self):
-        self.params = ["value"]
-        self.locals = ["char", "status"]
+
+    params = ["value"]
+    locals = ["char", "counter", "timeout"]
+    ret = ["status"]
 
     def instr(self):
         w = self.w
@@ -334,27 +335,23 @@ class WriteWord(SubR):
             ANDI(w.char, w.value, 0xFF),
             # wait for the uart to be ready
             ll("wait"),
-            LDXA(w.status, reg.serial_tx_rdy),
+            LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
-            BEQ(ll.cont),
-            J(ll.wait),
-            ll("cont"),
-            STXA(w.char, reg.serial_tx_data),
+            BNE(ll.wait),
+            STXA(w.char, reg.serial.tx.data),
             ll("wait2"),
-            LDXA(w.status, reg.serial_tx_rdy),
+            LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
-            BEQ(ll.cont2),
-            J(ll.wait2),
-            ll("cont2"),
+            BNE(ll.wait2),
             SRLI(w.char, w.value, 8),
-            STXA(w.char, reg.serial_tx_data),
+            STXA(w.char, reg.serial.tx.data),
         ]
 
 
 class ReadWord(SubR):
     def setup(self):
-        self.locals = ["counter", "char", "jump_save"]
-        self.ret = ["status", "value"]
+        self.locals = ["counter", "char", "jump_save", "timeout"]
+        self.ret = ["value", "status"]
         # 0 status is good
         # non zero is error
 
@@ -364,44 +361,42 @@ class ReadWord(SubR):
         reg = self.reg
         ll = LocalLabels()
         return [
-            # load zero into the value
-            MOVI(w.value, 0),
-            # wait for a char
-            JAL(w.jump_save, ll.wait_char),
-            # shift R by 8 bits
-            SRLI(w.value, w.char, 8),
-            # get another char
-            JAL(w.jump_save, ll.wait_char),
-            # char has the new value
-            OR(w.value, w.value, w.char),
+            MOVI(w.counter, 0),
             MOVI(w.status, 0),
-            ADJW(8),
-            JR(w.ret, 0),
-            # wait for char or timeout
-            ll("wait_char"),
-            # Load the timeout value
-            MOVI(w.counter, timeout),
-            ll("wait"),
-            # decrement the counter
-            SUBI(w.counter, w.counter, 1),
-            # if zero jump to the timeout
-            BZ(ll.timeout),
-            # check if the serial port is ready
-            LDXA(w.status, reg.serial_rx_rdy),
-            CMPI(w.status, 1),
-            BEQ(ll.get_char),
-            J(ll.wait),
-            # TIMEOUT
+            Rem("First Char"),
+            [
+                ll("wait"),
+                LDXA(w.status, reg.serial.rx.rdy),
+                CMPI(w.status, 1),
+                BEQ(ll.cont),
+                ADDI(w.counter, w.counter, 1),
+                CMPI(w.counter, timeout),
+                BEQ(ll.timeout),
+                J(ll.wait),
+            ],
+            ll("cont"),
+            LDXA(w.char, reg.serial.tx.data),
+            MOV(w.value, w.char),
+            SLLI(w.value, w.value, 8),
+            Rem("Second Char"),
+            MOVI(w.counter, 0),
+            [
+                ll("wait2"),
+                LDXA(w.status, reg.serial.rx.rdy),
+                CMPI(w.status, 1),
+                BEQ(ll.cont2),
+                ADDI(w.counter, w.counter, 1),
+                CMPI(w.counter, timeout),
+                BEQ(ll.timeout),
+                J(ll.wait2),
+            ],
+            ll("cont2"),
+            LDXA(w.char, reg.serial.tx.data),
+            OR(w.value, w.value, w.char),
+            J(ll.exit),
             ll("timeout"),
             MOVI(w.status, 1),
-            Rem("return from the subroutine"),  # this should be a macro
-            ADJW(8),
-            JR(w.ret, 0),
-            ll("get_char"),
-            LDXA(w.char, reg.serial_rx_data),
-            # insert into the crc engine
-            STXA(w.char, reg.crc_byte),
-            JR(w.jump_save, 0),
+            ll("exit"),
         ]
 
 
@@ -450,8 +445,8 @@ class CoreDump(SubR):
 
 
 class UART:
-    readword = ReadWord()
-    writeword = WriteWord()
+    readWord = ReadWord()
+    writeWord = WriteWord()
     read = Read()
     write = Write()
     writestring = WriteString()

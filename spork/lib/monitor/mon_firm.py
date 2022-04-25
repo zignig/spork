@@ -20,10 +20,48 @@ from spork.logger import logger
 
 log = logger(__name__)
 
+from .packets import Transport
+
+trans = Transport()
+
+
+class OtherStuff(SubR):
+    def instr(self):
+        return []
+
+
+class MonAction(SubR):
+    locals = ["command", "param1", "param2", "status"]
+
+    def instr(self):
+        w = self.w
+        return [
+            trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
+        ]
+
+
+# Working Functions``
+os = OtherStuff()
+ma = MonAction()
+
 
 class MonitorFirm(Firmware):
     def setup(self):
-        pass
+        self.w.req(["value"])
+
+    def instr(self):
+        w = self.w
+        reg = self.reg
+        ll = LocalLabels()
+        return [
+            Rem("Loop and Wait for serial"),
+            LDXA(w.value, reg.serial.rx.rdy),
+            CMPI(w.value, 1),
+            BNE(ll.over),
+            ma(),
+            ll("over"),
+            os(),
+        ]
 
 
 " load this "
