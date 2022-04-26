@@ -1,3 +1,6 @@
+from .base import Base
+
+
 class use(Base):
     def __init__(self, meta, name):
         self.meta = meta

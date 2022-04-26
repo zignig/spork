@@ -32,17 +32,17 @@ class SendPacket(SubR):
             Rem("reset the CRC"),
             STXA(w.temp, self.reg.crc.reset),
             MOVI(w.temp, MAGIC),
-            uart.writeword(w.temp),
+            uart.writeWord(w.temp),
             STXA(w.value, self.reg.crc.word),
-            uart.writeword(w.command),
+            uart.writeWord(w.command),
             STXA(w.value, self.reg.crc.reset),
             Rem("Check the packets"),
             STXA(w.param1, self.reg.crc.word),
             STXA(w.param2, self.reg.crc.word),
-            uart.writeword(w.param1),
-            uart.writeword(w.param2),
+            uart.writeWord(w.param1),
+            uart.writeWord(w.param2),
             LDXA(w.checksum, self.reg.crc.crc),
-            uart.writeword(w.checksum),
+            uart.writeWord(w.checksum),
         ]
 
 

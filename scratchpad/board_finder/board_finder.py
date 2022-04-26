@@ -78,8 +78,8 @@ def show_list():
 def select_board():
     "select one board from all available boards"
     boards = short_list()
-    val = select_from_list(boards, name="Boards")
-    board = check_board(val)
+    # val = select_from_list(boards, name="Boards")
+    board = check_board()
     return board
 
 

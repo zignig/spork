@@ -37,6 +37,7 @@ class MonAction(SubR):
         w = self.w
         return [
             trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
+            trans.Hello(),
         ]
 
 
@@ -56,8 +57,8 @@ class MonitorFirm(Firmware):
         return [
             Rem("Loop and Wait for serial"),
             LDXA(w.value, reg.serial.rx.rdy),
-            CMPI(w.value, 1),
-            BNE(ll.over),
+            CMPI(w.value, 0),
+            BEQ(ll.over),
             ma(),
             ll("over"),
             os(),
@@ -73,4 +74,4 @@ if __name__ == "__main__":
 
     spork = fwtest.build(firmware, detail=False)
     up = Uploader()
-    up.upload(spork)
+    up.upload(spork, console=False)

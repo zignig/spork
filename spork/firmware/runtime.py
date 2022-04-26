@@ -1,7 +1,6 @@
 # boneless runtime
 from collections import OrderedDict
 
-# from registers import Window, VectorTable
 
 from boneless.arch.opcode import *
 
@@ -10,7 +9,9 @@ import pprint
 __done__ = False
 
 """
-#Boneless runtime
+#
+# 
+# Boneless runtime
 
 This is a first cut layout for a boneless runtime.
 
@@ -70,6 +71,14 @@ contains relative vector addresses for common code
 - task windows
 - root window (last address % 8)
 """
+
+
+class VectorTable:
+    def __init__(self, name):
+        self.name = name
+
+    def dump(self):
+        return ""
 
 
 class BORK(Exception):

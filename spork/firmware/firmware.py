@@ -9,11 +9,14 @@ from ..logger import logger
 log = logger(__name__)
 from boneless.arch.opcode import *
 from boneless.arch.instr import Instr
-from boneless.arch.asm import assemble
+
+# from boneless.arch.asm import assemble
 
 from ..lib.stringer import Stringer
 from ..lib.globals import Globals
 from ..lib.commands import Command
+
+from ..cpu.arch.asm import Assembler
 
 SLICE = 16
 

@@ -5,7 +5,7 @@ from nmigen.utils import log2_int
 from nmigen_soc import csr
 from nmigen_soc.memory import MemoryMap
 
-# from nmigen_soc.csr.wishbone import WishboneCSRBridge
+from nmigen_soc.csr import wishbone
 
 from nmigen_soc.csr.bus import Multiplexer, Interface, Decoder
 

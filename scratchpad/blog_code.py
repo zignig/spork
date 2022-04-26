@@ -1,3 +1,8 @@
+from boneless.arch.opcode import Instr
+from boneless.arch.opcode import *
+from spork.firmware.base import *
+
+
 class Wait(SubR):
     def setup(self):
         self.params = ["value"]
