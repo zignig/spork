@@ -332,7 +332,7 @@ class WriteWord(SubR):
         ll = LocalLabels()
         return [
             # get the lower char
-            ANDI(w.char, w.value, 0xFF),
+            SRLI(w.char, w.value, 8),
             # wait for the uart to be ready
             ll("wait"),
             LDXA(w.status, reg.serial.tx.rdy),
@@ -343,7 +343,7 @@ class WriteWord(SubR):
             LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
             BNE(ll.wait2),
-            SRLI(w.char, w.value, 8),
+            ANDI(w.char, w.value, 0xFF),
             STXA(w.char, reg.serial.tx.data),
         ]
 

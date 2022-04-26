@@ -149,6 +149,7 @@ class Firmware:
         pprint.pprint(self.code(), width=1, indent=2)
 
     def assemble(self):
+        # TODO convert to new assembler
         fw = Instr.assemble(self.code())
         return fw
 

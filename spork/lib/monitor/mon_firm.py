@@ -31,13 +31,19 @@ class OtherStuff(SubR):
 
 
 class MonAction(SubR):
-    locals = ["command", "param1", "param2", "status"]
+    locals = ["command", "param1", "param2", "status", "counter"]
 
     def instr(self):
         w = self.w
+        ll = LocalLabels()
         return [
-            trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
+            MOVI(w.counter, 0),
+            # trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
             trans.Hello(),
+            ll("wait"),
+            ADDI(w.counter, w.counter, 1),
+            CMPI(w.counter, 0xFFFF),
+            BNE(ll.wait),
         ]
 
 
@@ -59,6 +65,7 @@ class MonitorFirm(Firmware):
             LDXA(w.value, reg.serial.rx.rdy),
             CMPI(w.value, 0),
             BEQ(ll.over),
+            LDXA(w.value, reg.serial.rx.data),
             ma(),
             ll("over"),
             os(),
