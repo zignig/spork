@@ -1,7 +1,7 @@
 # Command enumeration for both sides of the link
 from enum import IntEnum
 
-MAGIC = 0x5A04
+MAGIC = 0x6676
 
 
 class Flags(IntEnum):
@@ -34,6 +34,12 @@ class Commands(IntEnum):
     # and more
 
 
+class Response(IntEnum):
+    ok = 1
+    error = 2
+    crc_error = 3
+
+
 class CommandList:
     _index = 1
 
@@ -43,7 +49,7 @@ class CommandList:
     def _add(self, item):
         self._commands[CommandList._index] = item
         CommandList._index += 1
-        print(dir(item))
+        # print(dir(item))
         setattr(self, item.__name__, item())
 
 
@@ -54,8 +60,8 @@ def Attach(info=None):
     "Wrapper for registering commands"
 
     def inner(cls):
-        print(info)
-        print(cls, cls.__name__, dir(cls))
+        # print(info)
+        # print(cls, cls.__name__, dir(cls))
         CL._add(cls)
         return cls
 
@@ -66,7 +72,6 @@ class Com:
     "Base serial command object"
 
     def __init__(self):
-        print("bork")
         pass
 
     def local(self):

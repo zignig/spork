@@ -12,6 +12,7 @@ from boneless.arch.opcode import *
 # the firmare constructs
 from spork.firmware.base import *
 from spork.firmware.firmware import Firmware
+from spork.lib.monitor.commands import Response
 
 # the library code
 from spork.lib.uartIO import UART
@@ -21,8 +22,10 @@ from spork.logger import logger
 log = logger(__name__)
 
 from .packets import Transport
+from spork.lib.uartIO import UART
 
 trans = Transport()
+uart = UART()
 
 
 class OtherStuff(SubR):
@@ -31,19 +34,22 @@ class OtherStuff(SubR):
 
 
 class MonAction(SubR):
-    locals = ["command", "param1", "param2", "status", "counter"]
+    locals = ["command", "param1", "param2", "status", "rcomm"]
 
     def instr(self):
         w = self.w
         ll = LocalLabels()
         return [
-            MOVI(w.counter, 0),
-            # trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
-            trans.Hello(),
-            ll("wait"),
-            ADDI(w.counter, w.counter, 1),
-            CMPI(w.counter, 0xFFFF),
-            BNE(ll.wait),
+            # MOVI(w.rcomm, Response.ok),
+            trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
+            trans.Send(w.command, w.param1, w.param2),
+            # uart.readWord(ret=[w.rcomm,w.status]),
+            # MOVI(w.rcomm,0xFF00),
+            # uart.writeWord(w.rcomm),
+            # trans.Hello(),
+            # MOVI(w.rcomm,100),
+            # uart.readWait(ret=[w.rcomm]),
+            # uart.write(w.rcomm),
         ]
 
 
@@ -65,7 +71,6 @@ class MonitorFirm(Firmware):
             LDXA(w.value, reg.serial.rx.rdy),
             CMPI(w.value, 0),
             BEQ(ll.over),
-            LDXA(w.value, reg.serial.rx.data),
             ma(),
             ll("over"),
             os(),

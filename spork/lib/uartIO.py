@@ -331,7 +331,7 @@ class WriteWord(SubR):
         reg = self.reg
         ll = LocalLabels()
         return [
-            # get the lower char
+            # get the upper byte
             SRLI(w.char, w.value, 8),
             # wait for the uart to be ready
             ll("wait"),
@@ -343,6 +343,7 @@ class WriteWord(SubR):
             LDXA(w.status, reg.serial.tx.rdy),
             CMPI(w.status, 1),
             BNE(ll.wait2),
+            # get the lower byte
             ANDI(w.char, w.value, 0xFF),
             STXA(w.char, reg.serial.tx.data),
         ]
@@ -363,39 +364,40 @@ class ReadWord(SubR):
         return [
             MOVI(w.counter, 0),
             MOVI(w.status, 0),
+            MOVI(w.value, 0),
             Rem("First Char"),
             [
                 ll("wait"),
                 LDXA(w.status, reg.serial.rx.rdy),
-                CMPI(w.status, 1),
-                BEQ(ll.cont),
+                CMPI(w.status, 0),
+                BNE(ll.cont),
                 ADDI(w.counter, w.counter, 1),
                 CMPI(w.counter, timeout),
                 BEQ(ll.timeout),
                 J(ll.wait),
             ],
             ll("cont"),
-            LDXA(w.char, reg.serial.tx.data),
-            MOV(w.value, w.char),
-            SLLI(w.value, w.value, 8),
+            LDXA(w.char, reg.serial.rx.data),
+            SLLI(w.value, w.char, 8),
             Rem("Second Char"),
             MOVI(w.counter, 0),
             [
                 ll("wait2"),
                 LDXA(w.status, reg.serial.rx.rdy),
-                CMPI(w.status, 1),
-                BEQ(ll.cont2),
+                CMPI(w.status, 0),
+                BNE(ll.cont2),
                 ADDI(w.counter, w.counter, 1),
                 CMPI(w.counter, timeout),
                 BEQ(ll.timeout),
                 J(ll.wait2),
             ],
             ll("cont2"),
-            LDXA(w.char, reg.serial.tx.data),
+            LDXA(w.char, reg.serial.rx.data),
             OR(w.value, w.value, w.char),
+            MOVI(w.status, 0),
             J(ll.exit),
             ll("timeout"),
-            MOVI(w.status, 1),
+            MOVI(w.status, 2),
             ll("exit"),
         ]
 

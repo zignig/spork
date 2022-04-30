@@ -9,7 +9,7 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 # command stuff
-from .commands import MAGIC, Commands
+from .commands import MAGIC, Commands, Response
 
 # the library code
 from spork.lib.uartIO import UART
@@ -33,10 +33,10 @@ class SendPacket(SubR):
             STXA(w.temp, self.reg.crc.reset),
             MOVI(w.temp, MAGIC),
             uart.writeWord(w.temp),
-            STXA(w.value, self.reg.crc.word),
-            uart.writeWord(w.command),
+            Rem("Checksum the packets"),
             STXA(w.value, self.reg.crc.reset),
-            Rem("Check the packets"),
+            STXA(w.command, self.reg.crc.word),
+            uart.writeWord(w.command),
             STXA(w.param1, self.reg.crc.word),
             uart.writeWord(w.param1),
             STXA(w.param2, self.reg.crc.word),
@@ -55,7 +55,19 @@ class SendHelloResp(SubR):
     def instr(self):
         w = self.w
         return [
-            MOVI(w.command, Commands.hello),
+            MOVI(w.command, Response.ok),
+            MOVI(w.zero, 0),
+            sp(w.command, w.zero, w.zero),
+        ]
+
+
+class SendErrorResp(SubR):
+    locals = ["magic", "command", "zero"]
+
+    def instr(self):
+        w = self.w
+        return [
+            MOVI(w.command, Response.error),
             MOVI(w.zero, 0),
             sp(w.command, w.zero, w.zero),
         ]
@@ -69,7 +81,12 @@ class RecievePacket(SubR):
         w = self.w
         ll = LocalLabels()
         return [
+            Rem("Reset the CRC"),
+            STXA(w.temp, self.reg.crc.reset),
             MOVI(w.status, 0),
+            MOVI(w.command, 0),
+            MOVI(w.param1, 0),
+            MOVI(w.param2, 0),
             uart.readWord(ret=[w.temp, w.status]),
             CMPI(w.status, 0),
             BNE(ll.exit),
@@ -78,28 +95,26 @@ class RecievePacket(SubR):
             uart.readWord(ret=[w.command, w.status]),
             CMPI(w.status, 0),
             BNE(ll.exit),
+            STXA(w.command, self.reg.crc.word),
             uart.readWord(ret=[w.param1, w.status]),
             CMPI(w.status, 0),
             BNE(ll.exit),
+            STXA(w.param1, self.reg.crc.word),
             uart.readWord(ret=[w.param2, w.status]),
             CMPI(w.status, 0),
             BNE(ll.exit),
+            STXA(w.param2, self.reg.crc.word),
             uart.readWord(ret=[w.checksum, w.status]),
             CMPI(w.status, 0),
             BNE(ll.exit),
-            Rem("Reset the CRC"),
-            STXA(w.temp, self.reg.crc.reset),
-            STXA(w.command, self.reg.crc.word),
-            STXA(w.param1, self.reg.crc.word),
-            STXA(w.param2, self.reg.crc.word),
             LDXA(w.temp, self.reg.crc.crc),
             CMPI(w.checksum, w.temp),
             BEQ(ll.exit),
             Rem("Bad Checksum"),
-            MOVI(w.status, 3),
+            MOVI(w.status, Response.crc_error),
             J(ll.exit),
             ll("bad_magic"),
-            MOVI(w.status, 2),
+            MOVI(w.status, Response.error),
             ll("exit"),
         ]
 
@@ -108,3 +123,4 @@ class Transport:
     Send = SendPacket()
     Recv = RecievePacket()
     Hello = SendHelloResp()
+    Error = SendErrorResp()
