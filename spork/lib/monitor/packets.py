@@ -9,7 +9,7 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 # command stuff
-from .commands import MAGIC, Commands, Response
+from .defines import MAGIC, Commands
 
 # the library code
 from spork.lib.uartIO import UART
@@ -55,7 +55,19 @@ class SendHelloResp(SubR):
     def instr(self):
         w = self.w
         return [
-            MOVI(w.command, Response.ok),
+            MOVI(w.command, Commands.ok),
+            MOVI(w.zero, 0),
+            sp(w.command, w.zero, w.zero),
+        ]
+
+
+class SendNoResp(SubR):
+    locals = ["command", "zero"]
+
+    def instr(self):
+        w = self.w
+        return [
+            MOVI(w.command, Commands.no_command),
             MOVI(w.zero, 0),
             sp(w.command, w.zero, w.zero),
         ]
@@ -67,7 +79,7 @@ class SendErrorResp(SubR):
     def instr(self):
         w = self.w
         return [
-            MOVI(w.command, Response.error),
+            MOVI(w.command, Commands.error),
             MOVI(w.zero, 0),
             sp(w.command, w.zero, w.zero),
         ]
@@ -108,13 +120,13 @@ class RecievePacket(SubR):
             CMPI(w.status, 0),
             BNE(ll.exit),
             LDXA(w.temp, self.reg.crc.crc),
-            CMPI(w.checksum, w.temp),
+            CMP(w.temp, w.checksum),
             BEQ(ll.exit),
             Rem("Bad Checksum"),
-            MOVI(w.status, Response.crc_error),
+            MOVI(w.status, Commands.crc_error),
             J(ll.exit),
             ll("bad_magic"),
-            MOVI(w.status, Response.error),
+            MOVI(w.status, Commands.error),
             ll("exit"),
         ]
 
@@ -124,3 +136,6 @@ class Transport:
     Recv = RecievePacket()
     Hello = SendHelloResp()
     Error = SendErrorResp()
+    NoComm = SendNoResp()
+    # Send.mark()
+    # Recv.mark()

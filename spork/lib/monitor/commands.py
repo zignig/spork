@@ -1,7 +1,18 @@
 # Command enumeration for both sides of the link
 from enum import IntEnum
+from logging import NullHandler
+from re import L
 
-MAGIC = 0x6676
+# MAGIC = 0XBEEF
+
+from boneless.arch.opcode import Instr
+from boneless.arch.opcode import *
+
+# the firmare constructs
+from spork.firmware.base import *
+
+from .packets import Transport
+from .defines import Commands
 
 
 class Flags(IntEnum):
@@ -16,39 +27,12 @@ class Flags(IntEnum):
             print(i)
 
 
-class Commands(IntEnum):
-    hello = 1
-    write_data = 2
-    read_data = 3
-    jump = 4
-    write_external = 5
-    read_external = 6
-    load_code = 7
-    read_code = 8
-    delete_code = 9
-    list_code = 10
-    watch = 11
-    reset = 12
-    core_dump = 13
-    unwind_stack = 14
-    # and more
-
-
-class Response(IntEnum):
-    ok = 1
-    error = 2
-    crc_error = 3
-
-
 class CommandList:
-    _index = 1
-
     def __init__(self):
         self._commands = {}
 
     def _add(self, item):
-        self._commands[CommandList._index] = item
-        CommandList._index += 1
+        self._commands[item._id] = item
         # print(dir(item))
         setattr(self, item.__name__, item())
 
@@ -68,8 +52,15 @@ def Attach(info=None):
     return inner
 
 
+class Dummy(SubR):
+    def instr(self):
+        # probably return error
+        return []
+
+
 class Com:
     "Base serial command object"
+    _id = None
 
     def __init__(self):
         pass
@@ -78,7 +69,9 @@ class Com:
         print("LOCAL")
 
     def remote(self):
-        print("REMOTE")
+        command = Transport.NoComm
+        command.mark()
+        return command
 
     def __call__(self):
         self.local()
@@ -87,25 +80,35 @@ class Com:
 # Base Imutable Commands
 @Attach("hello")
 class Hello(Com):
+    _id = Commands.hello
+
+    class comm(SubR):
+        def instr(self):
+            return []
+
     def remote(self):
-        pass
-
-
-@Attach()
-class Reset(Com):
-    pass
+        command = Transport.Hello
+        command.mark()
+        return command
 
 
 @Attach("")
 class WriteData(Com):
+    _id = Commands.write_data
     pass
 
 
 @Attach()
 class ReadData(Com):
+    _id = Commands.read_data
     pass
 
 
 @Attach()
 class Jump(Com):
-    pass
+    _id = Commands.jump
+
+
+@Attach()
+class Free(Com):
+    _id = Commands.free

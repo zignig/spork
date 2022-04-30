@@ -6,7 +6,8 @@ import serial
 import struct
 import time
 
-from spork.lib.monitor.commands import Commands, Response, MAGIC
+from spork.lib.monitor.commands import CL
+from spork.lib.monitor.defines import Commands, MAGIC
 
 
 class MonitorError(Exception):
@@ -14,6 +15,14 @@ class MonitorError(Exception):
 
 
 class Timeout(MonitorError):
+    pass
+
+
+class BadMagic(MonitorError):
+    pass
+
+
+class CRCError(MonitorError):
     pass
 
 
@@ -37,24 +46,32 @@ class Mon:
         try:
             self.port = port
             self.baud = baud
-            self.ser = serial.serial_for_url(port, baud, timeout=0.5, dsrdtr=False)
-            self.ser.dtr = 0
+            self._ser = serial.serial_for_url(port, baud, timeout=0.5, dsrdtr=False)
+            self._ser.dtr = 0
             # clear out the buffers
-            self.ser.reset_input_buffer()
-            self.ser.reset_output_buffer()
+            self._ser.reset_input_buffer()
+            self._ser.reset_output_buffer()
 
         except:
-            print("fail")
+            print("Serial Port Fail")
+
+    def connect(self):
+        try:
+            self.ping()
+        except:
+            print("no response")
+            return
+        print("monitor connected")
 
     def _ser_write(self, data):
         sent = 0
         while sent != len(data):
-            sent += self.ser.write(data[sent:])
+            sent += self._ser.write(data[sent:])
 
     def _ser_read(self, length):
         read = b""
         while length > 0:
-            new = self.ser.read(length)
+            new = self._ser.read(length)
             if len(new) == 0:
                 raise Timeout("read timeout")
             read += new
@@ -74,27 +91,28 @@ class Mon:
         s = self._ser_read(10)
         # print(s)
         val = struct.unpack(">{}H".format(5), s)
-        print(val)
+        # print(val)
+        return val
 
     def ping(self):
         start = time.time()
-        self._packet_write(Commands.hello, 0, 0)
-        self._packet_read()
+        self.pack(Commands.hello)
         finish = time.time()
         print(finish - start)
+        return True
 
-    def pack(self, val, p1, p2):
+    def pack(self, val, p1=0, p2=0):
         self._packet_write(val, p1, p2)
         data = self._packet_read()
-        return data
-
-    def bounce(self, val):
-        r = struct.pack(">H", val)
-        self._ser_write(r)
-        val = self._ser_read(2)
-        o = struct.unpack(">H", val)
-        print(val)
+        # check the header
+        if data[0] != MAGIC:
+            raise BadMagic()
+        # check the crc
+        crc = _crc(data[1:4])
+        if crc != data[4]:
+            raise CRCError(data)
+        return (Commands(data[1]), data[2], data[3])
 
 
 m = Mon()
-m.ping()
+m.connect()

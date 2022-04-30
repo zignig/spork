@@ -467,7 +467,11 @@ class SubR(metaclass=MetaSub):
     def __call__(self, *args, **kwargs):
         # TODO this will need to be rewritten for the allocator
         if len(args) != self.length:
-            raise ValueError("Parameter count is should be '{}'".format(self.length))
+            raise ValueError(
+                "Parameter count is should be '{}' in  {}".format(
+                    self.length, self.name
+                )
+            )
         # load the parameters into the next frame up
         instr = []
         for i, j in enumerate(args):

@@ -10,11 +10,11 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 # the firmare constructs
-from .firmware.base import *
-from ...firmware.firmware import Firmware
+from spork.firmware.base import *
+from spork.firmware.firmware import Firmware
 
 # from .commands import Commands , CL
-from ..switch import Switch
+from spork.lib.switch import Switch
 
 # the library code
 from spork.lib.uartIO import UART
@@ -23,8 +23,8 @@ from spork.logger import logger
 
 log = logger(__name__)
 
-from .packets import Transport
-from .commands import CL
+from spork.lib.monitor.packets import Transport
+from spork.lib.monitor.commands import CL
 
 trans = Transport()
 
@@ -72,14 +72,14 @@ class MonAction(SubR):
             trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
             CMPI(w.command, self.vector_len()),
             BGTU(ll.command_overflow),
-            # s(),
-            Rem("Save the jump return"),
-            MOVR(w.ret, ll.end_vt),
-            Rem("Jump through the switch table"),
+            s(),
+            # Rem("Save the jump return"),
+            # MOVR(w.ret,ll.end_vt),
+            # Rem("Jump through the switch table"),
             # J(ll.end_vt),
-            JVT(w.command, 0),
-            ll("vt"),
-            self.vector(),
+            # JVT(w.command,0),
+            # ll('vt'),
+            # self.vector(),
             ll("end_vt"),
             J(ll.end),
             ll("command_overflow"),
@@ -122,4 +122,4 @@ if __name__ == "__main__":
 
     spork = fwtest.build(MonitorFirm, detail=True)
     up = Uploader()
-    up.upload(spork)  # , console=True)
+    up.upload(spork, console=False)
