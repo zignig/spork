@@ -10,7 +10,7 @@ from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
 # the firmare constructs
-from .firmware.base import *
+from ...firmware.base import *
 from ...firmware.firmware import Firmware
 
 # from .commands import Commands , CL
@@ -25,6 +25,7 @@ log = logger(__name__)
 
 from .packets import Transport
 from .commands import CL
+from .defines import Commands
 
 trans = Transport()
 
@@ -44,13 +45,13 @@ class MonAction(SubR):
         li = []
         # li = [Ref(self.dummy.name)]
         # li = [J(ll.jvt_end)]
+        # rr = Ref(CL._commands[Commands.hello]().remote().name)
+        # li = [rr,rr,rr,rr,rr,rr,rr,rr]
+        # return li
         for i in CL._commands:
             command = CL._commands[i]().remote()
             if command is not None:
                 val = Ref(command.name)
-            else:
-                val = Ref(self.dummy.name)
-
             li.append([Rem(i), val])
         # li.append(ll('jvt_end'))
         return li
@@ -72,14 +73,15 @@ class MonAction(SubR):
             trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
             CMPI(w.command, self.vector_len()),
             BGTU(ll.command_overflow),
-            # s(),
-            Rem("Save the jump return"),
-            MOVR(w.ret, ll.end_vt),
-            Rem("Jump through the switch table"),
-            # J(ll.end_vt),
-            JVT(w.command, 0),
-            ll("vt"),
-            self.vector(),
+            s(),
+            # Rem("Save the jump return"),
+            # MOVR(w.ret, ll.end_vt),
+            # J('SendHelloResp'),
+            # trans.Send(w.command, w.ret, w.status),
+            # MOVI(w.command,1),
+            # Rem("Jump through the switch table"),
+            # JST(w.command,-1),
+            # self.vector(),
             ll("end_vt"),
             J(ll.end),
             ll("command_overflow"),
@@ -122,4 +124,7 @@ if __name__ == "__main__":
 
     spork = fwtest.build(MonitorFirm, detail=True)
     up = Uploader()
-    up.upload(spork)  # , console=True)
+    up.upload(spork, console=False)  # , console=True)
+    r = Instr.disassemble(spork.fw.assemble())
+    for i in enumerate(r):
+        print(i)

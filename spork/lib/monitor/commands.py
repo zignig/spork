@@ -92,23 +92,28 @@ class Hello(Com):
         return command
 
 
-@Attach("")
+# @Attach()
+class Version(Com):
+    _id = Commands.version
+
+
+# @Attach("")
 class WriteData(Com):
     _id = Commands.write_data
     pass
 
 
-@Attach()
+# @Attach()
 class ReadData(Com):
     _id = Commands.read_data
     pass
 
 
-@Attach()
+# @Attach()
 class Jump(Com):
     _id = Commands.jump
 
 
-@Attach()
+# @Attach()
 class Free(Com):
     _id = Commands.free
