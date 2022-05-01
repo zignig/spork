@@ -20,7 +20,7 @@ log = logger(__name__)
 
 uart = UART()
 
-
+# Remote packet interface
 class SendPacket(SubR):
     params = ["command", "param1", "param2"]
     locals = ["value", "temp", "checksum"]
@@ -50,38 +50,41 @@ sp = SendPacket()
 
 
 class SendHelloResp(SubR):
-    locals = ["magic", "command", "zero"]
+    params = ["param1", "param2"]
+    locals = ["magic", "command"]
+    ret = ["status"]
 
     def instr(self):
         w = self.w
         return [
             MOVI(w.command, Commands.ok),
-            MOVI(w.zero, 0),
-            sp(w.command, w.zero, w.zero),
+            sp(w.command, w.param1, w.param2),
         ]
 
 
 class SendNoResp(SubR):
+    params = ["param1", "param2"]
     locals = ["command", "zero"]
+    ret = ["status"]
 
     def instr(self):
         w = self.w
         return [
             MOVI(w.command, Commands.no_command),
-            MOVI(w.zero, 0),
-            sp(w.command, w.zero, w.zero),
+            sp(w.command, w.param1, w.param2),
         ]
 
 
 class SendErrorResp(SubR):
+    params = ["param1", "param2"]
     locals = ["magic", "command", "zero"]
+    ret = ["status"]
 
     def instr(self):
         w = self.w
         return [
             MOVI(w.command, Commands.error),
-            MOVI(w.zero, 0),
-            sp(w.command, w.zero, w.zero),
+            sp(w.command, w.param1, w.param2),
         ]
 
 

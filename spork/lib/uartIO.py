@@ -351,7 +351,7 @@ class WriteWord(SubR):
 
 class ReadWord(SubR):
     def setup(self):
-        self.locals = ["counter", "char", "jump_save", "timeout"]
+        self.locals = ["counter", "char", "timeout"]
         self.ret = ["value", "status"]
         # 0 status is good
         # non zero is error

@@ -26,7 +26,10 @@ log = logger(__name__)
 from .packets import Transport
 from .commands import CL
 from .defines import Commands
+from .remote import DataBlock
 
+# Create the subroutines
+datablock = DataBlock()
 trans = Transport()
 
 
@@ -57,23 +60,31 @@ class MonAction(SubR):
         return li
 
     def vector_len(self):
+        "Length of available Commands"
         return len(CL._commands)
 
     def instr(self):
         w = self.w
         ll = LocalLabels()
 
-        s = Switch(w, w.command)
+        SwitchCommand = Switch(w, w.command)
         for i in CL._commands:
             command = CL._commands[i]().remote()
-            s.add((i, [Rem(i), command()]))
+
+            SwitchCommand.add(
+                (i, [Rem(i), command(w.param1, w.param2, ret=[w.status])])
+            )
 
         return [
             Rem("Command Switcher"),
             trans.Recv(ret=[w.command, w.param1, w.param2, w.status]),
+            CMPI(w.status, 0),
+            BNE(ll.end),  # Propagate status up
             CMPI(w.command, self.vector_len()),
             BGTU(ll.command_overflow),
-            s(),
+            Rem("Use a switch table"),
+            SwitchCommand(),
+            Rem("Can't get switch tables working"),
             # Rem("Save the jump return"),
             # MOVR(w.ret, ll.end_vt),
             # J('SendHelloResp'),
@@ -82,10 +93,10 @@ class MonAction(SubR):
             # Rem("Jump through the switch table"),
             # JST(w.command,-1),
             # self.vector(),
-            ll("end_vt"),
+            # ll("end_vt"),
             J(ll.end),
             ll("command_overflow"),
-            Transport.Error(),
+            Transport.Error(w.param1, w.param2),
             # trans.Send(w.command, w.param1, w.param2),
             ll("end"),
         ]
@@ -112,6 +123,8 @@ class MonitorFirm(Firmware):
             ma(),
             ll("over"),
             os(),
+            # DataBlock.Read(w.value,w.value,ret=[w.value]),
+            # DataBlock.Write(w.value,w.value),
         ]
 
 
@@ -125,6 +138,6 @@ if __name__ == "__main__":
     spork = fwtest.build(MonitorFirm, detail=True)
     up = Uploader()
     up.upload(spork, console=False)  # , console=True)
-    r = Instr.disassemble(spork.fw.assemble())
-    for i in enumerate(r):
-        print(i)
+    # r = Instr.disassemble(spork.fw.assemble())
+    # for i in enumerate(r):
+    #   print(i)

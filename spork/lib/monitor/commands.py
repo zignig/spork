@@ -91,22 +91,25 @@ class Hello(Com):
         command.mark()
         return command
 
-
-# @Attach()
-class Version(Com):
-    _id = Commands.version
+    def local(self):
+        pass
 
 
-# @Attach("")
+@Attach()
 class WriteData(Com):
     _id = Commands.write_data
     pass
 
 
-# @Attach()
+@Attach()
 class ReadData(Com):
     _id = Commands.read_data
     pass
+
+
+@Attach()
+class Version(Com):
+    _id = Commands.version
 
 
 # @Attach()

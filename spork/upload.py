@@ -66,6 +66,8 @@ class Uploader:
         parser = argparse.ArgumentParser()
         parser.add_argument("-l", "--list", action="store_true")
         parser.add_argument("-v", "--verbose", action="store_true")
+        # dummy for uploaderizing
+        parser.add_argument("-f", "--firmware", action="store_true")
 
         args = parser.parse_args()
         if args.list:
