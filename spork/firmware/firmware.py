@@ -91,7 +91,7 @@ class Firmware:
         raise FWError("No setup function")
 
     def prelude(self):
-        log.warning("No prelude(), use to setup code")
+        # log.warning("No prelude(), use to setup code")
         return []
 
     def instr(self):

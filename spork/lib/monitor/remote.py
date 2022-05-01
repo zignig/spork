@@ -17,7 +17,6 @@ from spork.logger import logger
 log = logger(__name__)
 
 from .packets import Transport
-from .commands import CL
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
 
 from spork.lib.uartIO import UART
@@ -103,18 +102,27 @@ class WriteData(SubR):
 
 
 class VersionInformation(CodeObject):
-    "Put the version and system information in a datablock"
-    " "
+    """
+    Put the version and system information in a datablock
+    """
 
     def __init__(self):
         super().__init__()
         self.version = FIRMWARE_VERSION
         self.gateway = GATEWARE_VERSION
         self.dummy = 0xAAAA
+        self._used = True
+        self.label = "VersionInformation"
+
+    def __call__(self, register):
+        self._used = True
+        return [MOVR(register, self.label)]
 
     def code(self):
         "8 items , one window"
         return [
+            Rem("Monitor Information Block"),
+            L("VersionInformation"),
             self.version,
             self.gateway,
             self.dummy,
@@ -128,12 +136,23 @@ class VersionInformation(CodeObject):
 
 class GetVersion(SubR):
     "Get mon version , gateway version , freewords , and stuff"
-    locals = ["counter"]
+    params = ["param1", "param2"]  # for monitor commands
+    locals = ["command", "version_pointer"]
+    ret = ["status"]
+    _called = True
 
     def instr(self):
         w = self.w
         ll = LocalLabels()
-        return []
+        self.mark()
+        self.vi = VersionInformation()
+        return [
+            self.vi(w.version_pointer),
+            MOVI(w.command, Commands.version),
+            MOVI(w.param1, FIRMWARE_VERSION),
+            MOVI(w.param2, GATEWARE_VERSION),
+            Transport.Send(w.command, w.param1, w.param2),
+        ]
 
 
 class DataBlock:

@@ -26,7 +26,7 @@ log = logger(__name__)
 from .packets import Transport
 from .commands import CL
 from .defines import Commands
-from .remote import DataBlock
+from .remote import DataBlock, VersionInformation
 
 # Create the subroutines
 datablock = DataBlock()
@@ -66,7 +66,6 @@ class MonAction(SubR):
     def instr(self):
         w = self.w
         ll = LocalLabels()
-
         SwitchCommand = Switch(w, w.command)
         for i in CL._commands:
             command = CL._commands[i]().remote()

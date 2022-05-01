@@ -10,7 +10,6 @@ import serial
 import struct
 import time
 
-from .commands import CL
 from .defines import Commands, MAGIC
 
 
@@ -50,16 +49,22 @@ class MonInterface:
         try:
             self._port = port
             self._baud = baud
-            self._ser = serial.serial_for_url(port, baud, timeout=0.5, dsrdtr=False)
-            self._ser.dtr = 0
-            # clear out the buffers
-            self._ser.reset_input_buffer()
-            self._ser.reset_output_buffer()
-            self.connect()
+            self._ser = None
+            self._connected = False
+
+            # self.connect()
         except:
             print("Serial Port Fail")
 
     def connect(self):
+        self._connected = True
+        self._ser = serial.serial_for_url(
+            self._port, self._baud, timeout=0.1, dsrdtr=False
+        )
+        self._ser.dtr = 0
+        # clear out the buffers
+        self._ser.reset_input_buffer()
+        self._ser.reset_output_buffer()
         try:
             self.ping()
         except:
@@ -68,11 +73,15 @@ class MonInterface:
         print("monitor connected")
 
     def _ser_write(self, data):
+        if not self._connected:
+            self.connect()
         sent = 0
         while sent != len(data):
             sent += self._ser.write(data[sent:])
 
     def _ser_read(self, length):
+        if not self._connected:
+            self.connect()
         read = b""
         while length > 0:
             new = self._ser.read(length)
@@ -86,7 +95,7 @@ class MonInterface:
         crc = _crc((command, param1, param2))
         packet = (MAGIC, command, param1, param2, crc)
         # print("packet")
-        print(packet)
+        # print(packet)
         encoded = struct.pack(">{}H".format(5), *packet)
         # print(encoded)
         self._ser_write(encoded)

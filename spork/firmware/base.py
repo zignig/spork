@@ -190,6 +190,9 @@ class CodeObject:
     def __lt__(self, other):
         return self.pos < other.pos
 
+    def __repr__(self):
+        return str("\t" + self.__class__.__name__)
+
     def build(self):
         log.warning("No build for " + str(self))
 

@@ -3,7 +3,7 @@ from enum import IntEnum
 
 
 MAGIC = 0x6676
-FIRMWARE_VERSION = 0x0001
+FIRMWARE_VERSION = 0x0002
 GATEWARE_VERSION = 0x0004
 
 
@@ -12,8 +12,8 @@ class Commands(IntEnum):
     write_data = 2
     read_data = 3
     version = 4
-    free = 5
-    jump = 6
+    jump = 5
+    free = 6
     write_external = 7
     read_external = 8
     load_code = 9
