@@ -11,9 +11,21 @@ from boneless.arch.opcode import *
 from spork.firmware.base import *
 
 from .packets import Transport
-from .defines import Commands
+from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
 from .remote import GetVersion, DataBlock
 from .serial_link import MonInterface
+
+
+class DataError(Exception):
+    pass
+
+
+class FirmVersionError(DataError):
+    pass
+
+
+class GateVersionError(DataError):
+    pass
 
 
 class Flags(IntEnum):
@@ -123,6 +135,19 @@ class Version(Com):
         command = GetVersion()
         # command.mark()
         return command
+
+    def local(self):
+        val = self._mon.pack(self._id, 0, 0)
+        data = self._mon.data_read(8)
+        # Check version info
+        firm_version = data[0]
+        gate_version = data[1]
+        if firm_version != FIRMWARE_VERSION:
+            raise FirmVersionError()
+        if gate_version != GATEWARE_VERSION:
+            raise GateVersionError()
+
+        return data
 
 
 @Attach()

@@ -4,6 +4,7 @@
 # data packets
 # send recieve
 
+from telnetlib import GA
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
@@ -137,7 +138,7 @@ class VersionInformation(CodeObject):
 class GetVersion(SubR):
     "Get mon version , gateway version , freewords , and stuff"
     params = ["param1", "param2"]  # for monitor commands
-    locals = ["command", "version_pointer"]
+    locals = ["command", "version_pointer", "size"]
     ret = ["status"]
     _called = True
 
@@ -152,6 +153,8 @@ class GetVersion(SubR):
             MOVI(w.param1, FIRMWARE_VERSION),
             MOVI(w.param2, GATEWARE_VERSION),
             Transport.Send(w.command, w.param1, w.param2),
+            MOVI(w.size, 8),
+            DataBlock.Write(w.version_pointer, w.size),
         ]
 
 

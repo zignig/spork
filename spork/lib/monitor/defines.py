@@ -3,8 +3,8 @@ from enum import IntEnum
 
 
 MAGIC = 0x6676
-FIRMWARE_VERSION = 0x0002
-GATEWARE_VERSION = 0x0004
+FIRMWARE_VERSION = 0x0003
+GATEWARE_VERSION = 0x0005
 
 
 class Commands(IntEnum):

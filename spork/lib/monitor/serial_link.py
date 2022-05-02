@@ -114,6 +114,17 @@ class MonInterface:
         print(finish - start)
         return True
 
+    def data_read(self, length):
+        "read words of length + crc"
+        data = self._ser_read(length * 2 + 2)
+        value = struct.unpack(">{}H".format(length + 1), data)
+        crc = value[-1]
+        data = value[:-1]
+        crc_data = _crc(data)
+        if crc_data != crc:
+            raise CRCError()
+        return data
+
     def pack(self, val, p1=0, p2=0):
         self._packet_write(val, p1, p2)
         data = self._packet_read()
