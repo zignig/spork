@@ -158,6 +158,54 @@ class GetVersion(SubR):
         ]
 
 
+class SendDataBlock(SubR):
+    params = ["address", "size"]
+    locals = ["command"]
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        return [
+            CMPI(w.size, 0),
+            BNE(ll.size_good),
+            MOVI(w.command, Commands.error),
+            Transport.Send(w.command, w.address, w.size),
+            J(ll.end),
+            ll("size_good"),
+            MOVI(w.command, Commands.read_data),
+            Transport.Send(w.command, w.address, w.size),
+            DataBlock.Read(w.address, w.size),
+            ll("end"),
+        ]
+
+
+class GetDatablock(SubR):
+    "Get datablock"
+    params = ["address", "size"]  # for monitor commands
+    locals = ["command"]
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        self.mark()
+        return [
+            CMPI(w.size, 0),
+            BNE(ll.size_good),
+            MOVI(w.command, Commands.error),
+            Transport.Send(w.command, w.address, w.size),
+            J(ll.end),
+            ll("size_good"),
+            MOVI(w.command, Commands.read_data),
+            Transport.Send(w.command, w.address, w.size),
+            DataBlock.Write(w.address, w.size),
+            ll("end"),
+        ]
+
+
 class DataBlock:
     Write = WriteData()
     Read = ReadData()

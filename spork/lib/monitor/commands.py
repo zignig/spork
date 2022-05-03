@@ -12,7 +12,7 @@ from spork.firmware.base import *
 
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
-from .remote import GetVersion, DataBlock
+from .remote import GetVersion, GetDatablock
 from .serial_link import MonInterface
 
 
@@ -116,15 +116,27 @@ class WriteData(Com):
     _id = Commands.write_data
 
     def local(self, *args):
-        return self._mon.pack(self._id, 0, 0)
+        command = SendDatablock()
+        command.mark()
+        return command
 
 
 @Attach()
 class ReadData(Com):
     _id = Commands.read_data
 
-    def local(self, *args):
-        return self._mon.pack(self._id, 0, 0)
+    def remote(self):
+        command = GetDatablock()
+        command.mark()
+        return command
+
+    def local(self, address, size):
+        comm = self._mon.pack(self._id, address, size)
+        if size > 0:
+            data = self._mon.data_read(size)
+        else:
+            return ()
+        return data
 
 
 @Attach()

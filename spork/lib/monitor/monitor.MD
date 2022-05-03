@@ -30,11 +30,11 @@ if check item < length jump error
 store 'jvt end' in R7 , return register
 jump through table 
 
-- hello ; liveness check
-- host_info ; some version and gateway information
+- hello ; liveness check (done)
+- version ; some version and gateway information (done)
 - heart_beat ; a heartbeat event (monotonic counter)
 - write_data ; datablock write
-- read_data ; datablock read 
+- read_data ; datablock read (done)
 - jump ; jump to address and execute
 
 - read external ; read peripheral data 
