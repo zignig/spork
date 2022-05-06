@@ -1,4 +1,8 @@
-# Command enumeration for both sides of the link
+"""
+    Command enumeration for both sides of the link
+
+"""
+
 
 from enum import IntEnum
 from logging import NullHandler
@@ -10,12 +14,13 @@ from boneless.arch.opcode import *
 # the firmare constructs
 from spork.firmware.base import *
 
+# stuff for the link
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
-from .remote import GetVersion, GetDatablock
+from .remote import GetVersion, GetDatablock, Jumper
 from .serial_link import MonInterface
 
-
+# Some errors
 class DataError(Exception):
     pass
 
@@ -26,18 +31,6 @@ class FirmVersionError(DataError):
 
 class GateVersionError(DataError):
     pass
-
-
-class Flags(IntEnum):
-    First = 1 << 0
-    Second = 1 << 1
-    Other = 1 << 2
-
-    @classmethod
-    def scan(self, value):
-        print(self, value)
-        for i in self:
-            print(i)
 
 
 class CommandList:
@@ -165,6 +158,13 @@ class Version(Com):
 @Attach()
 class Jump(Com):
     _id = Commands.jump
+
+    def remote(self):
+        command = Jumper()
+        return command
+
+    # local is single packet
+    # default does that
 
 
 # @Attach()

@@ -125,6 +125,14 @@ class MonInterface:
             raise CRCError()
         return data
 
+    def data_write(self, data):
+        crc = _crc(data)
+        l = len(data)
+        data = data + (crc,)
+        print(data)
+        value = struct.pack(">{}H".format(l + 1), *data)
+        self._ser_write(value)
+
     def pack(self, val, p1=0, p2=0):
         self._packet_write(val, p1, p2)
         data = self._packet_read()

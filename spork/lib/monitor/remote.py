@@ -135,6 +135,19 @@ class VersionInformation(CodeObject):
         ]
 
 
+class Jumper(SubR):
+    "Jump to given address"
+    params = ["address", "size"]  # for monitor commands
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        return [
+            J(w.address),
+        ]
+
+
 class GetVersion(SubR):
     "Get mon version , gateway version , freewords , and stuff"
     params = ["param1", "param2"]  # for monitor commands
