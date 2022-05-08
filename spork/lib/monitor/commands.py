@@ -17,7 +17,7 @@ from spork.firmware.base import *
 # stuff for the link
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
-from .remote import GetVersion, GetDatablock, Jumper
+from .remote import GetVersion, GetDatablock, Jumper, SendDataBlock
 from .serial_link import MonInterface
 
 # Some errors
@@ -108,10 +108,16 @@ class Hello(Com):
 class WriteData(Com):
     _id = Commands.write_data
 
-    def local(self, *args):
-        command = SendDatablock()
+    def remote(self, *args):
+        command = SendDataBlock()
         command.mark()
         return command
+
+    def local(self, address, data):
+        size = len(data)
+        comm = self._mon.pack(self._id, address, size)
+        if size > 0:
+            self._mon.data_write(data)
 
 
 @Attach()
@@ -167,6 +173,6 @@ class Jump(Com):
     # default does that
 
 
-# @Attach()
-class Free(Com):
-    _id = Commands.free
+@Attach()
+class LoadCode(Com):
+    _id = Commands.load_code

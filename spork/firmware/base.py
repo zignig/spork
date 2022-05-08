@@ -394,6 +394,7 @@ class MetaSub(type):
         for i in li:
             if i._called:
                 log.info("\t  - %s ", i.name)
+        # TODO lib code vector
         return c
 
 
@@ -427,6 +428,8 @@ class SubR(metaclass=MetaSub):
         self._size = 1  # for later ( stack frames ) TODO
         self.setup()
         self._built = False
+        # is it a lib function
+        self._lib = False
         if not hasattr(self, "name"):
             self.name = type(self).__qualname__
 
@@ -523,6 +526,7 @@ class SubR(metaclass=MetaSub):
     def code(self):
         # TODO This needs to change for the allocator
         data = [L(self.name)]
+        data += [L(self.name + "_start")]
         if self.__doc__ is not None:
             data.append(Rem(self.__doc__))
         if self.debug:
@@ -534,4 +538,5 @@ class SubR(metaclass=MetaSub):
         data += [self.instr()]  # all it's instructions
         data += [Rem("--- EXIT  ---")]
         data += [ADJW(self._size * 8), JR(R7, 0)]  # shift window down
+        data += [L(self.name + "_end")]
         return data

@@ -58,6 +58,7 @@ class Firmware:
         self.w = Window()
         self.sw = start_window
         self.reg = reg
+        self.topl = LocalLabels()
 
         # global string set
         self.stringer = st = Stringer()
