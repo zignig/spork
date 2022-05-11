@@ -3,7 +3,7 @@
 
 from spork.lib.monitor.serial_link import MonInterface
 from spork.lib.monitor.mon_firm import MonitorFirm
-from spork.lib.monitor.commands import CL
+from spork.lib.monitor.commands import CommandList
 from rich import print
 import sys
 
@@ -29,3 +29,4 @@ if __name__ == "__main__":
                 up.upload(spork, console=False)
 
     # m = MonInterface()
+    mon = CommandList()

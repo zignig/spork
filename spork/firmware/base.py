@@ -475,7 +475,7 @@ class SubR(metaclass=MetaSub):
         if len(args) != self.length:
             raise ValueError(
                 "Parameter count is should be '{}' in  {}".format(
-                    self.length, self.name
+                    self.params, self.name
                 )
             )
         # load the parameters into the next frame up

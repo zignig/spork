@@ -24,13 +24,15 @@ from spork.logger import logger
 log = logger(__name__)
 
 from .packets import Transport
-from .commands import CL
+from .commands import CommandList
 from .defines import Commands
 from .remote import DataBlock, VersionInformation
 
 # Create the subroutines
 datablock = DataBlock()
 trans = Transport()
+
+CL = CommandList()
 
 
 class OtherStuff(SubR):

@@ -8,11 +8,12 @@ from telnetlib import GA
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
+
 # the firmare constructs
 from ...firmware.base import *
 
 from ..switch import Switch
-
+from ..alloc import GAlloc
 from spork.logger import logger
 
 log = logger(__name__)
@@ -216,6 +217,24 @@ class GetDatablock(SubR):
             Transport.Send(w.command, w.address, w.size),
             DataBlock.Write(w.address, w.size),
             ll("end"),
+        ]
+
+
+class AllocBlock(SubR):
+    params = ["size", "unused"]
+    locals = ["address", "command"]
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        ga = GAlloc()
+        return [
+            ga(w.size, ret=[w.address]),
+            SLLI(w.size, w.size, 3),
+            MOVI(w.command, Commands.alloc),
+            Transport.Send(w.command, w.address, w.size),
         ]
 
 

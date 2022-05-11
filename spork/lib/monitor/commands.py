@@ -5,19 +5,11 @@
 
 
 from enum import IntEnum
-from logging import NullHandler
-from re import L
-
-from boneless.arch.opcode import Instr
-from boneless.arch.opcode import *
-
-# the firmare constructs
-from spork.firmware.base import *
 
 # stuff for the link
 from .packets import Transport
-from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands
-from .remote import GetVersion, GetDatablock, Jumper, SendDataBlock
+from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands, MemoryBlock
+from .remote import GetVersion, GetDatablock, Jumper, SendDataBlock, AllocBlock
 from .serial_link import MonInterface
 
 # Some errors
@@ -34,21 +26,31 @@ class GateVersionError(DataError):
 
 
 class CommandList:
-    def __init__(self, port="/dev/ttyUSB0", baud=115200):
-        self._commands = {}
-        self._mon = MonInterface(port=port, baud=baud)
+    "Interactive monitor for the Boneless"
+    _commands = {}
 
+    def __init__(self, port="/dev/ttyUSB0", baud=115200):
+        self._mon = MonInterface(port=port, baud=baud)
+        Com._mon = self._mon
+
+    @classmethod
     def _add(self, item):
-        self._commands[item._id] = item
+        CommandList._commands[item._id] = item
         # print(dir(item))
         setattr(self, item.__name__, item())
 
     def __repr__(self) -> str:
+        val = ""
         self._mon.ping()
-        return ""
+        val += self.__doc__ + "\n\n Available Commands \n\n"
+        for _, i in self._commands.items():
+            val += i.__name__ + "\n"
+            if hasattr(i, "__doc__") and i.__doc__ is not None:
+                val += "\t" + i.__doc__ + "\n"
+        return val
 
 
-CL = CommandList()
+# CL = CommandList()
 
 
 def Attach(info=None):
@@ -57,22 +59,16 @@ def Attach(info=None):
     def inner(cls):
         # print(info)
         # print(cls, cls.__name__, dir(cls))
-        CL._add(cls)
+        CommandList._add(cls)
         return cls
 
     return inner
 
 
-class Dummy(SubR):
-    def instr(self):
-        # probably return error
-        return []
-
-
 class Com:
     "Base serial command object"
     _id = None
-    _mon = CL._mon
+    _mon = None
 
     def __init__(self):
         pass
@@ -92,11 +88,8 @@ class Com:
 # Base Imutable Commands
 @Attach("hello")
 class Hello(Com):
+    "send a ping and get a pong"
     _id = Commands.hello
-
-    class comm(SubR):
-        def instr(self):
-            return []
 
     def remote(self):
         command = Transport.Hello
@@ -106,6 +99,7 @@ class Hello(Com):
 
 @Attach()
 class WriteData(Com):
+    "write data to memory ( address , (data) )"
     _id = Commands.write_data
 
     def remote(self, *args):
@@ -122,6 +116,7 @@ class WriteData(Com):
 
 @Attach()
 class ReadData(Com):
+    "read data from memory (address,size)"
     _id = Commands.read_data
 
     def remote(self):
@@ -140,6 +135,7 @@ class ReadData(Com):
 
 @Attach()
 class Version(Com):
+    "get version data of firmware and hardware"
     _id = Commands.version
 
     def remote(self):
@@ -163,6 +159,7 @@ class Version(Com):
 
 @Attach()
 class Jump(Com):
+    "Execute code at (address)"
     _id = Commands.jump
 
     def remote(self):
@@ -174,5 +171,26 @@ class Jump(Com):
 
 
 @Attach()
-class LoadCode(Com):
-    _id = Commands.load_code
+class Alloc(Com):
+    "Allocate (size) * 8 words"
+    _id = Commands.alloc
+
+    def remote(self):
+        command = AllocBlock()
+        return command
+
+    def local(self, size):
+        alloc = self._mon.pack(self._id, size, 0)
+        block = MemoryBlock(alloc[1], alloc[2])
+        return block
+
+
+@Attach()
+class Free(Com):
+    "show remaining memory"
+    pass
+
+
+# @Attach()
+# class LoadCode(Com):
+#     _id = Commands.load_code
