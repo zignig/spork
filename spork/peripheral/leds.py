@@ -1,3 +1,7 @@
+"""
+    Attach some blinky thingz
+"""
+
 from nmigen import *
 
 from ..cores.periph import Peripheral
@@ -8,7 +12,8 @@ __all__ = ["LedPeripheral"]
 
 @Enroll(driver=["led", "user_led"])
 class LedPeripheral(Peripheral, Elaboratable):
-    """Led peripheral.
+    """
+    Led peripheral.
 
     CSR registers
     -------------

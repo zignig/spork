@@ -1,7 +1,5 @@
 " A button builder "
 
-__working__ = False
-
 from nmigen import *
 
 from ..cores.periph.base import Peripheral
@@ -11,6 +9,8 @@ from ..utils.search import Enroll
 from ..logger import logger
 
 log = logger(__name__)
+
+__working__ = False
 
 __all__ = ["ButtonPeripheral"]
 

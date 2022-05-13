@@ -1,5 +1,7 @@
-# stored string handling functions
-
+""" 
+    Static string functions and collections .
+    
+"""
 from ..firmware.base import *
 from ..logger import logger
 from ..utils.search import Enroll

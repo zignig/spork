@@ -1,4 +1,11 @@
-from re import I
+"""
+    System tick generator.
+
+    Raises a flag when it is needed and has a scaling factor.
+
+    1000Hz seems to be a standard interval for events.
+"""
+
 from nmigen import *
 
 from ..cores.periph.base import Peripheral

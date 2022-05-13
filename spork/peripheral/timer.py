@@ -1,3 +1,7 @@
+"""
+    General purpose timer with events.
+    
+"""
 from nmigen import *
 
 from ..cores.periph.base import Peripheral
@@ -8,6 +12,7 @@ from ..logger import logger
 log = logger(__name__)
 
 __all__ = ["TimerPeripheral"]
+__working__ = True
 
 
 @Enroll(provides="timer")

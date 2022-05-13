@@ -1,4 +1,8 @@
-" Command infrastructure"
+"""
+    Command Infratructure
+
+    Command line system; provides a super class for commans
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

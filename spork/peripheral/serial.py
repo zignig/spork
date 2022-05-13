@@ -1,3 +1,11 @@
+"""
+    Serial port
+
+    Lifted from lambdasoc and adapted.
+
+    Creates a buffered uart interface onto the cpu
+"""
+
 from nmigen import *
 from nmigen.lib.fifo import SyncFIFO
 

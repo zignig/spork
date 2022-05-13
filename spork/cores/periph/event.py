@@ -1,3 +1,11 @@
+"""
+    Event objects
+
+    This needs to be converted into an Interrupt system.
+
+    For now the event loop should check them.
+    
+"""
 from nmigen import *
 from nmigen import tracer
 

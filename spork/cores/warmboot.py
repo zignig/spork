@@ -1,3 +1,11 @@
+"""
+    Ice40 warmboot.
+
+    This works on my tinybx. :P
+
+    It is also exposed as an external signal
+"""
+
 from nmigen import *
 
 from ..logger import logger

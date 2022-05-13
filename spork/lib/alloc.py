@@ -1,4 +1,10 @@
-"Allocte memory from the heap"
+""" 
+    Allocte memory from the heap
+
+    Bump allocator for now, read up on proper allocator.
+
+    Buddy allocator is probably better for this.
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

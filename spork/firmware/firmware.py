@@ -1,4 +1,8 @@
-" Firmware construct , builds the sections for a working firmware "
+""" 
+    Firmware construct , builds the sections for a working firmware 
+
+    This is for building a unitary firmware object    
+"""
 
 from .base import *
 import pprint
@@ -7,10 +11,9 @@ import math
 from ..logger import logger
 
 log = logger(__name__)
+
 from boneless.arch.opcode import *
 from boneless.arch.instr import Instr
-
-# from boneless.arch.asm import assemble
 
 from ..lib.stringer import Stringer
 from ..lib.globals import Globals
@@ -21,6 +24,7 @@ from ..cpu.arch.asm import Assembler
 SLICE = 16
 
 __done__ = False
+
 # CRC
 # implementation taken from crcany
 # lifted from https://github.com/tpwrules/ice_panel/

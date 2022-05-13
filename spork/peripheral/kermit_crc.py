@@ -16,6 +16,15 @@ __all__ = ["KermitCRC"]
 
 @Enroll(provides="crc16")
 class KermitCRC(Peripheral, Elaboratable):
+    """
+    Provides a cyclic redundancy check device
+
+    This is usefull for checking code and datablocks for integrity.
+
+    It can also be used for hash tables.
+
+    """
+
     def __init__(self):
         log.info("Create Kermit CRC device")
         super().__init__()
@@ -31,15 +40,13 @@ class KermitCRC(Peripheral, Elaboratable):
         # the given word
         self.word = bank.csr(16, "w")
         # the crc value
-        self.crc = bank.csr(16, "r")
-        # finished
-        # self.finished = bank.csr(1, "r")
+        self.crc = bank.csr(16, "rw")
 
     def elaborate(self, platform):
         m = Module()
         m.submodules.bridge = self._bridge
 
-        bit_counter = Signal(range(17))  # count from 7 to 0
+        bit_counter = Signal(range(17))
         crc = Signal(16)
 
         with m.If(self.reset.w_stb):
@@ -48,13 +55,11 @@ class KermitCRC(Peripheral, Elaboratable):
             m.d.sync += [
                 bit_counter.eq(8),
                 crc.eq(crc ^ self.byte.w_data),
-                #        self.finished.eq(0),
             ]
         with m.Elif(self.word.w_stb):
             m.d.sync += [
                 bit_counter.eq(16),
                 crc.eq(crc ^ self.word.w_data),
-                # self.finished.eq(0),
             ]
         with m.If(bit_counter > 0):
             m.d.sync += [

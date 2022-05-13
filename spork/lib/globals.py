@@ -1,8 +1,7 @@
 """ 
 Global values are named values that are added to the Firmware as labels,
 
-
-
+Automatically included in the firmware if they are used.
 """
 
 from ..firmware.base import *

@@ -1,5 +1,7 @@
 #!/usr/bin/python
-
+"""
+    Base firmware for the monitor system.
+"""
 
 # make a firmware object
 # enumerate the commands from commands

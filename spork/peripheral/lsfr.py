@@ -1,5 +1,14 @@
 """
 Linear feedback shift register
+
+A device that will return a psuedorandom random bitstream.
+
+https://en.wikipedia.org/wiki/Linear-feedback_shift_register
+
+16 bits, configurable.
+
+can be used for randomish data and terriblee encryption.
+
 """
 from nmigen import *
 
@@ -19,6 +28,8 @@ __all__ = ["LSFR"]
 # https://users.ece.cmu.edu/~koopman/lfsr/16.txt
 # for max length sequences
 # 8016,801C,801F,8029,805E,806B,8097,809E,80A7,80AE,80CB,80D0,80D6,80DF,80E3,810A,810C,8112
+
+
 def get_taps(mls):
     "takes a hex value and turns it into taps"
     bin_string = bin(mls)[2:]
@@ -40,13 +51,15 @@ class LSFR(Peripheral, Elaboratable):
         super().__init__()
         self.SIZE = 16
         assert initial != 0
+
         self.initial = initial
         self.initial_taps = start_taps
+
         bank = self.csr_bank()
 
         self.value = bank.csr(self.SIZE, "rw")
         self.taps = bank.csr(self.SIZE, "rw")
-        self.mode = bank.csr(1, "rw")  # 0 , free running
+        self.mode = bank.csr(1, "rw")  # 0 :free running , 1 increment on read
 
         self.current = Signal(self.SIZE)
 
@@ -79,6 +92,7 @@ class LSFR(Peripheral, Elaboratable):
                 m.d.sync += self.incr.eq(1)
                 m.d.sync += self.startup.eq(1)
                 m.next = "INCREMENT"
+
             with m.State("INCREMENT"):
                 # advance the lsfr
                 m.d.sync += Cat(self.current).eq(Cat(out, self.current))

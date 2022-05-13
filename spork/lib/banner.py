@@ -1,4 +1,8 @@
-"Encoded Banner"
+"""
+    Encoded Banner
+
+    Currently a string blob , need to RLE to make it smaller
+"""
 
 from ..firmware.base import *
 from .stringer import Stringer
@@ -6,6 +10,9 @@ from .stringer import Stringer
 from ..logger import logger
 
 log = logger(__name__)
+
+__done__ = False
+__working__ = True
 
 banner = """
 ┌────────────────────────────────────────────────┐

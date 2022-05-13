@@ -1,3 +1,7 @@
+"""
+    Collection on functions for the monitor to use.
+"""
+
 # remote commands to run on the processor
 
 # version

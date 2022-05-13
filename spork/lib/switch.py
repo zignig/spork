@@ -1,3 +1,9 @@
+"""
+    Create a switch table
+
+    Like a case statement except cooler.
+    
+"""
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 

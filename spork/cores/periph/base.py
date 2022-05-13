@@ -1,3 +1,12 @@
+"""
+    Create and attach gateware peripherals to your system
+
+    Needs more work
+"""
+
+__done__ = False
+__working = True
+
 from nmigen import *
 from nmigen import tracer
 from nmigen.utils import log2_int

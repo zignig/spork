@@ -1,4 +1,9 @@
-"Use the ice40 warmboot from code"
+"""
+    Use the ice40 warmboot from code
+
+    Code interface for the warmboot device
+
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

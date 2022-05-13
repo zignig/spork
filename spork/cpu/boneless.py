@@ -1,5 +1,11 @@
 """
 Base boneless object
+
+https://github.com/whitequark/Boneless-CPU
+
+a 16 bit processor filled with RISC awesome.
+
+
 """
 from nmigen import *
 

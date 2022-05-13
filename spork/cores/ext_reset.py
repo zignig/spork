@@ -1,3 +1,12 @@
+"""
+    A device to remotely reset the FPGA
+
+    Attached to the DTR of the serial port.
+
+    Waggle the DTR pin within the timeout and it will perform an action.
+    
+"""
+
 from nmigen import *
 import itertools
 

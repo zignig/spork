@@ -5,6 +5,7 @@ from ..utils.search import Enroll
 from ..logger import logger
 
 log = logger(__name__)
+__working__ = False
 
 
 @Enroll(platform="ice40", provides="watchdog")

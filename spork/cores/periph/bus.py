@@ -1,3 +1,7 @@
+""" 
+    CSR bus to attach things to stuff.
+    
+"""
 from nmigen import *
 from nmigen_soc.csr import Decoder
 from nmigen_soc.csr.bus import Multiplexer, Element, Decoder

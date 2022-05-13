@@ -15,6 +15,7 @@ from ..logger import logger
 log = logger(__name__)
 
 __all__ = ["SwitchPeripheral"]
+__working__ = False
 
 
 @Enroll(driver="switch")

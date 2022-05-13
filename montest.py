@@ -1,5 +1,9 @@
 #!/usr/bin/python -i
-" monitor python console interface"
+"""
+    Monitor python console interface,
+
+    use this to replace the hexloader.
+"""
 
 from spork.lib.monitor.serial_link import MonInterface
 from spork.lib.monitor.mon_firm import MonitorFirm
@@ -30,3 +34,4 @@ if __name__ == "__main__":
 
     # m = MonInterface()
     mon = CommandList()
+    mon  # show the commands

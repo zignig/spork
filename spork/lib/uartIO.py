@@ -1,4 +1,8 @@
-"Serial to char and word reading and writing"
+"""
+    Serial to char and word reading and writing
+    
+    UART functions for various data forms
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

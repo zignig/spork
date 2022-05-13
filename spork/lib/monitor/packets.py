@@ -1,5 +1,5 @@
 """
-Generate and send packets
+Generate and send packets to the host
 """
 
 from boneless.arch.opcode import Instr

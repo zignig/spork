@@ -1,4 +1,10 @@
-" Set of base commands "
+""" 
+    Set of base commands 
+
+    These are textual commands for the CLI 
+    they are automatically added to when declared.
+    
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

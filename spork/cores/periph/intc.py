@@ -1,3 +1,9 @@
+"""
+    Interupt Collection
+
+    ** unused but cool.
+"""
+
 from nmigen import *
 from . import Peripheral, IRQLine
 

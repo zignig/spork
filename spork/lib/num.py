@@ -1,6 +1,8 @@
-# Unfinished number commands.
-
+"""
+    Unfinished number functions 
+"""
 __done__ = False
+__working__ = False
 
 from ..firmware.base import *
 from ..logger import logger

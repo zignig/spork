@@ -1,5 +1,11 @@
-#  tree test
+"""
+    Static radix tree 
 
+    https://en.wikipedia.org/wiki/Radix_tree
+
+    generates static reference tree in memory
+    
+"""
 from ..firmware.base import *
 from .stringer import Stringer
 

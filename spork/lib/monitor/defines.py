@@ -1,3 +1,7 @@
+"""
+    Command ID for the monitor
+"""
+
 # defines for the monitor
 from enum import IntEnum
 

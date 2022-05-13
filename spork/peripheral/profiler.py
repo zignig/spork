@@ -9,6 +9,8 @@ log = logger(__name__)
 
 __all__ = ["Profiler"]
 
+__working__ = False
+
 
 class Stat(Elaboratable):
     def __init__(self):

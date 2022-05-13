@@ -1,4 +1,9 @@
-" Enuemerations of the commands for symbolic reference"
+"""
+    Enuemerations of the commands for symbolic reference
+
+    need to rework into a radix tree, but this is a good start
+
+"""
 
 from enum import IntEnum, auto
 

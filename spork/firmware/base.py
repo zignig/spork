@@ -6,6 +6,7 @@ The main aim is to only add components to the firmware if they are
 actually used in the program, otherwise they are not included.
 
 """
+
 from collections import OrderedDict
 import random
 import pprint
@@ -30,6 +31,8 @@ __all__ = [
 ]
 
 __done__ = False
+__working__ = True
+
 """
 Overview
 

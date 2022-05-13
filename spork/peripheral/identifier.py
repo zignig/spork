@@ -1,15 +1,22 @@
+"""
+    Creates a 128 bit id for the device , read only.
+"""
+
 from nmigen import *
 
 from ..cores.periph import Peripheral
 from ..utils.search import Enroll
+
 from ..logger import logger
 
 log = logger(__name__)
 
 import uuid
 
+__working__ = False
 
-@Enroll(platform="ice40", provides="identifier")
+
+@Enroll(provides="identifier")
 class Identifier(Peripheral, Elaboratable):
     def __init__(self, base="unsafe_default"):
         log.info("Create Id Object")
@@ -19,7 +26,7 @@ class Identifier(Peripheral, Elaboratable):
         self.uuid = str(uuid.uuid4())
         self.length = len(self.uuid)
 
-        self.get = bank.csr(1, "w")
+        self.get = bank.csr(1, "r")
         self.counter = Signal()
         self.reset = Signal()
 

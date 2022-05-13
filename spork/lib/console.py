@@ -1,4 +1,8 @@
-"Console"
+"""
+    Serial port interface.
+
+    Needs a total rework, radix tree and buffers
+"""
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *

@@ -1,3 +1,14 @@
+"""
+    Warmboot the FPGA
+
+    This is specific to the ice40 , and is bound to an exteral event.
+
+    It means that I can develop from the study whilst the board is in the shed...
+
+    :)
+    
+"""
+
 from nmigen import *
 
 from ..cores.periph import Peripheral
@@ -6,10 +17,13 @@ from ..utils.search import Enroll
 from ..logger import logger
 
 log = logger(__name__)
+__working__ = True
 
 
 @Enroll(platform="ice40", provides="warmboot", device="reset_pin")
 class WarmBoot(Peripheral, Elaboratable):
+    "Ice40 warm boot primative"
+
     def __init__(self):
         log.info("Create Warmboot Peripheral")
         super().__init__()

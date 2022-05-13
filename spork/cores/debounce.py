@@ -1,3 +1,10 @@
+"""
+    Debouncer ( untested )
+"""
+
+__done__ = False
+__working__ = False
+
 # Switch and button debouncer
 
 # IRC reference

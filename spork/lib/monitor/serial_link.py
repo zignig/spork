@@ -2,7 +2,8 @@
 """
     Primary serial link and encoder
 
-    Manages packet transactions from the host side 
+    Manages packet transactions from the host side
+
 """
 
 

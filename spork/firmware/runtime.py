@@ -1,6 +1,11 @@
-# boneless runtime
-from collections import OrderedDict
+"""
+    Unfinished Runtime struct
 
+    Need to rework and integrate
+    
+"""
+
+from collections import OrderedDict
 
 from boneless.arch.opcode import *
 

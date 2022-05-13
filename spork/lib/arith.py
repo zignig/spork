@@ -1,4 +1,4 @@
-" Some Decimal Math functions "
+" Some Decimal Math functions  ; unfinished "
 
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
@@ -8,6 +8,9 @@ from ..firmware.base import *
 from ..logger import logger
 
 log = logger(__name__)
+
+__done__ = False
+__working__ = False
 
 
 class DivMod(SubR):

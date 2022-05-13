@@ -1,5 +1,8 @@
 " Scheduler and tasks"
 
+
+__done__ = False
+__working__ = False
 from boneless.arch.opcode import Instr
 from boneless.arch.opcode import *
 
