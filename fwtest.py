@@ -15,6 +15,7 @@ from spork.peripheral.watchdog import Watchdog
 from spork.peripheral.profiler import Profiler
 from spork.peripheral.systick import SysTick
 from spork.peripheral.lsfr import LSFR
+from spork.peripheral.multiply import MultiplyPeripheral
 
 from spork.cores.ext_reset import ExternalReset
 from spork.cores.debounce import Debounce
@@ -82,11 +83,15 @@ class TestSpork(Elaboratable):
         cpu.add_peripheral(systick)
         # Reg test
 
-        # LSFT
+        multiply = MultiplyPeripheral()
+        cpu.add_peripheral(multiply)
+        # LSFR
+
         lsfr = LSFR()
         cpu.add_peripheral(lsfr)
-        # watchdog = Watchdog(cpu.cpu)
-        # cpu.add_peripheral(watchdog)
+
+        watchdog = Watchdog(cpu.cpu)
+        cpu.add_peripheral(watchdog)
 
         # Profiler
         # pro = Profiler()

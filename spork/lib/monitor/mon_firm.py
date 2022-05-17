@@ -118,6 +118,7 @@ class MonitorFirm(Firmware):
         w = self.w
         reg = self.reg
         ll = LocalLabels()
+        self.globals.otherpointer = 0
         return [
             Rem("Loop and Wait for serial"),
             LDXA(w.value, reg.serial.rx.rdy),

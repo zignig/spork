@@ -9,7 +9,7 @@ from enum import IntEnum
 # stuff for the link
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands, MemoryBlock
-from .remote import GetVersion, GetDatablock, Jumper, SendDataBlock, AllocBlock
+from .remote import GetVersion, GetDataBlock, Jumper, SendDataBlock, AllocBlock
 from .serial_link import MonInterface
 
 # Some errors
@@ -120,7 +120,7 @@ class ReadData(Com):
     _id = Commands.read_data
 
     def remote(self):
-        command = GetDatablock()
+        command = GetDataBlock()
         command.mark()
         return command
 

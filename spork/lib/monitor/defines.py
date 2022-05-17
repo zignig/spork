@@ -8,7 +8,7 @@ from enum import IntEnum
 
 MAGIC = 0x6676
 FIRMWARE_VERSION = 0x0003
-GATEWARE_VERSION = 0x0005
+GATEWARE_VERSION = 0x0006
 
 
 class MemoryBlock:

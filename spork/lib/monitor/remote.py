@@ -199,7 +199,7 @@ class SendDataBlock(SubR):
         ]
 
 
-class GetDatablock(SubR):
+class GetDataBlock(SubR):
     "Get datablock"
     params = ["address", "size"]  # for monitor commands
     locals = ["command"]
