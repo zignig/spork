@@ -242,6 +242,27 @@ class AllocBlock(SubR):
         ]
 
 
+class FreeMem(SubR):
+    params = ["unused", "unused2"]
+    locals = ["command", "heap", "mem_limit"]
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels()
+        return [
+            self.globals.heap_pointer(w.heap),
+            LD(w.heap, w.heap, 0),
+            self.globals.mem_limit(w.mem_limit),
+            LD(w.mem_limit, w.mem_limit, 0),
+            SUB(w.status, w.mem_limit, w.heap),
+            MOVI(w.command, Commands.free),
+            MOVI(w.unused, 0),
+            Transport.Send(w.command, w.unused, w.status),
+        ]
+
+
 class DataBlock:
     Write = WriteData()
     Read = ReadData()

@@ -114,6 +114,7 @@ class Firmware:
             self.labels = ll = LocalLabels()
             self.setup()
             self.globals.heap_pointer = 0
+            self.globals.mem_limit = self.sw - 64 * 8
             fw = [
                 Rem("--- Firmware Object ---"),
                 Rem(self.w._name),

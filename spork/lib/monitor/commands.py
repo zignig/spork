@@ -9,7 +9,7 @@ from enum import IntEnum
 # stuff for the link
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands, MemoryBlock
-from .remote import GetVersion, GetDataBlock, Jumper, SendDataBlock, AllocBlock
+from .remote import GetVersion, GetDataBlock, Jumper, SendDataBlock, AllocBlock, FreeMem
 from .serial_link import MonInterface
 
 # Some errors
@@ -188,7 +188,11 @@ class Alloc(Com):
 @Attach()
 class Free(Com):
     "show remaining memory"
-    pass
+    _id = Commands.free
+
+    def remote(self):
+        command = FreeMem()
+        return command
 
 
 # @Attach()
