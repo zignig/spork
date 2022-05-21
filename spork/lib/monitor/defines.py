@@ -26,7 +26,7 @@ class Commands(IntEnum):
     jump = 5
     alloc = 6
     free = 7
-    # write_external = 7
+    write_external = 8
     # read_external = 8
     # load_code = 9
     # read_code = 10

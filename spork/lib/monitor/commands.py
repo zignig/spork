@@ -10,6 +10,7 @@ from enum import IntEnum
 from .packets import Transport
 from .defines import FIRMWARE_VERSION, GATEWARE_VERSION, Commands, MemoryBlock
 from .remote import GetVersion, GetDataBlock, Jumper, SendDataBlock, AllocBlock, FreeMem
+from .remote import WriteExternalRegister
 from .serial_link import MonInterface
 
 # Some errors
@@ -42,6 +43,7 @@ class CommandList:
     def __repr__(self) -> str:
         val = ""
         self._mon.ping()
+        val += str(self.Free()) + "\n"
         val += self.__doc__ + "\n\n Available Commands \n\n"
         for _, i in self._commands.items():
             val += i.__name__ + "\n"
@@ -193,6 +195,14 @@ class Free(Com):
     def remote(self):
         command = FreeMem()
         return command
+
+
+@Attach()
+class WriteExternal(Com):
+    _id = Commands.write_external
+
+    def remote(self):
+        return WriteExternalRegister()
 
 
 # @Attach()

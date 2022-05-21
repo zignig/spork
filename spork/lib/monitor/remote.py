@@ -259,8 +259,20 @@ class FreeMem(SubR):
             SUB(w.status, w.mem_limit, w.heap),
             MOVI(w.command, Commands.free),
             MOVI(w.unused, 0),
-            Transport.Send(w.command, w.unused, w.status),
+            Transport.Send(w.command, w.heap, w.status),
         ]
+
+
+class WriteExternalRegister(SubR):
+    params = ["address", "value"]
+    locals = []
+    ret = ["status"]
+    _called = True
+
+    def instr(self):
+        w = self.w
+        ll = LocalLabels
+        return [STX(w.address, w.value, 0), MOVI(w.status, 0)]
 
 
 class DataBlock:
